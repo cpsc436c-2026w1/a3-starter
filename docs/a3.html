@@ -5782,7 +5782,7 @@ z-index: 1000;
 <section id="explain-and-price" class="level2">
 <h2 class="anchored" data-anchor-id="explain-and-price">2.3 Explain and price</h2>
 <p>Price a month of nightly runs of both jobs on Glue from your measured DPU-seconds ($0.44 per DPU-hour for Glue 5.0, billed per second, with a 1-minute minimum). Price the same month on an EMR cluster of one primary and two core m7g.xlarge nodes: about $0.67 an hour for the three, and about 5 minutes from launch until it is ready (L11). Both jobs run one after the other on one launch each night. In three sentences: which would you run, and what would change your mind?</p>
-<p>Athena could run the same loads too: a table over the raw files, then an <code>INSERT INTO branch.receipts SELECT …</code>, billed by Data scanned. In one more sentence: when would you choose that over a Glue job?</p>
+<p>Athena could run the same loads too: we could declare a Hive table over the raw files (only columns and a location in the catalog, no snapshots or manifests), then run <code>INSERT INTO branch.receipts SELECT …</code>, and we would pay only for Data scanned. In one more sentence: when would you choose that over a Glue job?</p>
 <p>📚 <strong>Lecture:</strong> L11, billing units and rules of thumb; tutorial 2, a Glue load and its DPU-seconds.</p>
 </section>
 </section>

@@ -360,8 +360,9 @@ billed per second, with a 1-minute minimum). Price the same month on an EMR clus
 nodes: about $0.67 an hour for the three, and about 5 minutes from launch until it is ready (L11). Both jobs run one
 after the other on one launch each night. In three sentences: which would you run, and what would change your mind?
 
-Athena could run the same loads too: a table over the raw files, then an `INSERT INTO branch.receipts SELECT …`, billed
-by Data scanned. In one more sentence: when would you choose that over a Glue job?
+Athena could run the same loads too: we could declare a Hive table over the raw files (only columns and a location in
+the catalog, no snapshots or manifests), then run `INSERT INTO branch.receipts SELECT …`, and we would pay only for
+Data scanned. In one more sentence: when would you choose that over a Glue job?
 
 📚 **Lecture:** L11, billing units and rules of thumb; tutorial 2, a Glue load and its DPU-seconds.
 
