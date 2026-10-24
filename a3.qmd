@@ -531,14 +531,16 @@ your Gherkin scenarios (L9) run on a table every time it commits.
    `is_lyon = true`. Run `bash setup_gate.sh features`, then commit again by setting `vacuum_min_snapshots_to_keep`
    back to `'1'`. Setting a property to the value it already has writes no metadata file and does not trigger the
    gate, so alternate between `'2'` and `'1'` for your test commits. You should see a result with `"passed": false`
-   in `branch/checks/results/members/`. Download that result file for your hand-in. Then restore the scenario and
+   in `branch/checks/results/members/`. Download that result file for your PDF. Then restore the scenario and
    run `bash setup_gate.sh features` again.
 
-**Hand in:** your feature file, one passing result, one failing result, and two short answers:
+**Add to your PDF, after task 4:**
 
-- Which statements you ran in tasks 2 to 4 would have triggered the gate, and which would not? Go through the Glue
-  load, `ADD COLUMNS`, `MERGE`, `DELETE`, `OPTIMIZE`, `VACUUM` and a `SELECT`, with the reason from task 3's commits.
-- Which of your scenarios would have caught a mistake in your own A3 run, and which mistake?
+- your feature file;
+- a description or a screenshot of your configuration;
+- a screenshot of sample outputs, such as a passing and a failing result;
+- 3 to 5 sentences: how the option you explored works, what might and might not be a good fit for this mechanism,
+  and how you would expand it in a production system.
 
 ::: {.callout-tip collapse="true" title="💡 Hint: scenario examples"}
 - R11: every row of `branch.members` has `is_lyon` true.
@@ -571,9 +573,12 @@ it calls Athena directly, with no Lambda in between.
    your task 4.3 plan.
 4. If you want the nightly schedules, run `bash setup_schedule.sh` without `--now`. They stop after 30 days.
 
-**Hand in:** the list of runs (query, state, Data scanned), two sentences comparing them with your task 4.3 plan,
-and one sentence on how the schedule for `branch.receipts` would change if the branch's till added one new data file
-a day. `OPTIMIZE` rewrites a partition only when it holds at least 5 data files.
+**Add to your PDF, after task 4:**
+
+- a description or a screenshot of your configuration, such as your schedules;
+- a screenshot of sample outputs, such as the runs in **Recent queries**;
+- 3 to 5 sentences: how the option you explored works, what might and might not be a good fit for this mechanism,
+  and how you would expand it in a production system.
 
 ::: {.callout-tip collapse="true" title="💡 Hint: where the numbers are"}
 - Athena's **Recent queries** gives each run's state and Data scanned. An `OPTIMIZE` on a table with nothing left to
@@ -598,7 +603,7 @@ Athena's query history is your evidence and stays. Head office keeps your delive
 - The report as a PDF: your predictions, your explanations, the price table and the maintenance plan.
 - Screenshot 1.
 - Screenshot 2: head office's reply email to your task 1 report (or the reply file, if the email did not arrive).
-- If you did an optional task: its section in your PDF and its hand-in files.
+- If you did an optional task, what it asks you to add to your PDF.
 
 Never screenshot a key, a token, or a secret.
 
