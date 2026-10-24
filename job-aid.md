@@ -45,7 +45,7 @@ aws athena get-work-group --work-group primary \
 | Data source | What it holds | Name in full |
 |---|---|---|
 | `course` | the company lakehouse, read-only | `course.course_lake.<table>` |
-| `AwsDataCatalog` | your own catalog: the `branch` database | `branch.<table>` |
+| `AwsDataCatalog` | your own catalog: the `branch` database | `awsdatacatalog.branch.<table>` (`branch.<table>` under this Data source) |
 | `shelf` | the shelf-price app's DynamoDB table, through a Lambda connector | `shelf.default.course_shelf_prices` |
 
 1. **Athena query editor**, Data source `course`: run `SHOW TABLES IN course_lake`. You should see the company
@@ -63,7 +63,8 @@ aws athena get-work-group --work-group primary \
    SHOW TABLES IN shelf.default;
    ```
 
-   You should see `course_shelf_prices`. A query on it is a federated query, through the connector.
+   You should see `course_shelf_prices`, and other tables of the course account that you cannot read. A query on
+   `course_shelf_prices` is a federated query, through the connector.
 4. Data source `AwsDataCatalog`: run `SHOW TABLES IN branch`. After setup you should see `raw_households`.
 
 A statement that names every table in full runs under any Data source. Numbers from `shelf` arrive as `decimal(38,9)`: cast a key with `CAST(store_id AS bigint)`
@@ -118,8 +119,8 @@ A run shorter than a minute is billed as a minute: a 40-second run on 2 DPUs cos
    WITH (format = 'JSON', compression = 'NONE');
    ```
 
-   `format = 'JSON'` writes JSON Lines: one JSON record per line. `compression = 'NONE'` writes plain text, and
-   without it Athena writes gzip files.
+   `format = 'JSON'` writes JSON Lines: one JSON record per line. Set `compression = 'NONE'` to write plain-text JSON Lines.
+   Without it, Athena uses the documented JSON default, gzip.
 2. The folder must be empty. A second `UNLOAD` into the same folder fails with `HIVE_PATH_ALREADY_EXISTS`: use a
    new folder name each time.
 3. **CloudShell**, within a minute, list the replies and print one:
@@ -132,7 +133,7 @@ A run shorter than a minute is billed as a minute: a 40-second run on 2 DPUs cos
    You should see `toy-stores.json`, saying head office does not know a report called `toy-stores`: the path
    works. Head office checks folders whose name starts with `task1-`.
 
-**Replies by email.** In CloudShell, with the starter's `subscribe.sh` in your home folder:
+**Replies by email.** In CloudShell, in the `a3-starter` folder:
 
 ```bash
 bash subscribe.sh <your email>
@@ -181,6 +182,13 @@ MERGE_TARGET_ROW_MULTIPLE_MATCHES: One MERGE target table row matched more than 
 
 Keep one incoming row per key before the `MERGE`.
 
+**Deleting the rows another table lists.** A `DELETE` can take its keys from a query:
+
+```sql
+DELETE FROM tutorial.zones
+WHERE locationid IN (SELECT locationid FROM tutorial.zone_changes WHERE zone = 'New test zone');
+```
+
 <!--src: https://docs.aws.amazon.com/athena/latest/ug/merge-into-statement.html (synopsis, first WHEN clause wins, error on multiple matches, INSERT/VALUES prefixes) | b3-t2-glue-rides/sql/06_extra_merge.sql and README §4 (265 → 266 → 266) | demos/l11check/runs/athena-statements-20261019-011459.jsonl (error text, one snapshot per MERGE) -->
 
 ## Changing a Glue job from CSV to JSON Lines
@@ -195,6 +203,8 @@ from scratch lacks them and fails when it writes to `glue_catalog`.
    `s3://436c-glue-<account>/branch/jobs/`, so that saving the clone's script leaves `branch_receipts.py` as it is.
    Task 3.3 runs `branch-receipts` again.
 4. **Script** tab: edit the script, then **Save**.
+5. On the **Runs** tab, open the run. For a failed run, you see its **Error message**; select **Output logs** to open
+   the full log.
 
 Step 3 matters whichever path the clone starts with: a script file of its own is the only way an edit cannot reach
 `branch_receipts.py`.
@@ -247,6 +257,32 @@ The table properties, `repartition` and `job.commit()` stay as they are.
 
 <!--src: https://docs.aws.amazon.com/glue/latest/dg/managing-jobs-chapter.html (Actions → Clone job) | starter/setup_a3.sh:47-49 (--datalake-formats, --conf, --BUCKET, --DAY) | starter/branch_receipts.py | https://spark.apache.org/docs/latest/sql-data-sources-json.html (JSON Lines by default, schema inferred) -->
 
+## One price in four places
+
+The four statements for task 3.5, one per place. Each shows a price and the time it carries.
+
+1. **The app's DynamoDB table**, Data source `shelf` (a federated query):
+   ```sql
+   SELECT price_eur, updated_at FROM shelf.default.course_shelf_prices
+   WHERE store_id = 43 AND product_code = '3068320011707';
+   ```
+2. **The hourly export in your raw zone**, in CloudShell:
+   ```bash
+   aws s3 cp s3://436c-glue-<account>/branch/raw/price_events/dt=2026-10-16/hour=23/changes.jsonl - | grep '"store_id": 43, "product_code": "3068320011707"'
+   ```
+3. **Your branch table**, Data source `AwsDataCatalog`:
+   ```sql
+   SELECT price_eur, changed_at FROM branch.price_events
+   WHERE store_id = 43 AND product_code = '3068320011707';
+   ```
+4. **The company table**, Data source `course`:
+   ```sql
+   SELECT current_unit_price_eur, observed_at FROM course.course_lake.current_prices
+   WHERE store_id = 43 AND product_code = '3068320011707';
+   ```
+
+<!--src: statements 1, 3 and 4 ran in the sandbox, run log tools/e2e/run-20261023-24.md, 2026-10-23/24 | statement 2: the grep pattern matches one line of data/branch-raw/price_events/dt=2026-10-16/hour=23/changes.jsonl (format from demos/a3-hq/updater.py json.dumps), not run in CloudShell -->
+
 ## Table properties, OPTIMIZE and VACUUM
 
 All in the **Athena query editor**, one statement at a time, for each of `branch.members`, `branch.receipts` and
@@ -293,7 +329,7 @@ aws s3 ls s3://436c-glue-<account>/<folder up to data/> --recursive | wc -l
 ```
 
 In our run of A3 (2026-10-24), `OPTIMIZE` rewrote each branch table into one file: a day's 32 or 64 small files,
-and a table whose two data files each had delete files.
+and a table whose first data file had two delete files, from the `MERGE` and from the `DELETE`.
 
 Where the files are: a table a Glue job created is under `branch/tables/branch.db/<table>/`, and a table made with
 `CREATE TABLE ... AS SELECT` is under the `location` you gave it.

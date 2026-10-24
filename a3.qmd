@@ -70,19 +70,20 @@ prices and store locations, so that the assignment has answers we can check.
 <colgroup><col style="width:14%"><col style="width:28%"><col style="width:29%"><col style="width:29%"></colgroup>
 <thead>
 <tr><th rowspan="2"></th><th rowspan="2">Company lakehouse<br>(head office's, read-only to you)</th><th colspan="2" style="text-align:center">Branch data (your responsibility)</th></tr>
-<tr><th>Bronze: the raw zone<br>(files as they arrived, L8)</th><th>Silver: the branch lake<br>(Iceberg tables, typed and queryable, L8, L10)</th></tr>
+<tr><th>Bronze: the raw zone<br>(files as they arrived, L8)</th><th>Silver: the branch lake, your own lakehouse at branch size<br>(Iceberg tables, typed and queryable, L8, L10)</th></tr>
 </thead>
 <tbody>
-<tr><td>What is there</td><td><code>consumption</code> (the receipt lines), <code>products</code>, <code>catalogue</code>, <code>stores</code>, <code>households</code>, <code>prices</code>, <code>current_prices</code></td><td>the branch's files as they arrive: till exports (CSV, one file a day), the shelf-price app's price changes (JSON Lines, one JSON record per line, one file an hour), changes to members' records (JSON Lines)</td><td>the tables you build: <code>branch.receipts</code>, <code>branch.price_events</code>, <code>branch.members</code></td></tr>
+<tr><td>What is there</td><td><code>consumption</code> (the receipt lines), <code>products</code> (Open Food Facts records as published), <code>catalogue</code> (one row per product, with its grades), <code>stores</code>, <code>households</code>, <code>prices</code>, <code>current_prices</code></td><td>the branch's files as they arrive: till exports (CSV, one file a day), the shelf-price app's price changes (JSON Lines, one JSON record per line, one file an hour), changes to members' records (JSON Lines)</td><td>the tables you build: <code>branch.receipts</code>, <code>branch.price_events</code>, <code>branch.members</code></td></tr>
 <tr><td>Where it is</td><td>the course account's catalog, database <code>course_lake</code>, read in Athena as <code>course.course_lake.&lt;table&gt;</code></td><td>your bucket, <code>s3://436c-glue-&lt;account&gt;/branch/raw/</code></td><td>your Glue database <code>branch</code>, data under <code>s3://436c-glue-&lt;account&gt;/branch/tables/</code></td></tr>
 <tr><td>What you can do</td><td>read</td><td>read and add files</td><td>create, change, compact, delete</td></tr>
-<tr><td>What it costs you</td><td>Athena, $5.50 per TB of Data scanned, 10 MB minimum per query</td><td>S3 storage, a few cents for the assignment</td><td>Athena per TB of Data scanned, and Glue $0.44 per DPU-hour for each load</td></tr>
+<tr><td>What it costs you</td><td>Athena, $5.50 per TB of Data scanned, 10 MB minimum per query</td><td>S3 storage, far below a cent for the assignment's files</td><td>Athena per TB of Data scanned, and Glue $0.44 per DPU-hour for each load</td></tr>
 </tbody>
 </table>
 ```
 :::
 
-The report you deliver to head office in task 1 is gold: shaped for one consumer. Reminder of the three levels:
+The report you deliver to head office in task 1 is gold: shaped for one consumer, here built straight from head
+office's tables. Reminder of the three levels:
 L8, and Strengholt, [*Building Medallion Architectures*, ch. 1, "What Is a Medallion Architecture?"](https://learning.oreilly.com/library/view/building-medallion-architectures/9781098178826/ch01.html).
 
 The shelf-price app also keeps the price each Lyon store shows right now in its own DynamoDB table, which Athena
@@ -133,7 +134,7 @@ to do these comparisons is how you build data engineering intuition. You don't g
 **Task 2. Loading the branch's files (build, about 105 minutes).** Run the ready Glue job that loads the till
 export into `branch.receipts`, create a second job from its script to load the shelf-price app's changes into `branch.price_events`,
 and price a month of nightly runs of both jobs on Glue against an EMR cluster of one primary and two core m7g.xlarge nodes. Hand in your script's changes,
-two rows of `results.csv`, the price table and three sentences.
+five rows of `results.csv`, the price table and three sentences.
 
 **Task 3. Keeping the members correct (change, about 100 minutes).** Copy the branch's members from the company
 lakehouse into `branch.members`, apply day 2's change file with `MERGE`, rerun a load to test R40, process the 25
@@ -171,8 +172,8 @@ you.
 :::
 
 ::: {.callout-warning title="⚠️ One expensive query"}
-Athena bills $5.50 per TB of Data scanned, with a 10 MB minimum per query. Task 1's report reads about 7.6 GB, about 4
-cents, and every other query in this assignment reads less. A `SELECT *` over `consumption` reads the whole table;
+Athena bills $5.50 per TB of Data scanned, with a 10 MB minimum per query. Task 1's report is the one large query in this
+assignment: predict what it reads before you run it. A `SELECT *` over `consumption` reads the whole table;
 do not run it to see what happens.
 :::
 
@@ -188,12 +189,13 @@ Running a command in the wrong place is the most common way to lose an hour.
 - **The Athena query editor, in the browser:** every SQL statement.
 - **The Glue console, in the browser:** reading and editing the job script, and its run history.
 
-`results.csv` lives on your laptop.
+`results.csv` is in the `a3-starter` folder in CloudShell: edit it there, or download it (**Actions**, **Download
+file**) and edit it on your laptop.
 :::
 
-1. **Your branch database and the course data source.** In the Athena query editor, run
-   `CREATE DATABASE IF NOT EXISTS branch`. Tutorial 1 already added the course catalog as the data source `course`;
-   check that `SHOW TABLES IN course_lake` (with **Data source** `course`) lists the company tables.
+1. **The course data source.** Tutorial 1 already added the course catalog as the data source `course`. In the Athena
+   query editor, with **Data source** `course`, check that `SHOW TABLES IN course_lake` lists the company tables.
+   Step 3 creates your own database `branch`.
 2. **The shelf-price app's DynamoDB table.** In CloudShell, register the connector head office shares:
    `aws athena create-data-catalog --name shelf --type LAMBDA --parameters function=arn:aws:lambda:ca-central-1:940482406111:function:436c-ddb-connector`.
 3. **The raw zone and the ready job.** In CloudShell, in the `a3-starter` folder, run `bash setup_a3.sh`. It lands
@@ -207,7 +209,8 @@ Running a command in the wrong place is the most common way to lose an hour.
 shelf.default` lists `course_shelf_prices`, and `aws s3 ls s3://436c-glue-<account>/branch/raw/ --recursive` lists
 the four raw files, including `_files.json`.
 
-📸 **Screenshot 1.** The Athena editor with the `branch` database selected and the `shelf` data source listed.
+📸 **Screenshot 1.** The Athena editor with **Data source** `AwsDataCatalog` and the `branch` database selected,
+showing `raw_households`, and the result of `SHOW TABLES IN shelf.default`.
 
 # Task 1. Healthier-basket report
 
@@ -284,8 +287,8 @@ sequenceDiagram
 ```
 
 Head office checks every report it receives and replies within a minute, by email if you subscribed, and always as a
-file in `inbox/<your account id>/replies/`. A report sent again into the same folder within two minutes is not
-checked again: use a new folder name.
+file in `inbox/<your account id>/replies/`. `UNLOAD` refuses a folder that already holds files,
+so each delivery needs a new folder name. After a failed or cancelled `UNLOAD`, use a new name too.
 
 👀 **Quick check.** The report returns 72 rows, one per month and segment, in under a minute. Head office's reply
 is organised by the requirements your report answers, R70 and R20, with each requirement and each of its constraints marked met or not met.
@@ -296,7 +299,7 @@ Our run's Data scanned was 7.6 GB, in about 15 seconds, and head office accepted
 
 ## 1.3 Explain the gap
 
-In one paragraph: why did the report read what it did, compared with your estimate and with the whole table? Name the mechanism (projection pushdown) that kept the other columns out, and say why no partition was skipped. Then a second, reverse task:
+In one paragraph: why did the report read what it did, compared with your estimate and with the whole table? Name the mechanism that kept the other columns out of the read, and say whether any partition was skipped, and why. Then a second, reverse task:
 three measured Data scanned figures and three versions of the query (one more column, one month only, the join without the
 catalogue) are in `task1_variants.md`; match them and say why.
 
@@ -313,9 +316,10 @@ different engine. (R30, R31)
 - Glue is priced per DPU-hour, billed per second, with a 1-minute minimum. Athena bills per TB of Data scanned. A
   nightly job pays for each run, busy day or quiet.
 - The till export and the app's changes differ in format and in columns. Which lines of the job care about which?
-- An EMR cluster takes minutes from launch until it is ready (L7), and those minutes are billed too. Each node bills
+- An EMR cluster takes minutes from launch until it is ready (L11), and those minutes are billed too. Each node bills
   per second while it is up, busy or idle, at the EC2 price plus the EMR price (L11).
 - Dean runs head office's jobs on a cluster that never shuts down, like his old car: always warm, always billing.
+  If you argue for that, price it at 24 hours a day.
 - Things to look up before promising anything: …
 :::
 
@@ -335,12 +339,14 @@ with. Write both into your task 2 row.
 **Run it.** In CloudShell: `aws glue start-job-run --job-name branch-receipts`. When the run ends (Glue console,
 **ETL jobs**, `branch-receipts`, **Runs**), count the day's rows in Athena and read the run's figures:
 `aws glue get-job-runs --job-name branch-receipts --max-items 1 --query 'JobRuns[0].[ExecutionTime,DPUSeconds]'`.
-Record the rows, the seconds and the DPU-seconds.
+Record the rows, the seconds and the DPU-seconds. If a run fails, the job aid shows where to read its error.
 
 ## 2.2 Adapt it for the price changes
 
 **Predict, before you change anything:** which lines of the script must change for a JSON Lines input with different
 columns and a different target table, and how many rows the new job will write (`_files.json` lists the export files and their rows).
+In CloudShell, look at one record first:
+`aws s3 cp s3://436c-glue-<account>/branch/raw/price_events/dt=2026-10-16/hour=23/changes.jsonl - | head -2`.
 
 **Change and run it.** In the Glue console, clone `branch-receipts` (**Actions**, **Clone job**), give the clone its
 own name and script file, change the reader to JSON Lines, the column mapping, and the target table
@@ -349,8 +355,8 @@ clone works where a new empty job does not. Record the rows and the DPU-seconds.
 
 ## 2.3 Explain and price
 
-Price a month of nightly runs of both jobs on Glue from your measured DPU-seconds ($0.44 per DPU-hour, billed per
-second, with a 1-minute minimum). Price the same month on an EMR cluster of one primary and two core m7g.xlarge
+Price a month of nightly runs of both jobs on Glue from your measured DPU-seconds ($0.44 per DPU-hour for Glue 5.0,
+billed per second, with a 1-minute minimum). Price the same month on an EMR cluster of one primary and two core m7g.xlarge
 nodes: about $0.67 an hour for the three, and about 5 minutes from launch until it is ready (L11). Both jobs run one
 after the other on one launch each night. In three sentences: which would you run, and what would change your mind?
 
@@ -381,7 +387,7 @@ or new record (with a new field, `marketing_consent`), and `erase` for a member 
 ## 3.1 Copy the members
 
 Copy the Lyon members from the company lakehouse into `branch.members`, with a `CREATE TABLE ... AS SELECT` and
-`table_type = 'ICEBERG'`, as in tutorial 1. **Predict first:** how many rows the copy holds. Then run it and count.
+`table_type = 'ICEBERG'` and `location = 's3://436c-glue-<account>/branch/tables/members/'`, as in tutorial 1. **Predict first:** how many rows the copy holds. Then run it and count.
 
 ## 3.2 Apply the changes with MERGE
 
@@ -418,7 +424,8 @@ On 16 October 2026 at 23:14:04 UTC, the shelf-price app changed the price of Evi
 `branch/raw/price_events/`, your `branch.price_events` from task 2.2, and the company's `current_prices`.
 
 **Predict first:** which of the four show 3.68 € and which still show 3.51 €, and why. Then query each, and record the
-price it shows and the time it carries (`updated_at`, `changed_at` or `observed_at`).
+price it shows and the time it carries (`updated_at`, `changed_at` or `observed_at`). The job aid gives a statement
+for each place.
 
 <!--src: change measured:demos/a3-hq updater run, hour 2026-10-16T23 (s3://436c-l6-bench-940482406111/lake/apps/shelf-prices/changes/dt=2026-10-16/hour=23/changes.jsonl, 3,295 changes) | DynamoDB item store 43 / 3068320011707: price_eur 3.68, updated_at 2026-10-16T23:14:04Z, source app (strongly consistent get-item, 2026-10-23) | course_lake.current_prices: 3.51, observed_at 2025-12-31 10:49:09 (Athena, 2026-10-23) | expected: DynamoDB and the export show 3.68; branch.price_events shows 3.68 once 2.2 has loaded the hour-23 file; current_prices shows 3.51, because it is built from price observations and nothing feeds the app's changes into it | build: the generator (BUILD-STATE D1) copies this hour-23 export into branch/raw/price_events/dt=2026-10-16/hour=23/; the updater stays unscheduled until A3 closes, or the item changes again -->
 
@@ -442,8 +449,8 @@ rewriting files and expiring snapshots, each with a bill. (R51, R80, R90)
   history is what time travel reads, and it is also what we pay to store.
 - A reader opens every data file it needs and reads its footer before any row. Many small loads leave many small files.
 - `OPTIMIZE` rewrites data files. `VACUUM` expires snapshots and deletes files no snapshot needs. Neither runs by
-  itself. `OPTIMIZE` leaves a partition alone until it has at least 5 small files, or a data file has at least 2
-  delete files (Athena's defaults), so a table that does not change may be under that line.
+  itself. By default `OPTIMIZE` rewrites nothing unless at least 5 data files need rewriting, or a data file has
+  at least 2 delete files, so a table that does not change may be under both lines.
 - A `DELETE` writes a delete file and leaves the data file as it was. Which step, in which order, takes an erased
   member's row out of S3?
 - S3 can delete files by age itself (L11): what rule would we set on the raw zone, and does it help with an erasure
@@ -475,7 +482,8 @@ age you set, so let a minute pass after the last change to a table before you ru
 
 One paragraph to the director: what runs, when, on which engine, and at what monthly cost, item by item. Say in what
 order an erasure goes through `DELETE`, `OPTIMIZE` and `VACUUM`, which snapshot age you would set in production to
-meet rule 2 (not the 60 seconds used here), and how the raw zone meets data-use rules 2 and 4. Use your own numbers. Your plan should be motivated with the numbers from your
+meet rule 2 (not the 60 seconds used here), and how the raw zone meets data-use rules 2 and 4 (describe the S3 Lifecycle rule
+you would set; applying it is optional). Use your own numbers. Your plan should be motivated with the numbers from your
 `results.csv` and relevant prices.
 
 📚 **Lecture:** L11, `OPTIMIZE` then `VACUUM`, scheduling with EventBridge Scheduler, storage classes and S3 Lifecycle;
