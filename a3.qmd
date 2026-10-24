@@ -514,10 +514,6 @@ the features of the course lake and get into some maintenance mechanisms for dat
 to production work (though still a bit simplified for the sake of time). Chat with me if you attempted to do them,
 even if you haven't finished!
 
-1. Finish the four tasks first.
-2. Choose one optional task, or both.
-3. Add what you did as the last section of your PDF.
-
 ## Optional A. Quality gate for your branch lake
 
 Head office checks your report with scenarios in task 1. A quality gate applies the same method to your own tables:
