@@ -5705,18 +5705,22 @@ z-index: 1000;
 <div>
 <pre class="mermaid mermaid-js">sequenceDiagram
   participant You as You, in Athena
+  participant Lake as Company lakehouse (read only)
   participant Inbox as Head office inbox (S3)
   participant Checker as Report checker
   participant Mail as Your email
-  You-&gt;&gt;Inbox: UNLOAD into inbox/&lt;account&gt;/task1-&lt;name&gt;/
+  You-&gt;&gt;Lake: run the report on its own
+  Lake--&gt;&gt;You: 72 rows, then record Data scanned and run time
+  You-&gt;&gt;Lake: the same query inside UNLOAD
+  Lake--&gt;&gt;Inbox: report files in inbox/&lt;account&gt;/task1-&lt;name&gt;/
   Inbox-&gt;&gt;Checker: new report files
   Note over Checker: checks R70, then R20
   Checker-&gt;&gt;Inbox: reply in inbox/&lt;account&gt;/replies/
   Checker-&gt;&gt;Mail: each requirement met or not met
-  You-&gt;&gt;Inbox: read the reply file
+  You-&gt;&gt;Inbox: read the reply file (Screenshot 2: the email)
 </pre>
 </div>
-<p></p><figcaption> Delivering a report: head office checks it against R70 and R20 and replies.</figcaption> </figure><p></p>
+<p></p><figcaption> Measuring, then delivering the report: head office checks it against R70 and R20 and replies.</figcaption> </figure><p></p>
 </div>
 </div>
 </div>

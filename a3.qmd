@@ -274,18 +274,22 @@ WITH (format = 'JSON', compression = 'NONE');
 ```
 
 ```{mermaid}
-%%| fig-cap: "Delivering a report: head office checks it against R70 and R20 and replies."
+%%| fig-cap: "Measuring, then delivering the report: head office checks it against R70 and R20 and replies."
 sequenceDiagram
   participant You as You, in Athena
+  participant Lake as Company lakehouse (read only)
   participant Inbox as Head office inbox (S3)
   participant Checker as Report checker
   participant Mail as Your email
-  You->>Inbox: UNLOAD into inbox/<account>/task1-<name>/
+  You->>Lake: run the report on its own
+  Lake-->>You: 72 rows, then record Data scanned and run time
+  You->>Lake: the same query inside UNLOAD
+  Lake-->>Inbox: report files in inbox/<account>/task1-<name>/
   Inbox->>Checker: new report files
   Note over Checker: checks R70, then R20
   Checker->>Inbox: reply in inbox/<account>/replies/
   Checker->>Mail: each requirement met or not met
-  You->>Inbox: read the reply file
+  You->>Inbox: read the reply file (Screenshot 2: the email)
 ```
 
 Head office checks every report it receives and replies within a minute, by email if you subscribed, and always as a
