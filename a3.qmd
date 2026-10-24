@@ -30,6 +30,11 @@ or not applicable. NOVA is a four-group processing scale on which group 4 is ult
 Every branch can read the company lakehouse, and no branch can change it. In this course, the company lakehouse is
 the course tables you registered in tutorial 1 as the data source `course`.
 
+Head office loaded the three years of receipt lines in one go and has not reorganised them since. The table has one
+partition per month, and no other layout. The branches have asked for a layout that suits them, and head office's
+answer is that each branch can build what it needs in its own lake. That is part of why the Lyon branch keeps a lake
+of its own.
+
 The Lyon branch also has data that head office does not keep: the daily export from its own tills, the price
 changes its shelf-price app records during the day, and changes to its own members' records, including requests to
 be erased from the branch's systems. The branch keeps that data itself and queries it together with the company's.
@@ -215,6 +220,7 @@ the table's manifests before you run it. (R20, R70)
 - This report reads three years of receipt lines (`consumption`). Before running anything that big, I read the manifests: they list
   every data file, with the bytes of each column in it.
 - The bill follows what is read: which files, and which columns of them. Does this report skip any months?
+  Could a Lyon-only query skip any files inside a month? The manifests' minimum and maximum per column would say.
 - `catalogue` and `households` are small next to `consumption`. Which table decides the bill?
 - Head office takes aggregates only. Look at the columns before you `UNLOAD`.
 - Things to look up before promising anything: …
