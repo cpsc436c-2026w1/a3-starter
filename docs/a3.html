@@ -5586,7 +5586,7 @@ z-index: 1000;
 <h1>Roadmap</h1>
 <p>On every task, we ask you to predict, measure and explain. <strong>Predict</strong> what will happen: give an estimate of Data scanned, rows, seconds or dollars, from the numbers you can look up, before executing anything, and write it into <code>results.csv</code> first. <strong>Measure</strong>: run it, then write the figures into your row: Data scanned and run time from Athena’s Query stats, or, for a Glue run, its DPU-seconds (DPUs × seconds of run time). <strong>Explain</strong> the difference between your estimate and the measurement, and name the mechanism behind it.</p>
 <p>In predictions we ask for order-of-magnitude comparisons and don’t ask for a precise estimate. As a rule of thumb, you should be able to do a back-of-the-envelope prediction looking at the numbers or their estimates, seldom needing code or GenAI. Write your prediction down before you run the query, then compare it with the measurement. Learning to do these comparisons is how you build data engineering intuition. You don’t get downgraded for wrong predictions.</p>
-<p><strong>Task 1. Healthier-basket report (use, about 75 minutes).</strong> Predict, from the table’s manifests, how much data the branch’s monthly trend report reads, complete and run the report, deliver it to head office’s inbox with <code>UNLOAD</code>, and explain the difference. Hand in two rows of <code>results.csv</code>, head office’s reply, and a paragraph.</p>
+<p><strong>Task 1. Healthier-basket report (use, about 75 minutes).</strong> Predict, from the table’s manifests, how much data the branch’s monthly trend report reads, complete and run the report, deliver it to head office’s inbox with <code>UNLOAD</code>, and explain the difference. Hand in two rows of <code>results.csv</code>, head office’s reply (Screenshot 2), and a paragraph.</p>
 <p><strong>Task 2. Loading the branch’s files (build, about 105 minutes).</strong> Run the ready Glue job that loads the till export into <code>branch.receipts</code>, create a second job from its script to load the shelf-price app’s changes into <code>branch.price_events</code>, and price a month of nightly runs of both jobs on Glue against an EMR cluster of one primary and two core m7g.xlarge nodes. Hand in your script’s changes, five rows of <code>results.csv</code>, the price table and four sentences.</p>
 <p><strong>Task 3. Keeping the members correct (change, about 100 minutes).</strong> Copy the branch’s members from the company lakehouse into <code>branch.members</code>, apply day 2’s change file with <code>MERGE</code>, rerun a load to test R40, process the 25 erasure requests, check what an older snapshot still returns, and compare how fresh a shelf price is in each place. Hand in your statements, three rows of <code>results.csv</code> and a four-sentence answer.</p>
 <p><strong>Task 4. Maintenance for the year (maintain, about 75 minutes).</strong> Set the clean-up properties, compact and clean up old snapshots on <code>branch.members</code>, <code>branch.receipts</code> and <code>branch.price_events</code>, check the erased members again, and write a one-paragraph maintenance plan for the year. Hand in two rows of <code>results.csv</code>, the properties as <code>SHOW TBLPROPERTIES</code> returns them, and the plan.</p>
@@ -5722,6 +5722,7 @@ z-index: 1000;
 </div>
 <p>Head office checks every report it receives and replies within a minute, by email if you subscribed, and always as a file in <code>inbox/&lt;your account id&gt;/replies/</code>. <code>UNLOAD</code> refuses a folder that already holds files, so each delivery needs a new folder name. After a failed or cancelled <code>UNLOAD</code>, use a new name too.</p>
 <p>👀 <strong>Quick check.</strong> The report returns 72 rows, one per month and segment, in under a minute. Head office’s reply is organised by the requirements your report answers, R70 and R20, with each requirement and each of its constraints marked met or not met.</p>
+<p>📸 <strong>Screenshot 2.</strong> Head office’s reply email to your task 1 report. If the email did not arrive, the reply file from <code>inbox/&lt;your account id&gt;/replies/</code> instead.</p>
 <div class="callout callout-style-default callout-note callout-titled" title="👀 Compare with our run: open after you have written your explanation">
 <div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-5-contents" aria-controls="callout-5" aria-expanded="false" aria-label="Toggle callout">
 <div class="callout-icon-container">
@@ -5893,8 +5894,8 @@ z-index: 1000;
 <ul>
 <li><code>results.csv</code>, with a row for every measured query and run.</li>
 <li>The report as a PDF: your predictions, your explanations, the price table and the maintenance plan.</li>
-<li>Head office’s reply to your task 1 report (the file or the email).</li>
 <li>Screenshot 1.</li>
+<li>Screenshot 2: head office’s reply email to your task 1 report (or the reply file, if the email did not arrive).</li>
 </ul>
 <p>Cover the last 4 digits of your account number. Never screenshot a key, a token, or a secret.</p>
 </section>

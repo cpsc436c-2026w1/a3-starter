@@ -129,7 +129,7 @@ code or GenAI. Write your prediction down before you run the query, then compare
 to do these comparisons is how you build data engineering intuition. You don't get downgraded for wrong predictions.
 
 **Task 1. Healthier-basket report (use, about 75 minutes).** Predict, from the table's manifests, how much data the branch's monthly trend report reads, complete and run the report, deliver it to head office's inbox with
-`UNLOAD`, and explain the difference. Hand in two rows of `results.csv`, head office's reply, and a paragraph.
+`UNLOAD`, and explain the difference. Hand in two rows of `results.csv`, head office's reply (Screenshot 2), and a paragraph.
 
 **Task 2. Loading the branch's files (build, about 105 minutes).** Run the ready Glue job that loads the till
 export into `branch.receipts`, create a second job from its script to load the shelf-price app's changes into `branch.price_events`,
@@ -294,6 +294,9 @@ so each delivery needs a new folder name. After a failed or cancelled `UNLOAD`, 
 
 👀 **Quick check.** The report returns 72 rows, one per month and segment, in under a minute. Head office's reply
 is organised by the requirements your report answers, R70 and R20, with each requirement and each of its constraints marked met or not met.
+
+📸 **Screenshot 2.** Head office's reply email to your task 1 report. If the email did not arrive, the reply file
+from `inbox/<your account id>/replies/` instead.
 
 ::: {.callout-note collapse="true" title="👀 Compare with our run: open after you have written your explanation"}
 Our run's Data scanned was 7.6 GB, in about 15 seconds, and head office accepted it.
@@ -509,8 +512,8 @@ your evidence and stays. Head office keeps your delivered reports.
 
 - `results.csv`, with a row for every measured query and run.
 - The report as a PDF: your predictions, your explanations, the price table and the maintenance plan.
-- Head office's reply to your task 1 report (the file or the email).
 - Screenshot 1.
+- Screenshot 2: head office's reply email to your task 1 report (or the reply file, if the email did not arrive).
 
 Cover the last 4 digits of your account number. Never screenshot a key, a token, or a secret.
 
