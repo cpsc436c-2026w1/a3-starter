@@ -59,15 +59,26 @@ prices and store locations, so that the assignment has answers we can check.
 ![What runs where. The numbers follow the order you meet each step; head office's reply to a report is shown in more detail under task 1.](diagrams/a3-architecture.svg){fig-alt="Three AWS accounts. Your branch account: Athena (your query editor), the raw zone, Glue jobs, and the branch tables. Head office: the company lakehouse (read only), the report inbox, the report checker and email replies. The shelf-price app: an hourly updater, its change exports and the current prices in DynamoDB. Arrows: 1 Athena reads the company lakehouse; 2 the change exports land in the raw zone; 3 Glue loads the raw zone into the branch tables; 4 Athena queries and changes the branch tables; 5 Athena reads current prices through a connector; 6 Athena UNLOADs a report into the inbox; 7 the checker replies by email."}
 :::
 
-| | Company lakehouse | Branch raw zone (L8's `raw/`: files kept as they arrived) | Branch lake (your own lakehouse, at branch size) |
-|---|---|---|---|
-| What is there | `consumption` (the receipt lines), `products`, `catalogue`, `stores`, `households`, `prices`, `current_prices` | the branch's files as they arrive: till exports (CSV, one file a day), the shelf-price app's price changes (JSON Lines, one JSON record per line, one file an hour), changes to members' records (JSON Lines) | the tables you build: `branch.receipts`, `branch.price_events`, `branch.members` |
-| Who owns it | head office | the Lyon branch (you) | the Lyon branch (you) |
-| Where it is | the course account's catalog, database `course_lake`, read in Athena as `course.course_lake.<table>` | your bucket, `s3://436c-glue-<account>/branch/raw/` | your Glue database `branch`, data under `s3://436c-glue-<account>/branch/tables/` |
-| What you can do | read | read and add files | create, change, compact, delete |
-| What it costs you | Athena, $5.50 per TB of Data scanned, 10 MB minimum per query | S3 storage, a few cents for the assignment | Athena per TB of Data scanned, and Glue $0.44 per DPU-hour for each load |
+::: {.column-page}
+```{=html}
+<table class="table" style="font-size: 0.92em">
+<colgroup><col style="width:14%"><col style="width:28%"><col style="width:29%"><col style="width:29%"></colgroup>
+<thead>
+<tr><th rowspan="2"></th><th rowspan="2">Company lakehouse<br>(head office's, read-only to you)</th><th colspan="2" style="text-align:center">Branch data (your responsibility)</th></tr>
+<tr><th>Bronze: the raw zone<br>(files as they arrived, L8)</th><th>Silver: the branch lake<br>(Iceberg tables, typed and queryable, L8, L10)</th></tr>
+</thead>
+<tbody>
+<tr><td>What is there</td><td><code>consumption</code> (the receipt lines), <code>products</code>, <code>catalogue</code>, <code>stores</code>, <code>households</code>, <code>prices</code>, <code>current_prices</code></td><td>the branch's files as they arrive: till exports (CSV, one file a day), the shelf-price app's price changes (JSON Lines, one JSON record per line, one file an hour), changes to members' records (JSON Lines)</td><td>the tables you build: <code>branch.receipts</code>, <code>branch.price_events</code>, <code>branch.members</code></td></tr>
+<tr><td>Where it is</td><td>the course account's catalog, database <code>course_lake</code>, read in Athena as <code>course.course_lake.&lt;table&gt;</code></td><td>your bucket, <code>s3://436c-glue-&lt;account&gt;/branch/raw/</code></td><td>your Glue database <code>branch</code>, data under <code>s3://436c-glue-&lt;account&gt;/branch/tables/</code></td></tr>
+<tr><td>What you can do</td><td>read</td><td>read and add files</td><td>create, change, compact, delete</td></tr>
+<tr><td>What it costs you</td><td>Athena, $5.50 per TB of Data scanned, 10 MB minimum per query</td><td>S3 storage, a few cents for the assignment</td><td>Athena per TB of Data scanned, and Glue $0.44 per DPU-hour for each load</td></tr>
+</tbody>
+</table>
+```
+:::
 
-: {tbl-colwidths="[16,28,28,28]"}
+The report you deliver to head office in task 1 is gold: shaped for one consumer. Reminder of the three levels:
+L8, and Strengholt, [*Building Medallion Architectures*, ch. 1, "What Is a Medallion Architecture?"](https://learning.oreilly.com/library/view/building-medallion-architectures/9781098178826/ch01.html).
 
 The shelf-price app also keeps the price each Lyon store shows right now in its own DynamoDB table, which Athena
 reads through a Lambda connector as `shelf.default.course_shelf_prices`. That is a federated query: Athena reads a

@@ -5418,47 +5418,48 @@ z-index: 1000;
 </figure>
 </div>
 </div>
-<table class="caption-top table">
+<div class="column-page">
+<table class="table caption-top">
 <colgroup>
-<col style="width: 16%">
+<col style="width: 14%">
 <col style="width: 28%">
 <col style="width: 28%">
 <col style="width: 28%">
 </colgroup>
 <thead>
 <tr class="header">
-<th></th>
-<th>Company lakehouse</th>
-<th>Branch raw zone (L8’s <code>raw/</code>: files kept as they arrived)</th>
-<th>Branch lake (your own lakehouse, at branch size)</th>
+<th rowspan="2" data-quarto-table-cell-role="th"></th>
+<th rowspan="2" data-quarto-table-cell-role="th">Company lakehouse<br>
+(head office&#39;s, read-only to you)</th>
+<th colspan="2" style="text-align: center;" data-quarto-table-cell-role="th">Branch data (your responsibility)</th>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">Bronze: the raw zone<br>
+(files as they arrived, L8)</th>
+<th data-quarto-table-cell-role="th">Silver: the branch lake<br>
+(Iceberg tables, typed and queryable, L8, L10)</th>
 </tr>
 </thead>
 <tbody>
 <tr class="odd">
 <td>What is there</td>
 <td><code>consumption</code> (the receipt lines), <code>products</code>, <code>catalogue</code>, <code>stores</code>, <code>households</code>, <code>prices</code>, <code>current_prices</code></td>
-<td>the branch’s files as they arrive: till exports (CSV, one file a day), the shelf-price app’s price changes (JSON Lines, one JSON record per line, one file an hour), changes to members’ records (JSON Lines)</td>
+<td>the branch&#39;s files as they arrive: till exports (CSV, one file a day), the shelf-price app&#39;s price changes (JSON Lines, one JSON record per line, one file an hour), changes to members&#39; records (JSON Lines)</td>
 <td>the tables you build: <code>branch.receipts</code>, <code>branch.price_events</code>, <code>branch.members</code></td>
 </tr>
 <tr class="even">
-<td>Who owns it</td>
-<td>head office</td>
-<td>the Lyon branch (you)</td>
-<td>the Lyon branch (you)</td>
-</tr>
-<tr class="odd">
 <td>Where it is</td>
-<td>the course account’s catalog, database <code>course_lake</code>, read in Athena as <code>course.course_lake.&lt;table&gt;</code></td>
+<td>the course account&#39;s catalog, database <code>course_lake</code>, read in Athena as <code>course.course_lake.&lt;table&gt;</code></td>
 <td>your bucket, <code>s3://436c-glue-&lt;account&gt;/branch/raw/</code></td>
 <td>your Glue database <code>branch</code>, data under <code>s3://436c-glue-&lt;account&gt;/branch/tables/</code></td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td>What you can do</td>
 <td>read</td>
 <td>read and add files</td>
 <td>create, change, compact, delete</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td>What it costs you</td>
 <td>Athena, $5.50 per TB of Data scanned, 10 MB minimum per query</td>
 <td>S3 storage, a few cents for the assignment</td>
@@ -5466,6 +5467,8 @@ z-index: 1000;
 </tr>
 </tbody>
 </table>
+</div>
+<p>The report you deliver to head office in task 1 is gold: shaped for one consumer. Reminder of the three levels: L8, and Strengholt, <a href="https://learning.oreilly.com/library/view/building-medallion-architectures/9781098178826/ch01.html"><em>Building Medallion Architectures</em>, ch. 1, “What Is a Medallion Architecture?”</a>.</p>
 <p>The shelf-price app also keeps the price each Lyon store shows right now in its own DynamoDB table, which Athena reads through a Lambda connector as <code>shelf.default.course_shelf_prices</code>. That is a federated query: Athena reads a source outside the lake through a connector (L10).</p>
 <p>📚 <strong>Lecture:</strong> L10 (Iceberg tables, catalogs, engines), L11 (building, changing and maintaining tables, their bills) and L12 (DynamoDB); tutorial 1 ran a load twice.</p>
 </section>
