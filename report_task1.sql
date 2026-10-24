@@ -1,6 +1,7 @@
 -- Task 1.2: the healthier-basket report. Data source: course (the company lakehouse).
 -- Two parts are left for you: the condition that picks Nutri-Score A and B products (____ 1), and the GROUP BY (____ 2).
--- Run it once on its own (record Data scanned and run time), then wrap it in the UNLOAD statement from the assignment.
+-- Run it once on its own (record Data scanned and run time), then wrap it, without its final `;`,
+-- in the UNLOAD statement from the assignment.
 
 SELECT date_format(c.event_ts, '%Y-%m') AS month,
        CASE WHEN h.is_lyon THEN 'lyon' ELSE 'rest' END AS segment,

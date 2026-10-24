@@ -194,7 +194,8 @@ file**) and edit it on your laptop.
 :::
 
 1. **The course data source.** Tutorial 1 already added the course catalog as the data source `course`. In the Athena
-   query editor, with **Data source** `course`, check that `SHOW TABLES IN course_lake` lists the company tables.
+   query editor, with **Data source** `course`, check that `SHOW TABLES IN course_lake` lists the company tables. It also lists tables of other exercises
+   (`customer`, `store_sales` and others): A3 uses only the seven the table under "What lives where" names.
    Step 3 creates your own database `branch`.
 2. **The shelf-price app's DynamoDB table.** In CloudShell, register the connector head office shares:
    `aws athena create-data-catalog --name shelf --type LAMBDA --parameters function=arn:aws:lambda:ca-central-1:940482406111:function:436c-ddb-connector`.
@@ -251,7 +252,8 @@ LIMIT 3;
 
 The report needs four columns of `consumption`: the time of the line, the household, the product and the line
 total. Which months does it read? Using `column_sizes`, estimate the Data scanned for those four columns across the
-whole table, and write the estimate in your task 1 row of `results.csv` before you run the report. How far is it
+whole table (`sum(column_sizes[<field id>])` over all of `"consumption$files"` adds one column up), and write the
+estimate in your task 1 row of `results.csv` before you run the report. How far is it
 from the size of the whole table?
 
 📚 **Lecture:** L10, manifests; L11, the 🔍 box on `column_sizes` and `UNLOAD`; tutorial 1, metadata tables and predict
@@ -346,7 +348,7 @@ Record the rows, the seconds and the DPU-seconds. If a run fails, the job aid sh
 **Predict, before you change anything:** which lines of the script must change for a JSON Lines input with different
 columns and a different target table, and how many rows the new job will write (`_files.json` lists the export files and their rows).
 In CloudShell, look at one record first:
-`aws s3 cp s3://436c-glue-<account>/branch/raw/price_events/dt=2026-10-16/hour=23/changes.jsonl - | head -2`.
+`aws s3 cp s3://436c-glue-<account>/branch/raw/price_events/dt=2026-10-16/hour=23/changes.jsonl - 2>/dev/null | head -2`.
 
 **Change and run it.** In the Glue console, clone `branch-receipts` (**Actions**, **Clone job**), give the clone its
 own name and script file, change the reader to JSON Lines, the column mapping, and the target table
@@ -386,12 +388,14 @@ that older snapshots still hold, and the same price at different freshness in di
 
 You work on the branch's own copy of its members. Day 2's change file for members, `branch/raw/households/
 dt=2026-10-17/changes.jsonl`, holds one record per change, each with an `op` field: `upsert` for a member's updated
-or new record (with a new field, `marketing_consent`), and `erase` for a member who asked to be erased. `_files.json` gives how many records of each kind the file holds. Each step below says what to predict before you run it.
+or new record (with a new field, `marketing_consent`), and `erase` for a member who asked to be erased. `_files.json` gives how many records of each kind the file holds (its `update` and `new_member` are both
+`upsert` records). Each step below says what to predict before you run it.
 
 ## 3.1 Copy the members
 
 Copy the Lyon members from the company lakehouse into `branch.members`, with a `CREATE TABLE ... AS SELECT` and
-`table_type = 'ICEBERG'` and `location = 's3://436c-glue-<account>/branch/tables/members/'`, as in tutorial 1. **Predict first:** how many rows the copy holds. Then run it and count.
+`table_type = 'ICEBERG'`, `location = 's3://436c-glue-<account>/branch/tables/members/'` and `is_external = false`,
+as in tutorial 1. **Predict first:** how many rows the copy holds. Then run it and count.
 
 ## 3.2 Apply the changes with MERGE
 
@@ -497,7 +501,8 @@ tutorial 2, `OPTIMIZE` and `VACUUM`.
 
 ## Shut down first
 
-Delete the Glue jobs you created and, if you no longer need them, the tables in `branch`. Athena's query history is
+Delete the Glue jobs you created, set the Data scanned limit back to 2 GB (the job aid shows both), and, if you
+no longer need them, the tables in `branch`. Athena's query history is
 your evidence and stays. Head office keeps your delivered reports.
 
 ## Then submit to Canvas

@@ -2,7 +2,7 @@
 
 The assignment is [`a3.qmd`](a3.qmd) and the commands are in [`job-aid.md`](job-aid.md). Read the assignment first, then
 the job aid, then use these files. Run the shell scripts in CloudShell
-(Region ca-central-1) after downloading them with the line in the assignment's Setup.
+(Region ca-central-1) after cloning this repository with the line in the assignment's "Before you start".
 
 | File | What it is | Where you use it |
 |---|---|---|

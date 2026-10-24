@@ -213,6 +213,9 @@ Step 3 matters whichever path the clone starts with: a script file of its own is
 such as `{"sensor_id": "f-07", "store_id": 12, "read_at": "2026-10-16T23:00:05Z", "temp_c": 3.4}`. The diff turns
 `branch_receipts.py` into a job that loads them into `demo.fridge_readings`. It is an example to read, not to run.
 
+A job reads every file under the folder `RAW` names, subfolders included: a `RAW` that ends at `dt=<day>/` reads every
+hour of that day.
+
 ```diff
 -RAW = f"s3://{args['BUCKET']}/branch/raw/receipts/dt={args['DAY']}/"
 -TABLE = "glue_catalog.branch.receipts"
@@ -316,9 +319,15 @@ All in the **Athena query editor**, one statement at a time, for each of `branch
 
    ```sql
    SELECT count(*) AS files, sum(record_count) AS rows FROM branch."<table>$files";
-   SELECT committed_at, operation, summary['added-delete-files'] AS delete_files,
+   SELECT snapshot_id, committed_at, operation, summary['added-delete-files'] AS delete_files,
           summary['total-delete-files'] AS all_delete_files
    FROM branch."<table>$snapshots" ORDER BY committed_at;
+   ```
+
+   To read the table as it was at one of those snapshots, paste its `snapshot_id` as a number:
+
+   ```sql
+   SELECT count(*) FROM branch.<table> FOR VERSION AS OF <snapshot_id> WHERE <condition>;
    ```
 
 `$files` lists data files only. Delete files show in the `$snapshots` summaries, or in S3. To count every file
@@ -379,6 +388,13 @@ expired files in the background, some time after they reach 30 days.
    ```bash
    aws glue delete-job --job-name branch-receipts
    aws glue delete-job --job-name <your price job>
+   ```
+
+   Then set the Data scanned limit back to tutorial 1's 2 GB:
+
+   ```bash
+   aws athena update-work-group --work-group primary \
+     --configuration-updates BytesScannedCutoffPerQuery=2000000000
    ```
 
 2. Optional, **Athena query editor**, once your numbers are in `results.csv`:

@@ -5651,7 +5651,7 @@ z-index: 1000;
 </div>
 </div>
 <ol type="1">
-<li><strong>The course data source.</strong> Tutorial 1 already added the course catalog as the data source <code>course</code>. In the Athena query editor, with <strong>Data source</strong> <code>course</code>, check that <code>SHOW TABLES IN course_lake</code> lists the company tables. Step 3 creates your own database <code>branch</code>.</li>
+<li><strong>The course data source.</strong> Tutorial 1 already added the course catalog as the data source <code>course</code>. In the Athena query editor, with <strong>Data source</strong> <code>course</code>, check that <code>SHOW TABLES IN course_lake</code> lists the company tables. It also lists tables of other exercises (<code>customer</code>, <code>store_sales</code> and others): A3 uses only the seven the table under “What lives where” names. Step 3 creates your own database <code>branch</code>.</li>
 <li><strong>The shelf-price app’s DynamoDB table.</strong> In CloudShell, register the connector head office shares: <code>aws athena create-data-catalog --name shelf --type LAMBDA --parameters function=arn:aws:lambda:ca-central-1:940482406111:function:436c-ddb-connector</code>.</li>
 <li><strong>The raw zone and the ready job.</strong> In CloudShell, in the <code>a3-starter</code> folder, run <code>bash setup_a3.sh</code>. It lands the branch’s raw files in <code>s3://436c-glue-&lt;account&gt;/branch/raw/</code>, creates your Glue database <code>branch</code>, registers the members’ change files as the table <code>branch.raw_households</code> (Athena reads a table, not an S3 path, so <code>MERGE</code> in task 3 reads this one), and creates the Glue job <code>branch-receipts</code>. You can safely run it again.</li>
 <li><strong>Head office’s replies.</strong> In CloudShell, run <code>bash subscribe.sh &lt;your email&gt;</code> and confirm the email AWS sends. Head office then emails you its check of every report you deliver.</li>
@@ -5689,7 +5689,7 @@ z-index: 1000;
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode sql code-with-copy"><code class="sourceCode sql"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> file_path, record_count, column_sizes</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="kw">FROM</span> course.course_lake.<span class="ot">&quot;consumption$files&quot;</span></span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="kw">LIMIT</span> <span class="dv">3</span>;</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<p>The report needs four columns of <code>consumption</code>: the time of the line, the household, the product and the line total. Which months does it read? Using <code>column_sizes</code>, estimate the Data scanned for those four columns across the whole table, and write the estimate in your task 1 row of <code>results.csv</code> before you run the report. How far is it from the size of the whole table?</p>
+<p>The report needs four columns of <code>consumption</code>: the time of the line, the household, the product and the line total. Which months does it read? Using <code>column_sizes</code>, estimate the Data scanned for those four columns across the whole table (<code>sum(column_sizes[&lt;field id&gt;])</code> over all of <code>&quot;consumption$files&quot;</code> adds one column up), and write the estimate in your task 1 row of <code>results.csv</code> before you run the report. How far is it from the size of the whole table?</p>
 <p>📚 <strong>Lecture:</strong> L10, manifests; L11, the 🔍 box on <code>column_sizes</code> and <code>UNLOAD</code>; tutorial 1, metadata tables and predict then query.</p>
 </section>
 <section id="measure" class="level2">
@@ -5776,7 +5776,7 @@ z-index: 1000;
 </section>
 <section id="adapt-it-for-the-price-changes" class="level2">
 <h2 class="anchored" data-anchor-id="adapt-it-for-the-price-changes">2.2 Adapt it for the price changes</h2>
-<p><strong>Predict, before you change anything:</strong> which lines of the script must change for a JSON Lines input with different columns and a different target table, and how many rows the new job will write (<code>_files.json</code> lists the export files and their rows). In CloudShell, look at one record first: <code>aws s3 cp s3://436c-glue-&lt;account&gt;/branch/raw/price_events/dt=2026-10-16/hour=23/changes.jsonl - | head -2</code>.</p>
+<p><strong>Predict, before you change anything:</strong> which lines of the script must change for a JSON Lines input with different columns and a different target table, and how many rows the new job will write (<code>_files.json</code> lists the export files and their rows). In CloudShell, look at one record first: <code>aws s3 cp s3://436c-glue-&lt;account&gt;/branch/raw/price_events/dt=2026-10-16/hour=23/changes.jsonl - 2&gt;/dev/null | head -2</code>.</p>
 <p><strong>Change and run it.</strong> In the Glue console, clone <code>branch-receipts</code> (<strong>Actions</strong>, <strong>Clone job</strong>), give the clone its own name and script file, change the reader to JSON Lines, the column mapping, and the target table <code>branch.price_events</code>, then run it. The job aid shows a worked diff from CSV to JSON Lines on another file, and why a clone works where a new empty job does not. Record the rows and the DPU-seconds.</p>
 </section>
 <section id="explain-and-price" class="level2">
@@ -5810,10 +5810,10 @@ z-index: 1000;
 </ul>
 </div>
 </div>
-<p>You work on the branch’s own copy of its members. Day 2’s change file for members, <code>branch/raw/households/ dt=2026-10-17/changes.jsonl</code>, holds one record per change, each with an <code>op</code> field: <code>upsert</code> for a member’s updated or new record (with a new field, <code>marketing_consent</code>), and <code>erase</code> for a member who asked to be erased. <code>_files.json</code> gives how many records of each kind the file holds. Each step below says what to predict before you run it.</p>
+<p>You work on the branch’s own copy of its members. Day 2’s change file for members, <code>branch/raw/households/ dt=2026-10-17/changes.jsonl</code>, holds one record per change, each with an <code>op</code> field: <code>upsert</code> for a member’s updated or new record (with a new field, <code>marketing_consent</code>), and <code>erase</code> for a member who asked to be erased. <code>_files.json</code> gives how many records of each kind the file holds (its <code>update</code> and <code>new_member</code> are both <code>upsert</code> records). Each step below says what to predict before you run it.</p>
 <section id="copy-the-members" class="level2">
 <h2 class="anchored" data-anchor-id="copy-the-members">3.1 Copy the members</h2>
-<p>Copy the Lyon members from the company lakehouse into <code>branch.members</code>, with a <code>CREATE TABLE ... AS SELECT</code> and <code>table_type = &#39;ICEBERG&#39;</code> and <code>location = &#39;s3://436c-glue-&lt;account&gt;/branch/tables/members/&#39;</code>, as in tutorial 1. <strong>Predict first:</strong> how many rows the copy holds. Then run it and count.</p>
+<p>Copy the Lyon members from the company lakehouse into <code>branch.members</code>, with a <code>CREATE TABLE ... AS SELECT</code> and <code>table_type = &#39;ICEBERG&#39;</code>, <code>location = &#39;s3://436c-glue-&lt;account&gt;/branch/tables/members/&#39;</code> and <code>is_external = false</code>, as in tutorial 1. <strong>Predict first:</strong> how many rows the copy holds. Then run it and count.</p>
 </section>
 <section id="apply-the-changes-with-merge" class="level2">
 <h2 class="anchored" data-anchor-id="apply-the-changes-with-merge">3.2 Apply the changes with MERGE</h2>
@@ -5886,7 +5886,7 @@ z-index: 1000;
 <h1>Submission and shutdown</h1>
 <section id="shut-down-first" class="level2">
 <h2 class="anchored" data-anchor-id="shut-down-first">Shut down first</h2>
-<p>Delete the Glue jobs you created and, if you no longer need them, the tables in <code>branch</code>. Athena’s query history is your evidence and stays. Head office keeps your delivered reports.</p>
+<p>Delete the Glue jobs you created, set the Data scanned limit back to 2 GB (the job aid shows both), and, if you no longer need them, the tables in <code>branch</code>. Athena’s query history is your evidence and stays. Head office keeps your delivered reports.</p>
 </section>
 <section id="then-submit-to-canvas" class="level2">
 <h2 class="anchored" data-anchor-id="then-submit-to-canvas">Then submit to Canvas</h2>

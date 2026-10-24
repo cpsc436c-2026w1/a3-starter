@@ -10,4 +10,4 @@ task,step,quantity,predicted,measured,unit,query_or_run_id,notes
 3,3.2,rows in branch.members after MERGE,,,rows,,
 3,3.3,rows for day 1 in branch.receipts after the second run,,,rows,,
 4,4.1,files in each table after OPTIMIZE,,,files,,
-4,4.2,S3 files under each table after VACUUM,,,files,,
+4,4.2,S3 data files (under data/) of each table after VACUUM,,,files,,
