@@ -1,0 +1,12 @@
+task,step,quantity,predicted,measured,unit,query_or_run_id,notes
+1,1.1-1.2,Data scanned of the report,,,MB,,
+1,1.2,run time of the report,,,s,,
+2,2.1,rows written by branch-receipts,,,rows,,
+2,2.1,DPU-seconds of branch-receipts,,,DPU-s,,
+2,2.2,rows written by your price-events job,,,rows,,
+2,2.2,DPU-seconds of your price-events job,,,DPU-s,,
+3,3.1,rows in branch.members after the copy,,,rows,,
+3,3.2,rows in branch.members after MERGE,,,rows,,
+3,3.3,rows for day 1 in branch.receipts after the second run,,,rows,,
+4,4.1,files in each table after OPTIMIZE,,,files,,
+4,4.2,S3 files under each table after VACUUM,,,files,,
