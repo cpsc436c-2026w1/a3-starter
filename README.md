@@ -15,3 +15,17 @@ the job aid, then use these files. Run the shell scripts in CloudShell
 | `results.csv` | one row per prediction and measurement; add rows as you go | every task |
 
 The raw files themselves come from `s3://436c-2026w1-public/a3/raw/`; `setup_a3.sh` copies them.
+
+## Check your report before you deliver it (optional)
+
+`features/task1_report.feature` holds head office's checks as scenarios (Gherkin, L9). Run them on your report in
+CloudShell before the `UNLOAD`, or on the files the `UNLOAD` wrote:
+
+```bash
+pip install --user behave
+mkdir -p myreport && aws s3 cp s3://436c-hq-inbox-940482406111/inbox/<your account id>/task1-<name>/ myreport/ --recursive
+REPORT=myreport python3 -m behave --tags=-headoffice features
+```
+
+Every scenario should pass. The one tagged `@headoffice` compares each share with head office's own figure, which
+only head office can read: its reply tells you that result.

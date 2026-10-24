@@ -299,6 +299,9 @@ so each delivery needs a new folder name. After a failed or cancelled `UNLOAD`, 
 👀 **Quick check.** The report returns 72 rows, one per month and segment, in under a minute. Head office's reply
 is organised by the requirements your report answers, R70 and R20, with each requirement and each of its constraints marked met or not met.
 
+Optional: the starter's `features/task1_report.feature` holds the same checks as scenarios (L9's Gherkin); the starter
+README shows how to run them on your report with `behave`.
+
 📸 **Screenshot 2.** Head office's reply email to your task 1 report. If the email did not arrive, the reply file
 from `inbox/<your account id>/replies/` instead.
 
