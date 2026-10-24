@@ -12,14 +12,15 @@ the job aid, then use these files. Run the shell scripts in CloudShell
 | `report_task1.sql` | task 1's report, two parts blank | task 1.2 |
 | `task1_variants.md` | three versions of the report and three measured figures to match | task 1.3 |
 | `merge_members.sql` | the `MERGE` for the members' changes, two clauses blank | task 3.2 |
-| `results.csv` | one row per prediction and measurement; add rows as you go | every task |
+| `results.csv` | one row for each listed prediction and measurement. Predictions that have no row (2.2's lines to change, 3.2's changed rows and snapshot count, 3.3's snapshot list, 3.4, 3.5, and 4.2's query and noted files) go in the PDF | every task |
 
 The raw files themselves come from `s3://436c-2026w1-public/a3/raw/`; `setup_a3.sh` copies them.
 
-## Check your report before you deliver it (optional)
+## Check your delivered report yourself (optional)
 
-`features/task1_report.feature` holds head office's checks as scenarios (Gherkin, L9). Run them on your report in
-CloudShell before the `UNLOAD`, or on the files the `UNLOAD` wrote:
+`features/task1_report.feature` holds head office's checks as scenarios (Gherkin, L9). Run them on the files your
+`UNLOAD` wrote, either copied to CloudShell as below or named directly with
+`REPORT=s3://436c-hq-inbox-940482406111/inbox/<your account id>/task1-<name>/`:
 
 ```bash
 pip install --user behave

@@ -3,6 +3,7 @@
 -- Two clauses are left for you: what to change in a member that is already in the table (____ 1), and what to
 -- insert for a member who is not (____ 2). The job aid's MERGE section shows the shape on another table.
 -- household_id is int in branch.members and bigint in branch.raw_households: cast it when you insert.
+-- DESCRIBE branch.members and DESCRIBE branch.raw_households list the columns. Each upsert record is a member's whole record.
 
 MERGE INTO branch.members t
 USING (SELECT * FROM branch.raw_households WHERE op = 'upsert') c

@@ -25,7 +25,7 @@ _ath = None
 def athena():
     global _ath
     if _ath is None:
-        _ath = boto3.client("athena", region_name=os.environ.get("AWS_REGION", "ca-central-1"))
+        _ath = boto3.client("athena", region_name="ca-central-1")
     return _ath
 
 

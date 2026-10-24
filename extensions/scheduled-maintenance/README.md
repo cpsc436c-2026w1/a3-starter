@@ -19,6 +19,26 @@ Check a run in the Athena console's **Recent queries**, or in CloudShell:
 aws athena list-query-executions --work-group primary --max-items 6
 ```
 
+That command prints bare IDs. To see each run's statement, state and Data scanned, run:
+
+```bash
+aws athena batch-get-query-execution \
+  --query-execution-ids $(aws athena list-query-executions --work-group primary --max-items 6 --query 'QueryExecutionIds[]' --output text) \
+  --query 'QueryExecutions[].[Query,Status.State,Statistics.DataScannedInBytes]' --output table
+```
+
+If nothing ran, look at the schedule itself. A one-time `now-…` schedule that is still there after its time has not
+run, because it deletes itself once it has:
+
+```bash
+aws scheduler list-schedules --group-name 436c-maintenance --query 'Schedules[].Name'
+aws scheduler get-schedule --group-name 436c-maintenance --name <a name from the list, such as now-optimize-members>
+```
+
+In the CloudWatch console, **Metrics**, open the namespace `AWS/Scheduler`. `TargetErrorCount` counts calls Athena
+refused, and `InvocationDroppedCount` counts calls the scheduler gave up on after its retries. Both stay at 0 when
+the schedules work.
+
 The one-time schedules are named `now-…` and delete themselves after they run, so a test never replaces the nightly
 schedules. The nightly ones stop after 30 days; remove them earlier with `bash teardown_schedule.sh`.
 
@@ -34,7 +54,7 @@ Two things to know:
 
 | File | What it is |
 |---|---|
-| `setup_schedule.sh` | creates the role, the schedule group `436c-maintenance` and one schedule per statement |
-| `teardown_schedule.sh` | removes every schedule in the group, the group and the role |
+| [`setup_schedule.sh`](setup_schedule.sh) | creates the role, the schedule group `436c-maintenance` and one schedule per statement |
+| [`teardown_schedule.sh`](teardown_schedule.sh) | removes every schedule in the group, the group and the role |
 
 Set `TABLES="members receipts"` before the command to schedule fewer tables.

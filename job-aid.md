@@ -148,7 +148,8 @@ The starter files, `subscribe.sh` among them, are in CloudShell after the Setup'
 ## MERGE
 
 `MERGE` matches each incoming row to the table by a key. It updates the rows that match and inserts the rest.
-Tutorial 2's extra exercise, run in the **Athena query editor**:
+The example is tutorial 2's extra exercise, run in the **Athena query editor**. Its `sql/06_extra_merge.sql` creates
+both tables, so if you did not run it, read the statement as a pattern.
 
 ```sql
 MERGE INTO tutorial.zones t
@@ -308,7 +309,15 @@ All in the **Athena query editor**, one statement at a time, for each of `branch
 
    `OPTIMIZE` leaves a partition alone until it has at least 5 small files, or a data file has at least 2 delete
    files (Athena's defaults). It bills the data it reads.
-3. Wait one minute after the table's last change, then expire old snapshots:
+
+   `VACUUM` shows its own Data scanned. AWS adds S3 request charges for the files it lists and deletes. For a plan,
+   price each maintenance statement at least at Athena's 10 MB minimum and say so. S3 Standard storage is $0.025 per
+   GB-month (L11). Each month, EventBridge Scheduler in `ca-central-1` includes 14 million
+   scheduled invocations at no charge. Each further million costs $1.10.
+
+   <!--src: per month: https://aws.amazon.com/eventbridge/pricing/ "14,000,000 invocations per month for free" (read 2026-10-24); aws-pricing get_pricing AWSEvents ca-central-1, CAN1-ScheduledInvocation, "$0 for the first 14 million scheduled invocations", "$1.10 per million scheduled invocations in Canada (Central)", publication 2026-09-24 (read 2026-10-24) | aws-pricing get_pricing AmazonS3 ca-central-1 CAN1-TimedStorage-ByteHrs, $0.025 per GB first 50 TB / month (read 2026-10-24) | https://docs.aws.amazon.com/athena/latest/ug/vacuum-statement.html (S3 request charges) | tools/e2e/run-optional-20261024.md (Data scanned 0 for the six scheduled statements) -->
+3. Wait one minute after the table's last snapshot, then expire old snapshots. An `OPTIMIZE` or a write makes a
+   snapshot, and a property change makes none. Steps 1 and 2 can run in either order. Then run this statement.
 
    ```sql
    VACUUM branch.<table>;
@@ -330,15 +339,15 @@ All in the **Athena query editor**, one statement at a time, for each of `branch
    SELECT count(*) FROM branch.<table> FOR VERSION AS OF <snapshot_id> WHERE <condition>;
    ```
 
+`record_count` also counts the rows a delete file hides. Once `OPTIMIZE` rewrites the data file, those rows are gone
+from it. To know how many rows the table has, count the table itself.
+
 `$files` lists data files only. Delete files show in the `$snapshots` summaries, or in S3. To count every file
 in S3, take the folder from any `file_path` in `$files` and list it in CloudShell:
 
 ```bash
 aws s3 ls s3://436c-glue-<account>/<folder up to data/> --recursive | wc -l
 ```
-
-In our run of A3 (2026-10-24), `OPTIMIZE` rewrote each branch table into one file: a day's 32 or 64 small files,
-and a table whose first data file had two delete files, from the `MERGE` and from the `DELETE`.
 
 Where the files are: a table a Glue job created is under `branch/tables/branch.db/<table>/`, and a table made with
 `CREATE TABLE ... AS SELECT` is under the `location` you gave it.

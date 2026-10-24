@@ -1,5 +1,5 @@
 # Head office's checks of the task 1 report, as scenarios (Gherkin, L9). The same checks head office runs when your
-# report lands in its inbox. Run them on your own report before you deliver it: see the README.
+# report lands in its inbox. You can run them on your delivered report yourself: see the README.
 Feature: Healthier-basket report for head office (R20, R70)
 
   Background:

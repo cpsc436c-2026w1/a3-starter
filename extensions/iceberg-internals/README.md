@@ -1,6 +1,6 @@
 # Iceberg internals: what a table's metadata tells you
 
-`internals.py` reads a table's own metadata through Athena's metadata tables, never its rows, so each query bills
+[`internals.py`](internals.py) reads a table's own metadata through Athena's metadata tables, never its rows, so each query bills
 Athena's 10 MB minimum. Run it in CloudShell from this folder:
 
 ```bash
@@ -14,7 +14,7 @@ python3 internals.py branch.receipts --sort-column sold_at
 | How many row groups a file has | `split_offsets` in `$files`: where each Parquet row group starts | many small row groups: each one is a footer entry to read and a unit to skip or not |
 | Whether files are sorted by a column | `lower_bounds` and `upper_bounds` in `$files`, per column (keyed by the column's field id) | files whose ranges overlap: a filter on a value in the shared range reads every file that covers it (tutorial 2's sorted rides) |
 
-Two things to know:
+Keep four things in mind:
 
 - Spark's Iceberg writer (your Glue jobs) records `split_offsets`; Athena's `OPTIMIZE` output does not. For such a
   file, `python3 internals.py --footer s3://…/file.parquet` reads the count from the file's own footer (install the
@@ -26,4 +26,4 @@ Two things to know:
 - The rows it prints are the rows in data files: rows removed by `MERGE` or `DELETE` stay counted until `OPTIMIZE`
   applies the delete files.
 
-The quality gate (`../quality-gate`) imports these functions in its steps.
+The [quality gate](../quality-gate/README.md) imports these functions in its steps.

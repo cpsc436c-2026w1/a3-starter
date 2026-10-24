@@ -2,7 +2,7 @@
 # Quality gate setup: run once in CloudShell (Region ca-central-1), from this folder, after A3's setup.
 #   bash setup_gate.sh
 # 1. copies features/ (your scenarios and steps) to s3://436c-glue-<account>/branch/checks/features/
-# 2. creates the role 436c-quality-gate (Athena queries, read branch/tables/ and branch/checks/, write branch/checks/results/)
+# 2. creates the role 436c-quality-gate (Athena queries, read branch/tables/, branch/checks/ and branch/raw/households/, write branch/checks/results/)
 # 3. packages behave, the handler and ../iceberg-internals into the Lambda function 436c-quality-gate
 # 4. makes every Iceberg commit under branch/tables/ (a new *.metadata.json) invoke the function
 # After a change to features/ (scenarios or steps), step 1 is enough: bash setup_gate.sh features
@@ -32,7 +32,7 @@ aws iam put-role-policy --role-name "$ROLE" --policy-name gate --policy-document
  {\"Effect\":\"Allow\",\"Action\":[\"athena:StartQueryExecution\",\"athena:GetQueryExecution\",\"athena:GetQueryResults\"],\"Resource\":\"arn:aws:athena:ca-central-1:$ACCOUNT:workgroup/primary\"},
  {\"Effect\":\"Allow\",\"Action\":[\"glue:GetDatabase\",\"glue:GetDatabases\",\"glue:GetTable\",\"glue:GetTables\",\"glue:GetPartitions\"],\"Resource\":[\"arn:aws:glue:ca-central-1:$ACCOUNT:catalog\",\"arn:aws:glue:ca-central-1:$ACCOUNT:database/branch\",\"arn:aws:glue:ca-central-1:$ACCOUNT:table/branch/*\"]},
  {\"Effect\":\"Allow\",\"Action\":[\"s3:ListBucket\",\"s3:GetBucketLocation\"],\"Resource\":\"arn:aws:s3:::$BUCKET\"},
- {\"Effect\":\"Allow\",\"Action\":\"s3:GetObject\",\"Resource\":[\"arn:aws:s3:::$BUCKET/branch/tables/*\",\"arn:aws:s3:::$BUCKET/branch/checks/*\"]},
+ {\"Effect\":\"Allow\",\"Action\":\"s3:GetObject\",\"Resource\":[\"arn:aws:s3:::$BUCKET/branch/tables/*\",\"arn:aws:s3:::$BUCKET/branch/checks/*\",\"arn:aws:s3:::$BUCKET/branch/raw/households/*\"]},
  {\"Effect\":\"Allow\",\"Action\":\"s3:PutObject\",\"Resource\":\"arn:aws:s3:::$BUCKET/branch/checks/results/*\"},
  {\"Effect\":\"Allow\",\"Action\":[\"s3:GetObject\",\"s3:PutObject\",\"s3:ListBucket\",\"s3:GetBucketLocation\",\"s3:AbortMultipartUpload\"],\"Resource\":[\"arn:aws:s3:::$RBUCKET\",\"arn:aws:s3:::$RBUCKET/*\"]}]}"
 echo "role     $ROLE"
@@ -54,9 +54,10 @@ else
   for i in 1 2 3 4; do
     aws lambda create-function --function-name "$FN" --runtime python3.12 --handler handler.handler --timeout 300 \
       --memory-size 512 --role "arn:aws:iam::$ACCOUNT:role/$ROLE" --zip-file fileb:///tmp/436c-gate.zip \
-      --environment "Variables={WORKGROUP=primary}" >/dev/null 2>&1 && break
+      --environment "Variables={WORKGROUP=primary}" >/dev/null 2>/tmp/436c-gate-err && break
     echo "role not ready yet, retrying in 10 s"; sleep 10
   done
+  [ -s /tmp/436c-gate-err ] && cat /tmp/436c-gate-err
   aws lambda wait function-active-v2 --function-name "$FN"
   echo "function $FN created"
 fi

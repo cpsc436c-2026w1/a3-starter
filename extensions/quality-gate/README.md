@@ -14,11 +14,11 @@ old snapshot. The results go outside `branch/tables/`, so writing them never tri
 
 | File | What it is |
 |---|---|
-| `features/branch_lake.feature` | two example scenarios; write yours below them |
-| `features/steps/branch_steps.py` | the steps your scenarios can use (each runs a small Athena query) |
-| `handler.py` | the Lambda function: downloads `features/` from your bucket, runs behave for the committed table |
-| `setup_gate.sh` | copies `features/` to your bucket, creates the role, the function and the trigger |
-| `teardown_gate.sh` | removes the trigger, the function and the role |
+| [`features/branch_lake.feature`](features/branch_lake.feature) | two example scenarios; write yours below them |
+| [`features/steps/branch_steps.py`](features/steps/branch_steps.py) | the steps your scenarios can use; each runs a small Athena query through [iceberg-internals](../iceberg-internals/README.md) |
+| [`handler.py`](handler.py) | the Lambda function: downloads `features/` from your bucket, runs behave for the committed table |
+| [`setup_gate.sh`](setup_gate.sh) | copies `features/` to your bucket, creates the role, the function and the trigger |
+| [`teardown_gate.sh`](teardown_gate.sh) | removes the trigger, the function and the role |
 
 ## Run it
 
@@ -59,6 +59,9 @@ Then no data file is smaller than <n> MB
 Then no data file has more than <n> row groups     # skipped when no file records its row groups (after OPTIMIZE)
 Then the data files do not overlap on <column>     # skipped when every partition has one file
 ```
+
+The gate can read the tables in `branch` and the members' change files (`branch.raw_households`). It cannot read
+the company lakehouse (`course.…`) or other raw files.
 
 Tag each scenario with the tables it applies to: `@members`, `@receipts`, `@price_events`, or `@all`.
 
