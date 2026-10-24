@@ -71,7 +71,7 @@ before you join on it.
 
 <!--src: https://docs.aws.amazon.com/cli/latest/reference/athena/create-data-catalog.html (LAMBDA type, function=<arn>) | demos/a3-hq/README.md (connector, decimal(38,9) note; cross-account invoke grant LtHubOrgInvoke) | b3-t1-athena-rides/README.md §2 (Data source list, names in full) -->
 
-[VERIFY: `create-data-catalog` and `SHOW TABLES IN shelf.default` from a student sandbox account; tested only in the course account]
+Checked from a student sandbox account on 2026-10-24: `SHOW TABLES IN shelf.default` lists `course_shelf_prices`.
 
 ## Reading what a query and a Glue run cost
 

@@ -179,8 +179,7 @@ Running a command in the wrong place is the most common way to lose an hour.
    `CREATE DATABASE IF NOT EXISTS branch`. Tutorial 1 already added the course catalog as the data source `course`;
    check that `SHOW TABLES IN course_lake` (with **Data source** `course`) lists the company tables.
 2. **The shelf-price app's DynamoDB table.** In CloudShell, register the connector head office shares:
-   `aws athena create-data-catalog --name shelf --type LAMBDA --parameters function=arn:aws:lambda:ca-central-1:940482406111:function:436c-ddb-connector`
-   `[VERIFY: cross-account invoke grant; untested from a branch account]`.
+   `aws athena create-data-catalog --name shelf --type LAMBDA --parameters function=arn:aws:lambda:ca-central-1:940482406111:function:436c-ddb-connector`.
 3. **The raw zone and the ready job.** In CloudShell, in the `a3-starter` folder, run `bash setup_a3.sh`. It lands
    the branch's raw files in `s3://436c-glue-<account>/branch/raw/`, creates your Glue database `branch`, registers
    the members' change files as the table `branch.raw_households` (Athena reads a table, not an S3 path, so `MERGE`
