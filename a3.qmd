@@ -636,12 +636,16 @@ Athena's query history is your evidence and stays. Head office keeps your delive
 
 ## Then submit to Canvas
 
-- `results.csv`, [with a measured value on every row, and a predicted value on every row whose quantity a step
-  asks you to predict]{.chg}.
-- The report as a PDF: your predictions, your explanations, the price table and the maintenance plan.
-- Screenshot 1.
-- Screenshot 2: head office's reply email to your task 1 report (or the reply file, if the email did not arrive).
+- [Your report as one PDF: each prediction and its reasoning, your measurements, and your answers to every question,
+  using the task numbers from the assignment. It also holds what each task's "Hand in" line in the roadmap names
+  that is not a row of `results.csv` or a screenshot, such as task 2's script changes and task 4's properties.]{.chg}
+- `results.csv` [with 16 rows: 2 for task 1, 5 for task 2, 3 for task 3 and 6 for task 4. Each row has its measured
+  value, and a predicted value where a step asks you to predict it]{.chg}.
+- [Screenshots 1 and 2]{.chg}. Screenshot 2 is head office's reply email to your task 1 report, or the reply file if
+  the email did not arrive.
 - If you did an optional task, what it asks you to add to your PDF.
 
-Never screenshot a key, a token, or a secret.
+[Your account number should be visible in these screenshots: it is how we tell your work from anyone else's. Do not
+post them publicly or commit them to a public repository. Upload them to Canvas and nowhere else, and never submit a
+screenshot showing a key, a token, or a secret.]{.chg}
 
