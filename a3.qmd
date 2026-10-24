@@ -515,7 +515,7 @@ your evidence and stays. Head office keeps your delivered reports.
 - Screenshot 1.
 - Screenshot 2: head office's reply email to your task 1 report (or the reply file, if the email did not arrive).
 
-Cover the last 4 digits of your account number. Never screenshot a key, a token, or a secret.
+Never screenshot a key, a token, or a secret.
 
 # Rubric summary
 
