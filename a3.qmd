@@ -299,8 +299,8 @@ so each delivery needs a new folder name. After a failed or cancelled `UNLOAD`, 
 👀 **Quick check.** The report returns 72 rows, one per month and segment, in under a minute. Head office's reply
 is organised by the requirements your report answers, R70 and R20, with each requirement and each of its constraints marked met or not met.
 
-The starter's `features/task1_report.feature` holds the same checks as scenarios, in L9's Gherkin. If you want to run
-them on your report yourself, the starter README shows how, with `behave`. This step is optional.
+The starter's [`features/task1_report.feature`](https://github.com/cpsc436c-2026w1/a3-starter/blob/main/features/task1_report.feature) holds the same checks as scenarios, in L9's Gherkin. If you want to run
+them on your report yourself, the [starter README](https://github.com/cpsc436c-2026w1/a3-starter/blob/main/README.md) shows how, with `behave`. This step is optional.
 
 📸 **Screenshot 2.** Head office's reply email to your task 1 report. If the email did not arrive, the reply file
 from `inbox/<your account id>/replies/` instead.
@@ -520,8 +520,8 @@ Two optional tasks, for after your four tasks are done. They reuse what you buil
 Head office checks your report with scenarios in task 1. A quality gate applies the same method to your own tables:
 your Gherkin scenarios (L9) run on a table every time it commits.
 
-1. Read `extensions/quality-gate/README.md` in the starter. It has two example scenarios and the steps you can use.
-2. In `extensions/quality-gate/features/branch_lake.feature`, write three to five scenarios. For each scenario, name
+1. Read [`extensions/quality-gate/README.md`](https://github.com/cpsc436c-2026w1/a3-starter/blob/main/extensions/quality-gate/README.md) in the starter. It has two example scenarios and the steps you can use.
+2. In [`extensions/quality-gate/features/branch_lake.feature`](https://github.com/cpsc436c-2026w1/a3-starter/blob/main/extensions/quality-gate/features/branch_lake.feature), write three to five scenarios. For each scenario, name
    the requirement (R10 to R90) or the table property it checks. At least one scenario checks the table's metadata
    rather than its rows. It can check snapshots, data files, row groups, or whether the files are ordered by a column.
 3. From `extensions/quality-gate/`, run `bash setup_gate.sh`. Then in Athena, commit a change to a branch table:
@@ -552,7 +552,7 @@ your Gherkin scenarios (L9) run on a table every time it commits.
 :::
 
 ::: {.callout-tip collapse="true" title="💡 Hint: Iceberg table internals"}
-`extensions/iceberg-internals/` in the starter reads a table's metadata through Athena: snapshots from
+[`extensions/iceberg-internals/`](https://github.com/cpsc436c-2026w1/a3-starter/tree/main/extensions/iceberg-internals) in the starter reads a table's metadata through Athena: snapshots from
 `"<table>$snapshots"`, data files and their sizes from `"<table>$files"`, row groups from `split_offsets`, and each
 file's minimum and maximum per column from `lower_bounds` and `upper_bounds`. Run `python3 internals.py
 branch.receipts --sort-column sold_at` there to see what your scenarios can check. The gate's steps use the same
@@ -564,7 +564,7 @@ functions.
 Your task 4.3 plan says how often maintenance runs and what it costs. EventBridge Scheduler (L11) can run that plan:
 it calls Athena directly, with no Lambda in between.
 
-1. Read `extensions/scheduled-maintenance/README.md` in the starter.
+1. Read [`extensions/scheduled-maintenance/README.md`](https://github.com/cpsc436c-2026w1/a3-starter/blob/main/extensions/scheduled-maintenance/README.md) in the starter.
 2. From `extensions/scheduled-maintenance/`, run `bash setup_schedule.sh --now`. Each `OPTIMIZE` runs 3 minutes
    later and each `VACUUM` 5 minutes later. Do not start a Glue job until all of them have finished. In Athena's **Recent
    queries**, you should then see one run for each statement.
