@@ -134,7 +134,7 @@ to do these comparisons is how you build data engineering intuition. You don't g
 **Task 2. Loading the branch's files (build, about 105 minutes).** Run the ready Glue job that loads the till
 export into `branch.receipts`, create a second job from its script to load the shelf-price app's changes into `branch.price_events`,
 and price a month of nightly runs of both jobs on Glue against an EMR cluster of one primary and two core m7g.xlarge nodes. Hand in your script's changes,
-five rows of `results.csv`, the price table and three sentences.
+five rows of `results.csv`, the price table and four sentences.
 
 **Task 3. Keeping the members correct (change, about 100 minutes).** Copy the branch's members from the company
 lakehouse into `branch.members`, apply day 2's change file with `MERGE`, rerun a load to test R40, process the 25
@@ -359,6 +359,9 @@ Price a month of nightly runs of both jobs on Glue from your measured DPU-second
 billed per second, with a 1-minute minimum). Price the same month on an EMR cluster of one primary and two core m7g.xlarge
 nodes: about $0.67 an hour for the three, and about 5 minutes from launch until it is ready (L11). Both jobs run one
 after the other on one launch each night. In three sentences: which would you run, and what would change your mind?
+
+Athena could run the same loads too: a table over the raw files, then an `INSERT INTO branch.receipts SELECT …`, billed
+by Data scanned. In one more sentence: when would you choose that over a Glue job?
 
 📚 **Lecture:** L11, billing units and rules of thumb; tutorial 2, a Glue load and its DPU-seconds.
 
