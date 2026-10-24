@@ -8,7 +8,7 @@ Feature: The branch lake stays correct and cheap after every commit
 
   @members
   Scenario: Only Lyon members are copied (R11, data-use rule 1)
-    Then no row has is_lyon = false
+    Then no row has is_lyon IS DISTINCT FROM true
 
   @all
   Scenario: History is expired (R51, R90)

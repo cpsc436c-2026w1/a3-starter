@@ -299,8 +299,8 @@ so each delivery needs a new folder name. After a failed or cancelled `UNLOAD`, 
 👀 **Quick check.** The report returns 72 rows, one per month and segment, in under a minute. Head office's reply
 is organised by the requirements your report answers, R70 and R20, with each requirement and each of its constraints marked met or not met.
 
-Optional: the starter's `features/task1_report.feature` holds the same checks as scenarios (L9's Gherkin); the starter
-README shows how to run them on your report with `behave`.
+The starter's `features/task1_report.feature` holds the same checks as scenarios, in L9's Gherkin. If you want to run
+them on your report yourself, the starter README shows how, with `behave`. This step is optional.
 
 📸 **Screenshot 2.** Head office's reply email to your task 1 report. If the email did not arrive, the reply file
 from `inbox/<your account id>/replies/` instead.
@@ -522,50 +522,63 @@ your Gherkin scenarios (L9) run on a table every time it commits.
 
 1. Read `extensions/quality-gate/README.md` in the starter. It has two example scenarios and the steps you can use.
 2. In `extensions/quality-gate/features/branch_lake.feature`, write three to five scenarios. For each scenario, name
-   the requirement (R10 to R90) or the table property it checks. At least one scenario checks the table's metadata,
-   not its rows: snapshots, data files, row groups or sort order.
-3. From `extensions/quality-gate/`, run `bash setup_gate.sh`. Commit a change to one of your branch tables (the
-   README gives one that changes nothing). A minute later you should see a result file in
-   `s3://436c-glue-<account>/branch/checks/results/`.
-4. Change one scenario so that it expects something false, run `bash setup_gate.sh features`, and commit again. You
-   should see a failed result. Keep it, then restore the scenario.
+   the requirement (R10 to R90) or the table property it checks. At least one scenario checks the table's metadata
+   rather than its rows. It can check snapshots, data files, row groups, or whether the files are ordered by a column.
+3. From `extensions/quality-gate/`, run `bash setup_gate.sh`. Then in Athena, commit a change to a branch table:
+   `ALTER TABLE branch.members SET TBLPROPERTIES ('vacuum_min_snapshots_to_keep' = '2')`. A minute later you should
+   see a result file in `s3://436c-glue-<account>/branch/checks/results/members/`. If none appears after two
+   minutes, the README shows how to read the quality-gate function's log.
+4. Change one scenario so that it expects something false. For example, change the R11 scenario's condition to
+   `is_lyon = true`. Run `bash setup_gate.sh features`, then commit again by setting `vacuum_min_snapshots_to_keep`
+   back to `'1'`. Setting a property to the value it already has writes no metadata file and does not trigger the
+   gate, so alternate between `'2'` and `'1'` for your test commits. You should see a result with `"passed": false`
+   in `branch/checks/results/members/`. Download that result file for your hand-in. Then restore the scenario and
+   run `bash setup_gate.sh features` again.
 
-**Hand in:** your feature file, one passing result, one failing result, and two sentences: why the trigger is a
-table's new metadata file rather than its data files, and which of your scenarios would have caught a mistake in your
-own A3 run.
+**Hand in:** your feature file, one passing result, one failing result, and two short answers:
+
+- Which statements you ran in tasks 2 to 4 would have triggered the gate, and which would not? Go through the Glue
+  load, `ADD COLUMNS`, `MERGE`, `DELETE`, `OPTIMIZE`, `VACUUM` and a `SELECT`, with the reason from task 3's commits.
+- Which of your scenarios would have caught a mistake in your own A3 run, and which mistake?
 
 ::: {.callout-tip collapse="true" title="💡 Hint: scenario examples"}
 - R11: every row of `branch.members` has `is_lyon` true.
 - R40: no `(receipt_id, line_no)` appears twice in `branch.receipts`.
 - R51: no erased member's `household_id` is left in `branch.members` or `branch.receipts`.
 - R30: the rows of a day in `branch.receipts` equal that day's count in `_files.json`.
-- Metadata: choose and state your limits for the number of snapshots, the size of data files and the number of row
-  groups per file, and check whether the files of a partition overlap on the column you filter by.
+- Metadata: choose and state your limits for the number of snapshots and the size of data files, and check whether
+  the files of a partition overlap on the column you filter by. Files your Glue jobs wrote list their row groups in
+  `split_offsets`. Files Athena's `OPTIMIZE` wrote do not, so the gate skips a row-group scenario after `OPTIMIZE`.
 :::
 
 ::: {.callout-tip collapse="true" title="💡 Hint: Iceberg table internals"}
 `extensions/iceberg-internals/` in the starter reads a table's metadata through Athena: snapshots from
-`"<table>$snapshots"`, data files and their sizes from `"<table>$files"`, row groups from `split_offsets`, and sort
-order from each file's `lower_bounds` and `upper_bounds`. Run `python3 internals.py branch.receipts --sort-column
-sold_at` there to see what your scenarios can check. The gate's steps use the same functions.
+`"<table>$snapshots"`, data files and their sizes from `"<table>$files"`, row groups from `split_offsets`, and each
+file's minimum and maximum per column from `lower_bounds` and `upper_bounds`. Run `python3 internals.py
+branch.receipts --sort-column sold_at` there to see what your scenarios can check. The gate's steps use the same
+functions.
 :::
 
 ## Optional B. Nightly maintenance
 
-Task 4.3 set when maintenance runs and what it costs. EventBridge Scheduler (L11) can run that plan: it calls Athena
-directly, with no Lambda in between.
+Your task 4.3 plan says how often maintenance runs and what it costs. EventBridge Scheduler (L11) can run that plan:
+it calls Athena directly, with no Lambda in between.
 
 1. Read `extensions/scheduled-maintenance/README.md` in the starter.
-2. From `extensions/scheduled-maintenance/`, run `bash setup_schedule.sh --now`. Each statement runs once, a few
-   minutes later. In Athena's **Recent queries**, you should then see one run for each statement.
-3. Compare what the runs scanned and cost with the maintenance line of your task 4.3 plan.
-4. Run `bash teardown_schedule.sh`, unless you want the nightly schedules (`bash setup_schedule.sh` without `--now`).
+2. From `extensions/scheduled-maintenance/`, run `bash setup_schedule.sh --now`. Each `OPTIMIZE` runs 3 minutes
+   later and each `VACUUM` 5 minutes later. Do not start a Glue job until all of them have finished. In Athena's **Recent
+   queries**, you should then see one run for each statement.
+3. For each run, note its Data scanned in Athena and work out its cost. Compare them with the maintenance line of
+   your task 4.3 plan.
+4. If you want the nightly schedules, run `bash setup_schedule.sh` without `--now`. They stop after 30 days.
 
-**Hand in:** the list of runs (query, state, Data scanned), two sentences comparing them with your task 4.3 plan, and
-one sentence on how your schedule would differ for a table that gets one new file every day.
+**Hand in:** the list of runs (query, state, Data scanned), two sentences comparing them with your task 4.3 plan,
+and one sentence on how the schedule for `branch.receipts` would change if the branch's till added one new data file
+a day. `OPTIMIZE` rewrites a partition only when it holds at least 5 data files.
 
 ::: {.callout-tip collapse="true" title="💡 Hint: where the numbers are"}
-- Athena's **Recent queries** gives each run's state and Data scanned.
+- Athena's **Recent queries** gives each run's state and Data scanned. An `OPTIMIZE` on a table with nothing left to
+  merge scans 0 bytes, so a run straight after task 4 is the cheap case.
 - `aws s3 ls … --recursive | wc -l` before and after a `VACUUM` counts the files it removed.
 - Your task 4.3 plan gives the planned frequency and monthly cost. State the prices you use.
 :::
@@ -574,9 +587,11 @@ one sentence on how your schedule would differ for a table that gets one new fil
 
 ## Shut down first
 
-Delete the Glue jobs you created, set the Data scanned limit back to 2 GB (the job aid shows both), and, if you
-no longer need them, the tables in `branch`. Athena's query history is
-your evidence and stays. Head office keeps your delivered reports.
+If you did an optional task, remove its resources first. For Optional A, run `bash teardown_gate.sh` in
+`extensions/quality-gate/`. For Optional B, run `bash teardown_schedule.sh` in `extensions/scheduled-maintenance/`.
+Then delete the Glue jobs you created and set the Data scanned limit back to 2 GB. The job aid shows how to do both.
+If you no longer need the tables in `branch`, delete them too.
+Athena's query history is your evidence and stays. Head office keeps your delivered reports.
 
 ## Then submit to Canvas
 

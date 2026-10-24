@@ -4,10 +4,11 @@ After every commit to a branch table (a Glue job's write, `MERGE`, `DELETE`, `OP
 function runs your Gherkin scenarios against that table and writes the result to
 `s3://436c-glue-<account>/branch/checks/results/<table>/`.
 
-**Why the trigger is a metadata file.** An Iceberg write lands its data files first, then one new
-`metadata/*.metadata.json`: the commit. A trigger on that file fires once per commit, after the data is complete. A
-trigger on the data files would fire once per file, before the commit, while readers still see the old snapshot.
-The results go outside `branch/tables/`, so writing them never triggers the gate again.
+**Why the trigger is a metadata file.** An Iceberg commit writes its data files first, then a new
+`metadata/*.metadata.json`, then points the Glue catalog at that file. A trigger on the metadata file fires after the
+data files are written. The function then waits until the catalog points at the new file, so the scenarios read the
+new snapshot. A trigger on the data files would fire once per file, before the commit, while readers still see the
+old snapshot. The results go outside `branch/tables/`, so writing them never triggers the gate again.
 
 ## Files
 
@@ -24,20 +25,25 @@ The results go outside `branch/tables/`, so writing them never triggers the gate
 ```bash
 cd extensions/quality-gate
 bash setup_gate.sh                      # once
-bash setup_gate.sh features             # after each change to features/ (no redeploy)
+bash setup_gate.sh features             # after each change to features/, scenarios or steps (no redeploy)
 ```
 
-Commit something, for example `ALTER TABLE branch.members SET TBLPROPERTIES ('vacuum_min_snapshots_to_keep' = '1')`
-(the default value: it changes nothing but is still a commit), wait a minute, then:
+Commit something in Athena, for example `ALTER TABLE branch.members SET TBLPROPERTIES ('vacuum_min_snapshots_to_keep' =
+'2')`. The next time, set it back to `'1'`, the default. Each new value is a commit; setting the value the table
+already has is not, and writes no metadata file. Wait a minute, then:
 
 ```bash
 aws s3 ls s3://436c-glue-<account>/branch/checks/results/ --recursive
+aws s3 cp s3://436c-glue-<account>/branch/checks/results/members/<file>.json -    # one result
 ```
 
-Try a scenario on your own machine first, without the Lambda:
+Each result names the scenarios, their status and, for a failed or skipped one, the reason. No result after two
+minutes: `aws logs tail /aws/lambda/436c-quality-gate --since 10m` shows what the function printed.
+
+Try your scenarios in CloudShell first, without the Lambda:
 
 ```bash
-pip install --user behave
+pip install --user behave==1.3.3
 python3 -m behave features -D TABLE=branch.receipts --tags @receipts,@all
 ```
 
@@ -45,15 +51,15 @@ python3 -m behave features -D TABLE=branch.receipts --tags @receipts,@all
 
 ```gherkin
 Given the table that was just committed
-Then no row has <SQL condition>                    # e.g. is_lyon = false, quantity <= 0
+Then no row has <SQL condition>                    # e.g. quantity <= 0, is_lyon IS DISTINCT FROM true
 Then the query "<SQL with {table}>" returns <n>    # any count query
 Then the table has at most <n> snapshots
 Then the table has at most <n> data files
 Then no data file is smaller than <n> MB
-Then no data file has more than <n> row groups     # skipped when no file records its row groups
-Then the data files do not overlap on <column>
+Then no data file has more than <n> row groups     # skipped when no file records its row groups (after OPTIMIZE)
+Then the data files do not overlap on <column>     # skipped when every partition has one file
 ```
 
 Tag each scenario with the tables it applies to: `@members`, `@receipts`, `@price_events`, or `@all`.
 
-Remove it when you are done: `bash teardown_gate.sh`.
+Remove it when you are done: `bash teardown_gate.sh`. It removes the trigger, the function, its role and its logs.

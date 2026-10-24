@@ -5731,7 +5731,7 @@ z-index: 1000;
 </div>
 <p>Head office checks every report it receives and replies within a minute, by email if you subscribed, and always as a file in <code>inbox/&lt;your account id&gt;/replies/</code>. <code>UNLOAD</code> refuses a folder that already holds files, so each delivery needs a new folder name. After a failed or cancelled <code>UNLOAD</code>, use a new name too.</p>
 <p>👀 <strong>Quick check.</strong> The report returns 72 rows, one per month and segment, in under a minute. Head office’s reply is organised by the requirements your report answers, R70 and R20, with each requirement and each of its constraints marked met or not met.</p>
-<p>Optional: the starter’s <code>features/task1_report.feature</code> holds the same checks as scenarios (L9’s Gherkin); the starter README shows how to run them on your report with <code>behave</code>.</p>
+<p>The starter’s <code>features/task1_report.feature</code> holds the same checks as scenarios, in L9’s Gherkin. If you want to run them on your report yourself, the starter README shows how, with <code>behave</code>. This step is optional.</p>
 <p>📸 <strong>Screenshot 2.</strong> Head office’s reply email to your task 1 report. If the email did not arrive, the reply file from <code>inbox/&lt;your account id&gt;/replies/</code> instead.</p>
 <div class="callout callout-style-default callout-note callout-titled" title="👀 Compare with our run: open after you have written your explanation">
 <div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-5-contents" aria-controls="callout-5" aria-expanded="false" aria-label="Toggle callout">
@@ -5906,11 +5906,15 @@ z-index: 1000;
 <p>Head office checks your report with scenarios in task 1. A quality gate applies the same method to your own tables: your Gherkin scenarios (L9) run on a table every time it commits.</p>
 <ol type="1">
 <li>Read <code>extensions/quality-gate/README.md</code> in the starter. It has two example scenarios and the steps you can use.</li>
-<li>In <code>extensions/quality-gate/features/branch_lake.feature</code>, write three to five scenarios. For each scenario, name the requirement (R10 to R90) or the table property it checks. At least one scenario checks the table’s metadata, not its rows: snapshots, data files, row groups or sort order.</li>
-<li>From <code>extensions/quality-gate/</code>, run <code>bash setup_gate.sh</code>. Commit a change to one of your branch tables (the README gives one that changes nothing). A minute later you should see a result file in <code>s3://436c-glue-&lt;account&gt;/branch/checks/results/</code>.</li>
-<li>Change one scenario so that it expects something false, run <code>bash setup_gate.sh features</code>, and commit again. You should see a failed result. Keep it, then restore the scenario.</li>
+<li>In <code>extensions/quality-gate/features/branch_lake.feature</code>, write three to five scenarios. For each scenario, name the requirement (R10 to R90) or the table property it checks. At least one scenario checks the table’s metadata rather than its rows. It can check snapshots, data files, row groups, or whether the files are ordered by a column.</li>
+<li>From <code>extensions/quality-gate/</code>, run <code>bash setup_gate.sh</code>. Then in Athena, commit a change to a branch table: <code>ALTER TABLE branch.members SET TBLPROPERTIES (&#39;vacuum_min_snapshots_to_keep&#39; = &#39;2&#39;)</code>. A minute later you should see a result file in <code>s3://436c-glue-&lt;account&gt;/branch/checks/results/members/</code>. If none appears after two minutes, the README shows how to read the quality-gate function’s log.</li>
+<li>Change one scenario so that it expects something false. For example, change the R11 scenario’s condition to <code>is_lyon = true</code>. Run <code>bash setup_gate.sh features</code>, then commit again by setting <code>vacuum_min_snapshots_to_keep</code> back to <code>&#39;1&#39;</code>. Setting a property to the value it already has writes no metadata file and does not trigger the gate, so alternate between <code>&#39;2&#39;</code> and <code>&#39;1&#39;</code> for your test commits. You should see a result with <code>&quot;passed&quot;: false</code> in <code>branch/checks/results/members/</code>. Download that result file for your hand-in. Then restore the scenario and run <code>bash setup_gate.sh features</code> again.</li>
 </ol>
-<p><strong>Hand in:</strong> your feature file, one passing result, one failing result, and two sentences: why the trigger is a table’s new metadata file rather than its data files, and which of your scenarios would have caught a mistake in your own A3 run.</p>
+<p><strong>Hand in:</strong> your feature file, one passing result, one failing result, and two short answers:</p>
+<ul>
+<li>Which statements you ran in tasks 2 to 4 would have triggered the gate, and which would not? Go through the Glue load, <code>ADD COLUMNS</code>, <code>MERGE</code>, <code>DELETE</code>, <code>OPTIMIZE</code>, <code>VACUUM</code> and a <code>SELECT</code>, with the reason from task 3’s commits.</li>
+<li>Which of your scenarios would have caught a mistake in your own A3 run, and which mistake?</li>
+</ul>
 <div class="callout callout-style-default callout-tip callout-titled" title="💡 Hint: scenario examples">
 <div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-9-contents" aria-controls="callout-9" aria-expanded="false" aria-label="Toggle callout">
 <div class="callout-icon-container">
@@ -5928,7 +5932,7 @@ z-index: 1000;
 <li>R40: no <code>(receipt_id, line_no)</code> appears twice in <code>branch.receipts</code>.</li>
 <li>R51: no erased member’s <code>household_id</code> is left in <code>branch.members</code> or <code>branch.receipts</code>.</li>
 <li>R30: the rows of a day in <code>branch.receipts</code> equal that day’s count in <code>_files.json</code>.</li>
-<li>Metadata: choose and state your limits for the number of snapshots, the size of data files and the number of row groups per file, and check whether the files of a partition overlap on the column you filter by.</li>
+<li>Metadata: choose and state your limits for the number of snapshots and the size of data files, and check whether the files of a partition overlap on the column you filter by. Files your Glue jobs wrote list their row groups in <code>split_offsets</code>. Files Athena’s <code>OPTIMIZE</code> wrote do not, so the gate skips a row-group scenario after <code>OPTIMIZE</code>.</li>
 </ul>
 </div>
 </div>
@@ -5945,21 +5949,21 @@ z-index: 1000;
 </div>
 <div id="callout-10" class="callout-10-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
-<p><code>extensions/iceberg-internals/</code> in the starter reads a table’s metadata through Athena: snapshots from <code>&quot;&lt;table&gt;$snapshots&quot;</code>, data files and their sizes from <code>&quot;&lt;table&gt;$files&quot;</code>, row groups from <code>split_offsets</code>, and sort order from each file’s <code>lower_bounds</code> and <code>upper_bounds</code>. Run <code>python3 internals.py branch.receipts --sort-column sold_at</code> there to see what your scenarios can check. The gate’s steps use the same functions.</p>
+<p><code>extensions/iceberg-internals/</code> in the starter reads a table’s metadata through Athena: snapshots from <code>&quot;&lt;table&gt;$snapshots&quot;</code>, data files and their sizes from <code>&quot;&lt;table&gt;$files&quot;</code>, row groups from <code>split_offsets</code>, and each file’s minimum and maximum per column from <code>lower_bounds</code> and <code>upper_bounds</code>. Run <code>python3 internals.py branch.receipts --sort-column sold_at</code> there to see what your scenarios can check. The gate’s steps use the same functions.</p>
 </div>
 </div>
 </div>
 </section>
 <section id="optional-b.-nightly-maintenance" class="level2">
 <h2 class="anchored" data-anchor-id="optional-b.-nightly-maintenance">Optional B. Nightly maintenance</h2>
-<p>Task 4.3 set when maintenance runs and what it costs. EventBridge Scheduler (L11) can run that plan: it calls Athena directly, with no Lambda in between.</p>
+<p>Your task 4.3 plan says how often maintenance runs and what it costs. EventBridge Scheduler (L11) can run that plan: it calls Athena directly, with no Lambda in between.</p>
 <ol type="1">
 <li>Read <code>extensions/scheduled-maintenance/README.md</code> in the starter.</li>
-<li>From <code>extensions/scheduled-maintenance/</code>, run <code>bash setup_schedule.sh --now</code>. Each statement runs once, a few minutes later. In Athena’s <strong>Recent queries</strong>, you should then see one run for each statement.</li>
-<li>Compare what the runs scanned and cost with the maintenance line of your task 4.3 plan.</li>
-<li>Run <code>bash teardown_schedule.sh</code>, unless you want the nightly schedules (<code>bash setup_schedule.sh</code> without <code>--now</code>).</li>
+<li>From <code>extensions/scheduled-maintenance/</code>, run <code>bash setup_schedule.sh --now</code>. Each <code>OPTIMIZE</code> runs 3 minutes later and each <code>VACUUM</code> 5 minutes later. Do not start a Glue job until all of them have finished. In Athena’s <strong>Recent queries</strong>, you should then see one run for each statement.</li>
+<li>For each run, note its Data scanned in Athena and work out its cost. Compare them with the maintenance line of your task 4.3 plan.</li>
+<li>If you want the nightly schedules, run <code>bash setup_schedule.sh</code> without <code>--now</code>. They stop after 30 days.</li>
 </ol>
-<p><strong>Hand in:</strong> the list of runs (query, state, Data scanned), two sentences comparing them with your task 4.3 plan, and one sentence on how your schedule would differ for a table that gets one new file every day.</p>
+<p><strong>Hand in:</strong> the list of runs (query, state, Data scanned), two sentences comparing them with your task 4.3 plan, and one sentence on how the schedule for <code>branch.receipts</code> would change if the branch’s till added one new data file a day. <code>OPTIMIZE</code> rewrites a partition only when it holds at least 5 data files.</p>
 <div class="callout callout-style-default callout-tip callout-titled" title="💡 Hint: where the numbers are">
 <div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-11-contents" aria-controls="callout-11" aria-expanded="false" aria-label="Toggle callout">
 <div class="callout-icon-container">
@@ -5973,7 +5977,7 @@ z-index: 1000;
 <div id="callout-11" class="callout-11-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
 <ul>
-<li>Athena’s <strong>Recent queries</strong> gives each run’s state and Data scanned.</li>
+<li>Athena’s <strong>Recent queries</strong> gives each run’s state and Data scanned. An <code>OPTIMIZE</code> on a table with nothing left to merge scans 0 bytes, so a run straight after task 4 is the cheap case.</li>
 <li><code>aws s3 ls … --recursive | wc -l</code> before and after a <code>VACUUM</code> counts the files it removed.</li>
 <li>Your task 4.3 plan gives the planned frequency and monthly cost. State the prices you use.</li>
 </ul>
@@ -5986,7 +5990,7 @@ z-index: 1000;
 <h1>Submission and shutdown</h1>
 <section id="shut-down-first" class="level2">
 <h2 class="anchored" data-anchor-id="shut-down-first">Shut down first</h2>
-<p>Delete the Glue jobs you created, set the Data scanned limit back to 2 GB (the job aid shows both), and, if you no longer need them, the tables in <code>branch</code>. Athena’s query history is your evidence and stays. Head office keeps your delivered reports.</p>
+<p>If you did an optional task, remove its resources first. For Optional A, run <code>bash teardown_gate.sh</code> in <code>extensions/quality-gate/</code>. For Optional B, run <code>bash teardown_schedule.sh</code> in <code>extensions/scheduled-maintenance/</code>. Then delete the Glue jobs you created and set the Data scanned limit back to 2 GB. The job aid shows how to do both. If you no longer need the tables in <code>branch</code>, delete them too. Athena’s query history is your evidence and stays. Head office keeps your delivered reports.</p>
 </section>
 <section id="then-submit-to-canvas" class="level2">
 <h2 class="anchored" data-anchor-id="then-submit-to-canvas">Then submit to Canvas</h2>

@@ -56,5 +56,10 @@ def step_row_groups(context, n):
 
 @then("the data files do not overlap on {column}")
 def step_sorted(context, column):
-    pairs = internals.overlapping_files(context.table_name, column)
-    assert not pairs, f"{len(pairs)} pairs of files in one partition overlap on {column}: a filter on it cannot skip them"
+    by_part = internals.files_by_partition(context.table_name, column)
+    if not any(len(f) > 1 for f in by_part.values()):
+        context.scenario.skip(f"every partition has one data file: nothing to compare on {column}")
+        return
+    pairs = internals.overlapping_files(context.table_name, column, by_part)
+    assert not pairs, (f"{len(pairs)} pairs of files in one partition overlap on {column}: a filter on a value in the"
+                       " shared range reads every file that covers it")
