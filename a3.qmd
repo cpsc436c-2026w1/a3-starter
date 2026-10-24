@@ -507,6 +507,69 @@ you would set; applying it is optional). Use your own numbers. Your plan should 
 📚 **Lecture:** L11, `OPTIMIZE` then `VACUUM`, scheduling with EventBridge Scheduler, storage classes and S3 Lifecycle;
 tutorial 2, `OPTIMIZE` and `VACUUM`.
 
+# Going further (optional)
+
+Two optional tasks, for after your four tasks are done. They reuse what you built and need no new data.
+
+1. Finish the four tasks first.
+2. Choose one optional task, or both.
+3. Add what you did as the last section of your PDF.
+
+## Optional A. Quality gate for your branch lake
+
+Head office checks your report with scenarios in task 1. A quality gate applies the same method to your own tables:
+your Gherkin scenarios (L9) run on a table every time it commits.
+
+1. Read `extensions/quality-gate/README.md` in the starter. It has two example scenarios and the steps you can use.
+2. In `extensions/quality-gate/features/branch_lake.feature`, write three to five scenarios. For each scenario, name
+   the requirement (R10 to R90) or the table property it checks. At least one scenario checks the table's metadata,
+   not its rows: snapshots, data files, row groups or sort order.
+3. From `extensions/quality-gate/`, run `bash setup_gate.sh`. Commit a change to one of your branch tables (the
+   README gives one that changes nothing). A minute later you should see a result file in
+   `s3://436c-glue-<account>/branch/checks/results/`.
+4. Change one scenario so that it expects something false, run `bash setup_gate.sh features`, and commit again. You
+   should see a failed result. Keep it, then restore the scenario.
+
+**Hand in:** your feature file, one passing result, one failing result, and two sentences: why the trigger is a
+table's new metadata file rather than its data files, and which of your scenarios would have caught a mistake in your
+own A3 run.
+
+::: {.callout-tip collapse="true" title="💡 Hint: scenario examples"}
+- R11: every row of `branch.members` has `is_lyon` true.
+- R40: no `(receipt_id, line_no)` appears twice in `branch.receipts`.
+- R51: no erased member's `household_id` is left in `branch.members` or `branch.receipts`.
+- R30: the rows of a day in `branch.receipts` equal that day's count in `_files.json`.
+- Metadata: choose and state your limits for the number of snapshots, the size of data files and the number of row
+  groups per file, and check whether the files of a partition overlap on the column you filter by.
+:::
+
+::: {.callout-tip collapse="true" title="💡 Hint: Iceberg table internals"}
+`extensions/iceberg-internals/` in the starter reads a table's metadata through Athena: snapshots from
+`"<table>$snapshots"`, data files and their sizes from `"<table>$files"`, row groups from `split_offsets`, and sort
+order from each file's `lower_bounds` and `upper_bounds`. Run `python3 internals.py branch.receipts --sort-column
+sold_at` there to see what your scenarios can check. The gate's steps use the same functions.
+:::
+
+## Optional B. Nightly maintenance
+
+Task 4.3 set when maintenance runs and what it costs. EventBridge Scheduler (L11) can run that plan: it calls Athena
+directly, with no Lambda in between.
+
+1. Read `extensions/scheduled-maintenance/README.md` in the starter.
+2. From `extensions/scheduled-maintenance/`, run `bash setup_schedule.sh --now`. Each statement runs once, a few
+   minutes later. In Athena's **Recent queries**, you should then see one run for each statement.
+3. Compare what the runs scanned and cost with the maintenance line of your task 4.3 plan.
+4. Run `bash teardown_schedule.sh`, unless you want the nightly schedules (`bash setup_schedule.sh` without `--now`).
+
+**Hand in:** the list of runs (query, state, Data scanned), two sentences comparing them with your task 4.3 plan, and
+one sentence on how your schedule would differ for a table that gets one new file every day.
+
+::: {.callout-tip collapse="true" title="💡 Hint: where the numbers are"}
+- Athena's **Recent queries** gives each run's state and Data scanned.
+- `aws s3 ls … --recursive | wc -l` before and after a `VACUUM` counts the files it removed.
+- Your task 4.3 plan gives the planned frequency and monthly cost. State the prices you use.
+:::
+
 # Submission and shutdown
 
 ## Shut down first
@@ -521,6 +584,7 @@ your evidence and stays. Head office keeps your delivered reports.
 - The report as a PDF: your predictions, your explanations, the price table and the maintenance plan.
 - Screenshot 1.
 - Screenshot 2: head office's reply email to your task 1 report (or the reply file, if the email did not arrive).
+- If you did an optional task: its section in your PDF and its hand-in files.
 
 Never screenshot a key, a token, or a secret.
 

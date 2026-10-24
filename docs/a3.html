@@ -5349,6 +5349,11 @@ z-index: 1000;
   <li><a href="#expire-old-snapshots" id="toc-expire-old-snapshots" class="nav-link" data-scroll-target="#expire-old-snapshots">4.2 Expire old snapshots</a></li>
   <li><a href="#plan" id="toc-plan" class="nav-link" data-scroll-target="#plan">4.3 Plan</a></li>
   </ul></li>
+  <li><a href="#going-further-optional" id="toc-going-further-optional" class="nav-link" data-scroll-target="#going-further-optional">Going further (optional)</a>
+  <ul class="collapse">
+  <li><a href="#optional-a.-quality-gate-for-your-branch-lake" id="toc-optional-a.-quality-gate-for-your-branch-lake" class="nav-link" data-scroll-target="#optional-a.-quality-gate-for-your-branch-lake">Optional A. Quality gate for your branch lake</a></li>
+  <li><a href="#optional-b.-nightly-maintenance" id="toc-optional-b.-nightly-maintenance" class="nav-link" data-scroll-target="#optional-b.-nightly-maintenance">Optional B. Nightly maintenance</a></li>
+  </ul></li>
   <li><a href="#submission-and-shutdown" id="toc-submission-and-shutdown" class="nav-link" data-scroll-target="#submission-and-shutdown">Submission and shutdown</a>
   <ul class="collapse">
   <li><a href="#shut-down-first" id="toc-shut-down-first" class="nav-link" data-scroll-target="#shut-down-first">Shut down first</a></li>
@@ -5888,6 +5893,95 @@ z-index: 1000;
 <p>📚 <strong>Lecture:</strong> L11, <code>OPTIMIZE</code> then <code>VACUUM</code>, scheduling with EventBridge Scheduler, storage classes and S3 Lifecycle; tutorial 2, <code>OPTIMIZE</code> and <code>VACUUM</code>.</p>
 </section>
 </section>
+<section id="going-further-optional" class="level1">
+<h1>Going further (optional)</h1>
+<p>Two optional tasks, for after your four tasks are done. They reuse what you built and need no new data.</p>
+<ol type="1">
+<li>Finish the four tasks first.</li>
+<li>Choose one optional task, or both.</li>
+<li>Add what you did as the last section of your PDF.</li>
+</ol>
+<section id="optional-a.-quality-gate-for-your-branch-lake" class="level2">
+<h2 class="anchored" data-anchor-id="optional-a.-quality-gate-for-your-branch-lake">Optional A. Quality gate for your branch lake</h2>
+<p>Head office checks your report with scenarios in task 1. A quality gate applies the same method to your own tables: your Gherkin scenarios (L9) run on a table every time it commits.</p>
+<ol type="1">
+<li>Read <code>extensions/quality-gate/README.md</code> in the starter. It has two example scenarios and the steps you can use.</li>
+<li>In <code>extensions/quality-gate/features/branch_lake.feature</code>, write three to five scenarios. For each scenario, name the requirement (R10 to R90) or the table property it checks. At least one scenario checks the table’s metadata, not its rows: snapshots, data files, row groups or sort order.</li>
+<li>From <code>extensions/quality-gate/</code>, run <code>bash setup_gate.sh</code>. Commit a change to one of your branch tables (the README gives one that changes nothing). A minute later you should see a result file in <code>s3://436c-glue-&lt;account&gt;/branch/checks/results/</code>.</li>
+<li>Change one scenario so that it expects something false, run <code>bash setup_gate.sh features</code>, and commit again. You should see a failed result. Keep it, then restore the scenario.</li>
+</ol>
+<p><strong>Hand in:</strong> your feature file, one passing result, one failing result, and two sentences: why the trigger is a table’s new metadata file rather than its data files, and which of your scenarios would have caught a mistake in your own A3 run.</p>
+<div class="callout callout-style-default callout-tip callout-titled" title="💡 Hint: scenario examples">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-9-contents" aria-controls="callout-9" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Tip</span>💡 Hint: scenario examples
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-9" class="callout-9-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<ul>
+<li>R11: every row of <code>branch.members</code> has <code>is_lyon</code> true.</li>
+<li>R40: no <code>(receipt_id, line_no)</code> appears twice in <code>branch.receipts</code>.</li>
+<li>R51: no erased member’s <code>household_id</code> is left in <code>branch.members</code> or <code>branch.receipts</code>.</li>
+<li>R30: the rows of a day in <code>branch.receipts</code> equal that day’s count in <code>_files.json</code>.</li>
+<li>Metadata: choose and state your limits for the number of snapshots, the size of data files and the number of row groups per file, and check whether the files of a partition overlap on the column you filter by.</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="callout callout-style-default callout-tip callout-titled" title="💡 Hint: Iceberg table internals">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-10-contents" aria-controls="callout-10" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Tip</span>💡 Hint: Iceberg table internals
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-10" class="callout-10-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p><code>extensions/iceberg-internals/</code> in the starter reads a table’s metadata through Athena: snapshots from <code>&quot;&lt;table&gt;$snapshots&quot;</code>, data files and their sizes from <code>&quot;&lt;table&gt;$files&quot;</code>, row groups from <code>split_offsets</code>, and sort order from each file’s <code>lower_bounds</code> and <code>upper_bounds</code>. Run <code>python3 internals.py branch.receipts --sort-column sold_at</code> there to see what your scenarios can check. The gate’s steps use the same functions.</p>
+</div>
+</div>
+</div>
+</section>
+<section id="optional-b.-nightly-maintenance" class="level2">
+<h2 class="anchored" data-anchor-id="optional-b.-nightly-maintenance">Optional B. Nightly maintenance</h2>
+<p>Task 4.3 set when maintenance runs and what it costs. EventBridge Scheduler (L11) can run that plan: it calls Athena directly, with no Lambda in between.</p>
+<ol type="1">
+<li>Read <code>extensions/scheduled-maintenance/README.md</code> in the starter.</li>
+<li>From <code>extensions/scheduled-maintenance/</code>, run <code>bash setup_schedule.sh --now</code>. Each statement runs once, a few minutes later. In Athena’s <strong>Recent queries</strong>, you should then see one run for each statement.</li>
+<li>Compare what the runs scanned and cost with the maintenance line of your task 4.3 plan.</li>
+<li>Run <code>bash teardown_schedule.sh</code>, unless you want the nightly schedules (<code>bash setup_schedule.sh</code> without <code>--now</code>).</li>
+</ol>
+<p><strong>Hand in:</strong> the list of runs (query, state, Data scanned), two sentences comparing them with your task 4.3 plan, and one sentence on how your schedule would differ for a table that gets one new file every day.</p>
+<div class="callout callout-style-default callout-tip callout-titled" title="💡 Hint: where the numbers are">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-11-contents" aria-controls="callout-11" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Tip</span>💡 Hint: where the numbers are
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-11" class="callout-11-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<ul>
+<li>Athena’s <strong>Recent queries</strong> gives each run’s state and Data scanned.</li>
+<li><code>aws s3 ls … --recursive | wc -l</code> before and after a <code>VACUUM</code> counts the files it removed.</li>
+<li>Your task 4.3 plan gives the planned frequency and monthly cost. State the prices you use.</li>
+</ul>
+</div>
+</div>
+</div>
+</section>
+</section>
 <section id="submission-and-shutdown" class="level1">
 <h1>Submission and shutdown</h1>
 <section id="shut-down-first" class="level2">
@@ -5901,6 +5995,7 @@ z-index: 1000;
 <li>The report as a PDF: your predictions, your explanations, the price table and the maintenance plan.</li>
 <li>Screenshot 1.</li>
 <li>Screenshot 2: head office’s reply email to your task 1 report (or the reply file, if the email did not arrive).</li>
+<li>If you did an optional task: its section in your PDF and its hand-in files.</li>
 </ul>
 <p>Never screenshot a key, a token, or a secret.</p>
 </section>
