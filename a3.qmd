@@ -1103,7 +1103,7 @@ screenshot showing a key, a token, or a secret.]{.chg}
 
 | Step | Points |
 |---|---|
-| Setup evidence | 8 |
+| Setup (Screenshot 1) | 8 |
 | Task 1 | 20 |
 | Task 2 | 25 |
 | Task 3 | 25 |
