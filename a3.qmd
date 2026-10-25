@@ -238,10 +238,15 @@ file**) and edit it on your laptop.
    You should see `10000000000`.]{.chg}
 1. **The course data source.** Tutorial 1 already added the course catalog as the data source `course`. In the Athena
    query editor, with **Data source** `course`, check that `SHOW TABLES IN course_lake` lists the company tables. It also lists tables of other exercises
-   (`customer`, `store_sales` and others): A3 uses only the seven the table under "What lives where" names.
+   (`customer`, `store_sales` and others): A3 uses only [the seven tables]{.chg} that "What lives where" names.
    Step 3 creates your own database `branch`.
 2. **The shelf-price app's DynamoDB table.** In CloudShell, register the connector head office shares:
-   `aws athena create-data-catalog --name shelf --type LAMBDA --parameters function=arn:aws:lambda:ca-central-1:940482406111:function:436c-ddb-connector`.
+
+   ```bash
+   aws athena create-data-catalog --name shelf --type LAMBDA \
+     --parameters function=arn:aws:lambda:ca-central-1:940482406111:function:436c-ddb-connector
+   ```
+
    [If you run it again, it fails with an error saying the catalog already exists. The catalog is there and you can go on.]{.chg}
    [📋 Commands: Company lakehouse, `branch` database and `shelf` data source below walks through steps 1 and 2 with what you should see.]{.chg}
 3. **The raw zone and the ready job.** In CloudShell, in the `a3-starter` folder, run `bash setup_a3.sh`. It lands
