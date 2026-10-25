@@ -179,6 +179,7 @@ you.
 - The Data scanned limit you set in tutorial 1 (2 GB) is too low for task 1's report. Raise it to 10 GB for A3, as
   the job aid shows.
 - The job aid has every command. Read the assignment first, the job aid second.
+- [⭐ shows optional work. It earns no points, and you can leave it out.]{.chg}
 :::
 
 ::: {.callout-warning title="⚠️ One expensive query"}
@@ -313,8 +314,8 @@ so each delivery needs a new folder name. After a failed or cancelled `UNLOAD`, 
 👀 **Quick check.** The report returns 72 rows, one per month and segment, in under a minute. Head office's reply
 is organised by the requirements your report answers, R70 and R20, with each requirement and each of its constraints marked met or not met.
 
-The starter's [`features/task1_report.feature`](https://github.com/cpsc436c-2026w1/a3-starter/blob/main/features/task1_report.feature) holds the same checks as scenarios, in L9's Gherkin. If you want to run
-them on your report yourself, the [starter README](https://github.com/cpsc436c-2026w1/a3-starter/blob/main/README.md) shows how, with `behave`. This step is optional.
+[⭐ **Optional.**]{.chg} The starter's [`features/task1_report.feature`](https://github.com/cpsc436c-2026w1/a3-starter/blob/main/features/task1_report.feature) holds the same checks as scenarios, in L9's Gherkin. If you want to run
+them on your report yourself, the [starter README](https://github.com/cpsc436c-2026w1/a3-starter/blob/main/README.md) shows how, with `behave`.
 
 📸 **Screenshot 2.** Head office's reply email to your task 1 report. If the email did not arrive, the reply file
 from `inbox/<your account id>/replies/` instead.
@@ -531,20 +532,20 @@ snapshot, and a property change makes none]{.chg}.
 One paragraph to the director: what runs, when, on which engine, and at what monthly cost, item by item. Say in what
 order an erasure goes through `DELETE`, `OPTIMIZE` and `VACUUM`, which snapshot age you would set in production to
 meet rule 2 (not the 60 seconds used here), and how the raw zone meets data-use rules 2 and 4 (describe the S3 Lifecycle rule
-you would set; applying it is optional). Use your own numbers. Your plan should be motivated with the numbers from your
+you would set. [⭐ Applying it is optional]{.chg}). Use your own numbers. Your plan should be motivated with the numbers from your
 `results.csv` and relevant prices.
 
 📚 **Lecture:** L11, `OPTIMIZE` then `VACUUM`, scheduling with EventBridge Scheduler, storage classes and S3 Lifecycle;
 tutorial 2, `OPTIMIZE` and `VACUUM` [(README steps 4 and 5)]{.chg}.
 
-# Going further (optional)
+# [⭐]{.chg} Going further (optional)
 
 If you have time and want to dig into the topic a bit, there are two optional tasks which lead you to rebuild some of
 the features of the course lake and get into some maintenance mechanisms for data lakes and AWS. They are a bit closer
 to production work (though still a bit simplified for the sake of time). Chat with me if you attempted to do them,
 even if you haven't finished!
 
-## Optional A. Quality gate for your branch lake
+## [⭐]{.chg} Optional A. Quality gate for your branch lake
 
 Head office checks your report with scenarios in task 1. A quality gate applies the same method to your own tables:
 your Gherkin scenarios (L9) run on a table every time it commits.
@@ -596,7 +597,7 @@ branch.receipts --sort-column sold_at` there to see what your scenarios can chec
 functions.
 :::
 
-## Optional B. Nightly maintenance
+## [⭐]{.chg} Optional B. Nightly maintenance
 
 Your task 4.3 plan says how often maintenance runs and what it costs. EventBridge Scheduler (L11) can run that plan:
 it calls Athena directly, with no Lambda in between.
@@ -627,7 +628,7 @@ it calls Athena directly, with no Lambda in between.
 
 ## Shut down first
 
-If you did an optional task, remove its resources first. For Optional A, run `bash teardown_gate.sh` in
+[⭐]{.chg} If you did an optional task, remove its resources first. For Optional A, run `bash teardown_gate.sh` in
 `extensions/quality-gate/`. For Optional B, run `bash teardown_schedule.sh` in `extensions/scheduled-maintenance/`.
 [Before you delete the Glue jobs, copy your price job's script to CloudShell for task 2's hand-in:
 `aws s3 cp "$(aws glue get-job --job-name <your price job> --query 'Job.Command.ScriptLocation' --output text)" .`]{.chg} Then delete the Glue jobs you created and set the Data scanned limit back to 2 GB. The job aid shows how to do both.
@@ -643,9 +644,21 @@ Athena's query history is your evidence and stays. Head office keeps your delive
   value, and a predicted value where a step asks you to predict it]{.chg}.
 - [Screenshots 1 and 2]{.chg}. Screenshot 2 is head office's reply email to your task 1 report, or the reply file if
   the email did not arrive.
-- If you did an optional task, what it asks you to add to your PDF.
+- [⭐]{.chg} If you did an optional task, what it asks you to add to your PDF.
 
 [Your account number should be visible in these screenshots: it is how we tell your work from anyone else's. Do not
 post them publicly or commit them to a public repository. Upload them to Canvas and nowhere else, and never submit a
 screenshot showing a key, a token, or a secret.]{.chg}
 
+# Rubric summary
+
+| Step | Points |
+|---|---|
+| Setup evidence | 8 |
+| Task 1 | 20 |
+| Task 2 | 25 |
+| Task 3 | 25 |
+| Task 4 | 15 |
+| Delivered report accepted by head office | 7 |
+| ⭐ Going further (optional) | no points |
+| Total | 100 |

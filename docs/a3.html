@@ -5353,16 +5353,17 @@ z-index: 1000;
   <li><a href="#expire-old-snapshots" id="toc-expire-old-snapshots" class="nav-link" data-scroll-target="#expire-old-snapshots">4.2 Expire old snapshots</a></li>
   <li><a href="#plan" id="toc-plan" class="nav-link" data-scroll-target="#plan">4.3 Plan</a></li>
   </ul></li>
-  <li><a href="#going-further-optional" id="toc-going-further-optional" class="nav-link" data-scroll-target="#going-further-optional">Going further (optional)</a>
+  <li><a href="#going-further-optional" id="toc-going-further-optional" class="nav-link" data-scroll-target="#going-further-optional"><span class="chg">⭐</span> Going further (optional)</a>
   <ul class="collapse">
-  <li><a href="#optional-a.-quality-gate-for-your-branch-lake" id="toc-optional-a.-quality-gate-for-your-branch-lake" class="nav-link" data-scroll-target="#optional-a.-quality-gate-for-your-branch-lake">Optional A. Quality gate for your branch lake</a></li>
-  <li><a href="#optional-b.-nightly-maintenance" id="toc-optional-b.-nightly-maintenance" class="nav-link" data-scroll-target="#optional-b.-nightly-maintenance">Optional B. Nightly maintenance</a></li>
+  <li><a href="#optional-a.-quality-gate-for-your-branch-lake" id="toc-optional-a.-quality-gate-for-your-branch-lake" class="nav-link" data-scroll-target="#optional-a.-quality-gate-for-your-branch-lake"><span class="chg">⭐</span> Optional A. Quality gate for your branch lake</a></li>
+  <li><a href="#optional-b.-nightly-maintenance" id="toc-optional-b.-nightly-maintenance" class="nav-link" data-scroll-target="#optional-b.-nightly-maintenance"><span class="chg">⭐</span> Optional B. Nightly maintenance</a></li>
   </ul></li>
   <li><a href="#submission-and-shutdown" id="toc-submission-and-shutdown" class="nav-link" data-scroll-target="#submission-and-shutdown">Submission and shutdown</a>
   <ul class="collapse">
   <li><a href="#shut-down-first" id="toc-shut-down-first" class="nav-link" data-scroll-target="#shut-down-first">Shut down first</a></li>
   <li><a href="#then-submit-to-canvas" id="toc-then-submit-to-canvas" class="nav-link" data-scroll-target="#then-submit-to-canvas">Then submit to Canvas</a></li>
   </ul></li>
+  <li><a href="#rubric-summary" id="toc-rubric-summary" class="nav-link" data-scroll-target="#rubric-summary">Rubric summary</a></li>
   </ul>
 </nav>
 </div>
@@ -5620,6 +5621,7 @@ z-index: 1000;
 <li><span class="chg"><code>&lt;account&gt;</code> and <code>&lt;your account id&gt;</code> both stand for your 12-digit account number. In CloudShell, <code>aws sts get-caller-identity --query Account --output text</code> prints it. Before you run a command, replace both with that number, and replace <code>&lt;any name&gt;</code> with a name you choose.</span></li>
 <li>The Data scanned limit you set in tutorial 1 (2 GB) is too low for task 1’s report. Raise it to 10 GB for A3, as the job aid shows.</li>
 <li>The job aid has every command. Read the assignment first, the job aid second.</li>
+<li><span class="chg">⭐ shows optional work. It earns no points, and you can leave it out.</span></li>
 </ul>
 </div>
 </div>
@@ -5734,7 +5736,7 @@ z-index: 1000;
 </div>
 <p>Head office checks every report it receives and replies within a minute, by email if you subscribed. It always also writes the reply <span class="chg">to <code>inbox/&lt;your account id&gt;/replies/&lt;folder name&gt;.json</code>, named after the folder your <code>UNLOAD</code> wrote, such as <code>replies/task1-&lt;any name&gt;.json</code>. Head office checks only folders whose name starts with <code>task1-</code></span>. <code>UNLOAD</code> refuses a folder that already holds files, so each delivery needs a new folder name. After a failed or cancelled <code>UNLOAD</code>, use a new name too.</p>
 <p>👀 <strong>Quick check.</strong> The report returns 72 rows, one per month and segment, in under a minute. Head office’s reply is organised by the requirements your report answers, R70 and R20, with each requirement and each of its constraints marked met or not met.</p>
-<p>The starter’s <a href="https://github.com/cpsc436c-2026w1/a3-starter/blob/main/features/task1_report.feature"><code>features/task1_report.feature</code></a> holds the same checks as scenarios, in L9’s Gherkin. If you want to run them on your report yourself, the <a href="https://github.com/cpsc436c-2026w1/a3-starter/blob/main/README.md">starter README</a> shows how, with <code>behave</code>. This step is optional.</p>
+<p><span class="chg">⭐ <strong>Optional.</strong></span> The starter’s <a href="https://github.com/cpsc436c-2026w1/a3-starter/blob/main/features/task1_report.feature"><code>features/task1_report.feature</code></a> holds the same checks as scenarios, in L9’s Gherkin. If you want to run them on your report yourself, the <a href="https://github.com/cpsc436c-2026w1/a3-starter/blob/main/README.md">starter README</a> shows how, with <code>behave</code>.</p>
 <p>📸 <strong>Screenshot 2.</strong> Head office’s reply email to your task 1 report. If the email did not arrive, the reply file from <code>inbox/&lt;your account id&gt;/replies/</code> instead.</p>
 <div class="callout callout-style-default callout-note callout-titled" title="👀 Compare with our run: open after you have written your explanation">
 <div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-5-contents" aria-controls="callout-5" aria-expanded="false" aria-label="Toggle callout">
@@ -5905,15 +5907,15 @@ z-index: 1000;
 </section>
 <section id="plan" class="level2">
 <h2 class="anchored" data-anchor-id="plan">4.3 Plan</h2>
-<p>One paragraph to the director: what runs, when, on which engine, and at what monthly cost, item by item. Say in what order an erasure goes through <code>DELETE</code>, <code>OPTIMIZE</code> and <code>VACUUM</code>, which snapshot age you would set in production to meet rule 2 (not the 60 seconds used here), and how the raw zone meets data-use rules 2 and 4 (describe the S3 Lifecycle rule you would set; applying it is optional). Use your own numbers. Your plan should be motivated with the numbers from your <code>results.csv</code> and relevant prices.</p>
+<p>One paragraph to the director: what runs, when, on which engine, and at what monthly cost, item by item. Say in what order an erasure goes through <code>DELETE</code>, <code>OPTIMIZE</code> and <code>VACUUM</code>, which snapshot age you would set in production to meet rule 2 (not the 60 seconds used here), and how the raw zone meets data-use rules 2 and 4 (describe the S3 Lifecycle rule you would set. <span class="chg">⭐ Applying it is optional</span>). Use your own numbers. Your plan should be motivated with the numbers from your <code>results.csv</code> and relevant prices.</p>
 <p>📚 <strong>Lecture:</strong> L11, <code>OPTIMIZE</code> then <code>VACUUM</code>, scheduling with EventBridge Scheduler, storage classes and S3 Lifecycle; tutorial 2, <code>OPTIMIZE</code> and <code>VACUUM</code> <span class="chg">(README steps 4 and 5)</span>.</p>
 </section>
 </section>
 <section id="going-further-optional" class="level1">
-<h1>Going further (optional)</h1>
+<h1><span class="chg">⭐</span> Going further (optional)</h1>
 <p>If you have time and want to dig into the topic a bit, there are two optional tasks which lead you to rebuild some of the features of the course lake and get into some maintenance mechanisms for data lakes and AWS. They are a bit closer to production work (though still a bit simplified for the sake of time). Chat with me if you attempted to do them, even if you haven’t finished!</p>
 <section id="optional-a.-quality-gate-for-your-branch-lake" class="level2">
-<h2 class="anchored" data-anchor-id="optional-a.-quality-gate-for-your-branch-lake">Optional A. Quality gate for your branch lake</h2>
+<h2 class="anchored" data-anchor-id="optional-a.-quality-gate-for-your-branch-lake"><span class="chg">⭐</span> Optional A. Quality gate for your branch lake</h2>
 <p>Head office checks your report with scenarios in task 1. A quality gate applies the same method to your own tables: your Gherkin scenarios (L9) run on a table every time it commits.</p>
 <ol type="1">
 <li>Read <a href="https://github.com/cpsc436c-2026w1/a3-starter/blob/main/extensions/quality-gate/README.md"><code>extensions/quality-gate/README.md</code></a> in the starter. It has two example scenarios and the steps you can use.</li>
@@ -5969,7 +5971,7 @@ z-index: 1000;
 </div>
 </section>
 <section id="optional-b.-nightly-maintenance" class="level2">
-<h2 class="anchored" data-anchor-id="optional-b.-nightly-maintenance">Optional B. Nightly maintenance</h2>
+<h2 class="anchored" data-anchor-id="optional-b.-nightly-maintenance"><span class="chg">⭐</span> Optional B. Nightly maintenance</h2>
 <p>Your task 4.3 plan says how often maintenance runs and what it costs. EventBridge Scheduler (L11) can run that plan: it calls Athena directly, with no Lambda in between.</p>
 <ol type="1">
 <li>Read <a href="https://github.com/cpsc436c-2026w1/a3-starter/blob/main/extensions/scheduled-maintenance/README.md"><code>extensions/scheduled-maintenance/README.md</code></a> in the starter.</li>
@@ -6009,7 +6011,7 @@ z-index: 1000;
 <h1>Submission and shutdown</h1>
 <section id="shut-down-first" class="level2">
 <h2 class="anchored" data-anchor-id="shut-down-first">Shut down first</h2>
-<p>If you did an optional task, remove its resources first. For Optional A, run <code>bash teardown_gate.sh</code> in <code>extensions/quality-gate/</code>. For Optional B, run <code>bash teardown_schedule.sh</code> in <code>extensions/scheduled-maintenance/</code>. <span class="chg">Before you delete the Glue jobs, copy your price job’s script to CloudShell for task 2’s hand-in: <code>aws s3 cp &quot;$(aws glue get-job --job-name &lt;your price job&gt; --query &#39;Job.Command.ScriptLocation&#39; --output text)&quot; .</code></span> Then delete the Glue jobs you created and set the Data scanned limit back to 2 GB. The job aid shows how to do both. If you no longer need the tables in <code>branch</code>, delete them too. Athena’s query history is your evidence and stays. Head office keeps your delivered reports.</p>
+<p><span class="chg">⭐</span> If you did an optional task, remove its resources first. For Optional A, run <code>bash teardown_gate.sh</code> in <code>extensions/quality-gate/</code>. For Optional B, run <code>bash teardown_schedule.sh</code> in <code>extensions/scheduled-maintenance/</code>. <span class="chg">Before you delete the Glue jobs, copy your price job’s script to CloudShell for task 2’s hand-in: <code>aws s3 cp &quot;$(aws glue get-job --job-name &lt;your price job&gt; --query &#39;Job.Command.ScriptLocation&#39; --output text)&quot; .</code></span> Then delete the Glue jobs you created and set the Data scanned limit back to 2 GB. The job aid shows how to do both. If you no longer need the tables in <code>branch</code>, delete them too. Athena’s query history is your evidence and stays. Head office keeps your delivered reports.</p>
 </section>
 <section id="then-submit-to-canvas" class="level2">
 <h2 class="anchored" data-anchor-id="then-submit-to-canvas">Then submit to Canvas</h2>
@@ -6017,10 +6019,55 @@ z-index: 1000;
 <li><span class="chg">Your report as one PDF: each prediction and its reasoning, your measurements, and your answers to every question, using the task numbers from the assignment. It also holds what each task’s “Hand in” line in the roadmap names that is not a row of <code>results.csv</code> or a screenshot, such as task 2’s script changes and task 4’s properties.</span></li>
 <li><code>results.csv</code> <span class="chg">with 16 rows: 2 for task 1, 5 for task 2, 3 for task 3 and 6 for task 4. Each row has its measured value, and a predicted value where a step asks you to predict it</span>.</li>
 <li><span class="chg">Screenshots 1 and 2</span>. Screenshot 2 is head office’s reply email to your task 1 report, or the reply file if the email did not arrive.</li>
-<li>If you did an optional task, what it asks you to add to your PDF.</li>
+<li><span class="chg">⭐</span> If you did an optional task, what it asks you to add to your PDF.</li>
 </ul>
 <p><span class="chg">Your account number should be visible in these screenshots: it is how we tell your work from anyone else’s. Do not post them publicly or commit them to a public repository. Upload them to Canvas and nowhere else, and never submit a screenshot showing a key, a token, or a secret.</span></p>
 </section>
+</section>
+<section id="rubric-summary" class="level1">
+<h1>Rubric summary</h1>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Step</th>
+<th>Points</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Setup evidence</td>
+<td>8</td>
+</tr>
+<tr class="even">
+<td>Task 1</td>
+<td>20</td>
+</tr>
+<tr class="odd">
+<td>Task 2</td>
+<td>25</td>
+</tr>
+<tr class="even">
+<td>Task 3</td>
+<td>25</td>
+</tr>
+<tr class="odd">
+<td>Task 4</td>
+<td>15</td>
+</tr>
+<tr class="even">
+<td>Delivered report accepted by head office</td>
+<td>7</td>
+</tr>
+<tr class="odd">
+<td>⭐ Going further (optional)</td>
+<td>no points</td>
+</tr>
+<tr class="even">
+<td>Total</td>
+<td>100</td>
+</tr>
+</tbody>
+</table>
 </section>
 
 </main>
