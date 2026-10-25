@@ -5593,7 +5593,72 @@ z-index: 1000;
 </section>
 <section id="roadmap" class="level1">
 <h1>Roadmap</h1>
-<p>On every task, we ask you to predict, measure and explain. <strong>Predict</strong> what will happen: give an estimate of Data scanned, rows, seconds or dollars, from the numbers you can look up, before executing anything, and write it into <code>results.csv</code> first. <strong>Measure</strong>: run it, then write the figures into your row: Data scanned and run time from Athena’s Query stats, or, for a Glue run, its DPU-seconds (DPUs × seconds of run time). <strong>Explain</strong> the difference between your estimate and the measurement, and name the mechanism behind it.</p>
+<p>On every task, we ask you to predict, measure and explain. <strong>Predict</strong> what will happen: give an estimate of Data scanned, rows, seconds or dollars, from the numbers you can look up, before executing anything, and write it into <code>results.csv</code> first. <strong>Measure</strong>: run it, then write the figures into your row: Data scanned and run time from Athena’s Query stats, or, for a Glue run, its DPU-seconds (DPUs × seconds of run time). <span class="chg">The 📋 box below shows where to read both.</span> <strong>Explain</strong> the difference between your estimate and the measurement, and name the mechanism behind it.</p>
+<p><span id="cmd-reading-what-a-query-and-a-glue-run-cost"></span></p>
+<div class="callout callout-style-default callout-note no-icon callout-titled" title="📋 Commands: Reading what a query and a Glue run cost">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-1-contents" aria-controls="callout-1" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon no-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>📋 Commands: Reading what a query and a Glue run cost
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-1" class="callout-1-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p><strong>Athena query.</strong> After a query ends, the editor shows <strong>Run time</strong> and <strong>Data scanned</strong> under the results, and the <strong>Query stats</strong> tab shows the same. Athena bills $5.50 per TB of Data scanned in <code>ca-central-1</code>, with a 10 MB minimum per query.</p>
+<p><strong>Glue run.</strong> In CloudShell, after the run ends:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="ex">aws</span> glue get-job-runs <span class="at">--job-name</span> rides-month <span class="at">--max-items</span> 1 <span class="dt">\</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">--query</span> <span class="st">&#39;JobRuns[0].[ExecutionTime,DPUSeconds]&#39;</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>The first number is the run time in seconds, the second the DPU-seconds. If the second is <code>null</code>, multiply the seconds by the job’s DPUs: two G.1X workers are 2 DPUs. Glue 5.0 bills $0.44 per DPU-hour, per second, with a 1-minute minimum.</p>
+<p><strong>Worked example: tutorial 2’s rides.</strong></p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 25%">
+<col style="width: 25%">
+<col style="width: 25%">
+<col style="width: 25%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Item</th>
+<th>Measured</th>
+<th>Arithmetic</th>
+<th>Cost</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Glue run, <code>rides-month</code></td>
+<td><code>[189, 379.0]</code></td>
+<td>379 / 3,600 × $0.44</td>
+<td>$0.046 a run</td>
+</tr>
+<tr class="even">
+<td>Same run, every night for a year</td>
+<td></td>
+<td>$0.046 × 365</td>
+<td>about $17</td>
+</tr>
+<tr class="odd">
+<td>Week report in Athena</td>
+<td>13.1 MB</td>
+<td>13.1 MB / 1,000,000 MB per TB × $5.50</td>
+<td>$0.00007</td>
+</tr>
+<tr class="even">
+<td><code>MERGE</code> on the zones</td>
+<td>under 1 KB</td>
+<td>billed as 10 MB: 10 / 1,000,000 × $5.50</td>
+<td>$0.000055</td>
+</tr>
+</tbody>
+</table>
+<p>A run shorter than a minute is billed as a minute: a 40-second run on 2 DPUs costs 2 × 60 DPU-seconds.</p>
+</div>
+</div>
+</div>
 <p>In predictions we ask for order-of-magnitude comparisons and don’t ask for a precise estimate. As a rule of thumb, you should be able to do a back-of-the-envelope prediction looking at the numbers or their estimates, seldom needing code or GenAI. Write your prediction down before you run the query, then compare it with the measurement. Learning to do these comparisons is how you build data engineering intuition. You don’t get downgraded for wrong predictions.</p>
 <p><strong>Task 1. Healthier-basket report (use, about 75 minutes).</strong> Predict, from the table’s manifests, how much data the branch’s monthly trend report reads, complete and run the report, deliver it to head office’s inbox with <code>UNLOAD</code>, and explain the difference. Hand in two rows of <code>results.csv</code>, head office’s reply (Screenshot 2), and a paragraph.</p>
 <p><strong>Task 2. Loading the branch’s files (build, about 105 minutes).</strong> Run the ready Glue job that loads the till export into <code>branch.receipts</code>, create a second job from its script to load the shelf-price app’s changes into <code>branch.price_events</code>, and price a month of nightly runs of both jobs on Glue against an EMR cluster of one primary and two core m7g.xlarge nodes. Hand in your script’s changes, five rows of <code>results.csv</code>, the price table and four sentences.</p>
@@ -5603,7 +5668,7 @@ z-index: 1000;
 <section id="shape-of-the-work" class="level1">
 <h1>🗺️ Shape of the work</h1>
 <p>Do Setup first and once. Tasks 1 and 2 are independent of each other: task 1 needs only the company lakehouse, and task 2 needs your raw zone and the Glue role. Task 3 needs <code>branch.receipts</code> from task 2. Task 4 works on the tables from tasks 2 and 3, so it comes last. The maintenance plan in task 4 needs your numbers from every task and no cloud access at all, so you can write it with the console closed.</p>
-<p>The tutorials practised most moves in this assignment on the New York rides: tutorial 1 the query, a copy, a delete, snapshots, time travel, a load run twice, a new column and a join; tutorial 2 a Glue load, <code>OPTIMIZE</code> and <code>VACUUM</code>. The job aid shows the moves they did not practise: <code>MERGE</code>, <code>UNLOAD</code>, changing a job from CSV to JSON Lines, an S3 Lifecycle rule and a federated query. Here you make these moves on the grocer data, with less given to you.</p>
+<p>The tutorials practised most moves in this assignment on the New York rides: tutorial 1 the query, a copy, a delete, snapshots, time travel, a load run twice, a new column and a join; tutorial 2 a Glue load, <code>OPTIMIZE</code> and <code>VACUUM</code>. <span class="chg">The 📋 Commands boxes show</span> the moves they did not practise: <code>MERGE</code>, <code>UNLOAD</code>, changing a job from CSV to JSON Lines, an S3 Lifecycle rule and a federated query. Here you make these moves on the grocer data, with less given to you.</p>
 <div class="callout callout-style-default callout-important callout-titled" title="Before you start">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
@@ -5619,8 +5684,8 @@ z-index: 1000;
 <li>You need tutorial 1’s setup (the <code>course</code> data source and Athena’s result location) and L7’s <code>setup_glue.sh</code> (your bucket <code>436c-glue-&lt;account&gt;</code> and the Glue role <code>436c-glue-notebook</code>). Tutorial 2 (<a href="https://github.com/cpsc436c-2026w1/b3-t2-glue-rides">b3-t2-glue-rides</a>) is useful here: it runs a Glue load, <code>OPTIMIZE</code> and <code>VACUUM</code> on the rides.</li>
 <li>Get the starter files into CloudShell: <code>git clone https://github.com/cpsc436c-2026w1/a3-starter.git &amp;&amp; cd a3-starter</code>.</li>
 <li><span class="chg"><code>&lt;account&gt;</code> and <code>&lt;your account id&gt;</code> both stand for your 12-digit account number. In CloudShell, <code>aws sts get-caller-identity --query Account --output text</code> prints it. Before you run a command, replace both with that number, and replace <code>&lt;any name&gt;</code> with a name you choose.</span></li>
-<li>The Data scanned limit you set in tutorial 1 (2 GB) is too low for task 1’s report. Raise it to 10 GB for A3, as the job aid shows.</li>
-<li>The job aid has every command. Read the assignment first, the job aid second.</li>
+<li>The Data scanned limit you set in tutorial 1 (2 GB) is too low for task 1’s report. Raise it to 10 GB for A3, as <span class="chg"><a href="#cmd-data-scanned-limit-once-per-account">📋 Commands: Data scanned limit, once per account</a> in Setup shows</span>.</li>
+<li><span class="chg">Every command is in a collapsed 📋 Commands box where a task first needs it. Read the task first, then open its box.</span></li>
 <li><span class="chg">⭐ shows optional work. It earns no points, and you can leave it out.</span></li>
 </ul>
 </div>
@@ -5661,12 +5726,135 @@ z-index: 1000;
 </div>
 </div>
 <ol start="0" type="1">
-<li><span class="chg"><strong>Data scanned limit.</strong> In CloudShell, raise it to 10 GB and check it, as the job aid’s first section shows. You should see <code>10000000000</code>.</span></li>
+<li><span class="chg"><strong>Data scanned limit.</strong> In CloudShell, raise it to 10 GB and check it, as <span class="chg">📋 Commands: Data scanned limit, once per account below shows</span>. You should see <code>10000000000</code>.</span></li>
 <li><strong>The course data source.</strong> Tutorial 1 already added the course catalog as the data source <code>course</code>. In the Athena query editor, with <strong>Data source</strong> <code>course</code>, check that <code>SHOW TABLES IN course_lake</code> lists the company tables. It also lists tables of other exercises (<code>customer</code>, <code>store_sales</code> and others): A3 uses only the seven the table under “What lives where” names. Step 3 creates your own database <code>branch</code>.</li>
-<li><strong>The shelf-price app’s DynamoDB table.</strong> In CloudShell, register the connector head office shares: <code>aws athena create-data-catalog --name shelf --type LAMBDA --parameters function=arn:aws:lambda:ca-central-1:940482406111:function:436c-ddb-connector</code>. <span class="chg">If you run it again, it fails with an error saying the catalog already exists. The catalog is there and you can go on.</span></li>
+<li><strong>The shelf-price app’s DynamoDB table.</strong> In CloudShell, register the connector head office shares: <code>aws athena create-data-catalog --name shelf --type LAMBDA --parameters function=arn:aws:lambda:ca-central-1:940482406111:function:436c-ddb-connector</code>. <span class="chg">If you run it again, it fails with an error saying the catalog already exists. The catalog is there and you can go on.</span> <span class="chg">📋 Commands: Company lakehouse, <code>branch</code> database and <code>shelf</code> data source below walks through steps 1 and 2 with what you should see.</span></li>
 <li><strong>The raw zone and the ready job.</strong> In CloudShell, in the <code>a3-starter</code> folder, run <code>bash setup_a3.sh</code>. It lands the branch’s raw files in <code>s3://436c-glue-&lt;account&gt;/branch/raw/</code>, creates your Glue database <code>branch</code>, registers the members’ change files as the table <code>branch.raw_households</code> (Athena reads a table, not an S3 path, so <code>MERGE</code> in task 3 reads this one), and creates the Glue job <code>branch-receipts</code>. You can safely run it again.</li>
-<li><strong>Head office’s replies.</strong> In CloudShell, run <code>bash subscribe.sh &lt;your email&gt;</code> and confirm the email AWS sends. Head office then emails you its check of every report you deliver.</li>
+<li><strong>Head office’s replies.</strong> In CloudShell, run <code>bash subscribe.sh &lt;your email&gt;</code> and confirm the email AWS sends. Head office then emails you its check of every report you deliver. <span class="chg">📋 Commands: UNLOAD to head office’s inbox below tests the inbox with a toy report before task 1.</span></li>
 </ol>
+<p><span id="cmd-data-scanned-limit-once-per-account"></span></p>
+<div class="callout callout-style-default callout-note no-icon callout-titled" title="📋 Commands: Data scanned limit, once per account">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-5-contents" aria-controls="callout-5" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon no-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>📋 Commands: Data scanned limit, once per account
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-5" class="callout-5-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p>Tutorial 1 set a Data scanned limit of 2 GB on the workgroup <code>primary</code>. Task 1’s report reads more, so raise the limit to 10 GB.</p>
+<p><strong>In the console:</strong></p>
+<ol type="1">
+<li>Athena → <strong>Workgroups</strong> → <code>primary</code> → <strong>Execution controls</strong> tab → <strong>Edit controls</strong>.</li>
+<li>Set <strong>Data scanned limit</strong> to 10 GB → <strong>Save</strong>.</li>
+</ol>
+<p><strong>Or in CloudShell:</strong></p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="ex">aws</span> athena update-work-group <span class="at">--work-group</span> primary <span class="dt">\</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">--configuration-updates</span> BytesScannedCutoffPerQuery=10000000000</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>The command changes only the limit. The result location from tutorial 1 stays.</p>
+<p><strong>Check it</strong> in CloudShell. You should see <code>10000000000</code>:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="ex">aws</span> athena get-work-group <span class="at">--work-group</span> primary <span class="dt">\</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">--query</span> WorkGroup.Configuration.BytesScannedCutoffPerQuery</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+</div>
+</div>
+<p><span id="cmd-company-lakehouse-branch-database-and-shelf-data-source"></span></p>
+<div class="callout callout-style-default callout-note no-icon callout-titled" title="📋 Commands: Company lakehouse, `branch` database and `shelf` data source">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-6-contents" aria-controls="callout-6" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon no-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>📋 Commands: Company lakehouse, <code>branch</code> database and <code>shelf</code> data source
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-6" class="callout-6-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p><strong>Data source</strong>, on the left of the query editor, sets the catalog for table names you do not write in full.</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 33%">
+<col style="width: 33%">
+<col style="width: 33%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Data source</th>
+<th>What it holds</th>
+<th>Name in full</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>course</code></td>
+<td>the company lakehouse, read-only</td>
+<td><code>course.course_lake.&lt;table&gt;</code></td>
+</tr>
+<tr class="even">
+<td><code>AwsDataCatalog</code></td>
+<td>your own catalog: the <code>branch</code> database</td>
+<td><code>awsdatacatalog.branch.&lt;table&gt;</code> (<code>branch.&lt;table&gt;</code> under this Data source)</td>
+</tr>
+<tr class="odd">
+<td><code>shelf</code></td>
+<td>the shelf-price app’s DynamoDB table, through a Lambda connector</td>
+<td><code>shelf.default.course_shelf_prices</code></td>
+</tr>
+</tbody>
+</table>
+<ol type="1">
+<li><p><strong>Athena query editor</strong>, Data source <code>course</code>: run <code>SHOW TABLES IN course_lake</code>. You should see the company tables, <code>consumption</code> among them.</p></li>
+<li><p><strong>CloudShell</strong>: register the connector once, as Setup step 2 says:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="ex">aws</span> athena create-data-catalog <span class="at">--name</span> shelf <span class="at">--type</span> LAMBDA <span class="dt">\</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">--parameters</span> function=arn:aws:lambda:ca-central-1:940482406111:function:436c-ddb-connector</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div></li>
+<li><p><strong>Athena query editor</strong>: reload the Data source list. You should see <code>shelf</code>. Run:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5"><pre class="sourceCode sql code-with-copy"><code class="sourceCode sql"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>SHOW <span class="kw">TABLES</span> <span class="kw">IN</span> shelf.<span class="kw">default</span>;</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>You should see <code>course_shelf_prices</code>, and other tables of the course account that you cannot read. A query on <code>course_shelf_prices</code> is a federated query, through the connector.</p></li>
+<li><p>Data source <code>AwsDataCatalog</code>: run <code>SHOW TABLES IN branch</code>. After setup you should see <code>raw_households</code>.</p></li>
+</ol>
+<p>A statement that names every table in full runs under any Data source. Numbers from <code>shelf</code> arrive as <code>decimal(38,9)</code>: cast a key with <code>CAST(store_id AS bigint)</code> before you join on it.</p>
+</div>
+</div>
+</div>
+<p><span id="cmd-unload-to-head-office-s-inbox"></span></p>
+<div class="callout callout-style-default callout-note no-icon callout-titled" title="📋 Commands: UNLOAD to head office&#39;s inbox">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-7-contents" aria-controls="callout-7" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon no-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>📋 Commands: UNLOAD to head office’s inbox
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-7" class="callout-7-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p><code>UNLOAD</code> runs a query and writes its result as files to an S3 folder. Head office reads every folder under <code>s3://436c-hq-inbox-940482406111/inbox/&lt;account&gt;/</code>. Test the path with a toy report before task 1.</p>
+<ol type="1">
+<li><p><strong>Athena query editor</strong>:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb6"><pre class="sourceCode sql code-with-copy"><code class="sourceCode sql"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>UNLOAD (<span class="kw">SELECT</span> city, <span class="fu">count</span>(<span class="op">*</span>) <span class="kw">AS</span> stores</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>        <span class="kw">FROM</span> course.course_lake.stores</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>        <span class="kw">GROUP</span> <span class="kw">BY</span> city)</span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a><span class="kw">TO</span> <span class="st">&#39;s3://436c-hq-inbox-940482406111/inbox/&lt;account&gt;/toy-stores/&#39;</span></span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a><span class="kw">WITH</span> (format <span class="op">=</span> <span class="st">&#39;JSON&#39;</span>, compression <span class="op">=</span> <span class="st">&#39;NONE&#39;</span>);</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p><code>format = &#39;JSON&#39;</code> writes JSON Lines: one JSON record per line. Set <code>compression = &#39;NONE&#39;</code> to write plain-text JSON Lines. Without it, Athena uses the documented JSON default, gzip.</p></li>
+<li><p>The folder must be empty. A second <code>UNLOAD</code> into the same folder fails with <code>HIVE_PATH_ALREADY_EXISTS</code>: use a new folder name each time.</p></li>
+<li><p><strong>CloudShell</strong>, within a minute, list the replies and print one:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb7"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="ex">aws</span> s3 ls s3://436c-hq-inbox-940482406111/inbox/<span class="op">&lt;</span>account<span class="op">&gt;</span>/replies/</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="ex">aws</span> s3 cp s3://436c-hq-inbox-940482406111/inbox/<span class="op">&lt;</span>account<span class="op">&gt;</span>/replies/toy-stores.json <span class="at">-</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>You should see <code>toy-stores.json</code>, saying head office does not know a report called <code>toy-stores</code>: the path works. Head office checks folders whose name starts with <code>task1-</code>.</p></li>
+</ol>
+<p><strong>Replies by email.</strong> In CloudShell, in the <code>a3-starter</code> folder:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb8"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="fu">bash</span> subscribe.sh <span class="op">&lt;</span>your email<span class="op">&gt;</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Confirm the subscription in the email from AWS Notifications. Every reply then also arrives by email.</p>
+<p>The starter files, <code>subscribe.sh</code> among them, are in CloudShell after the Setup’s <code>git clone</code> of <code>a3-starter</code>.</p>
+</div>
+</div>
+</div>
 <p>👀 <strong>Quick check.</strong> <code>SELECT count(*) FROM course.course_lake.households</code> returns 450000, <code>SHOW TABLES IN shelf.default</code> lists <code>course_shelf_prices</code>, and <code>aws s3 ls s3://436c-glue-&lt;account&gt;/branch/raw/ --recursive</code> lists the four raw files, including <code>_files.json</code>.</p>
 <p>📸 <strong>Screenshot 1.</strong> The Athena editor with <strong>Data source</strong> <code>AwsDataCatalog</code> and the <code>branch</code> database selected, showing <code>raw_households</code>, and the result of <code>SHOW TABLES IN shelf.default</code>.</p>
 </section>
@@ -5696,18 +5884,18 @@ z-index: 1000;
 <section id="predict" class="level2">
 <h2 class="anchored" data-anchor-id="predict">1.1 Predict</h2>
 <p>In L10 you met the manifest: a row per data file, with its partition value, its row count, and the minimum and maximum of each column. The same row also holds how many bytes each column takes in that file. Athena shows the manifests’ rows as the table <code>&quot;consumption$files&quot;</code>, one row per data file. <code>column_sizes</code> holds the bytes per column, keyed by the column’s field id, the number Iceberg gives a column when it is added (L11). No column of <code>consumption</code> has been added or dropped since the table was made, so its field ids follow the order <code>DESCRIBE course.course_lake.consumption</code> lists the columns (1 is <code>event_id</code>, 2 is <code>event_ts</code>, and so on). In the Athena editor, look them up:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode sql code-with-copy"><code class="sourceCode sql"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> file_path, record_count, column_sizes</span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="kw">FROM</span> course.course_lake.<span class="ot">&quot;consumption$files&quot;</span></span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="kw">LIMIT</span> <span class="dv">3</span>;</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb9"><pre class="sourceCode sql code-with-copy"><code class="sourceCode sql"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> file_path, record_count, column_sizes</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="kw">FROM</span> course.course_lake.<span class="ot">&quot;consumption$files&quot;</span></span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a><span class="kw">LIMIT</span> <span class="dv">3</span>;</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <p>The report needs four columns of <code>consumption</code><span class="chg">, the ones <code>report_task1.sql</code> names</span>: the time of the line, the household, the product and the line total. Which months does it read? Using <code>column_sizes</code>, estimate the Data scanned for those four columns across the whole table (<code>sum(column_sizes[&lt;field id&gt;])</code> over all of <code>&quot;consumption$files&quot;</code> adds one column up<span class="chg">, and <code>sum(file_size_in_bytes)</code> gives the whole table</span>), and write the estimate in your task 1 row of <code>results.csv</code> before you run the report. How far is it from the size of the whole table? <span class="chg">The four-column estimate and the whole-table sum are both in bytes. Divide each by 1,000,000 for the MB in <code>results.csv</code>.</span></p>
 <p>📚 <strong>Lecture:</strong> L10, manifests; L11, the 🔍 box on <code>column_sizes</code> and <code>UNLOAD</code>; tutorial 1, metadata tables and predict then query.</p>
 </section>
 <section id="measure" class="level2">
 <h2 class="anchored" data-anchor-id="measure">1.2 Measure</h2>
 <p>Complete the report in <code>report_task1.sql</code>: the condition that picks products graded A or B, and the <code>GROUP BY</code>, are left for you. Its result has the columns <code>month</code>, <code>segment</code> and <code>ab_share</code>: <code>segment</code> is <code>lyon</code> for households with <code>is_lyon</code> true and <code>rest</code> for all others, and <code>ab_share</code> is the spend on products graded <code>a</code> or <code>b</code> in <code>catalogue</code> <span class="chg">(<code>DESCRIBE course.course_lake.catalogue</code> names its Nutri-Score column, and the grades are lower-case letters)</span>, divided by all spend. Run it, record Data scanned and run time in your row, then deliver it to head office. <code>UNLOAD</code> runs a query and writes its result as files to an S3 location:</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode sql code-with-copy"><code class="sourceCode sql"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>UNLOAD (<span class="op">&lt;</span>your report <span class="kw">query</span><span class="op">&gt;</span>)</span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="kw">TO</span> <span class="st">&#39;s3://436c-hq-inbox-940482406111/inbox/&lt;your account id&gt;/task1-&lt;any name&gt;/&#39;</span></span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="kw">WITH</span> (format <span class="op">=</span> <span class="st">&#39;JSON&#39;</span>, compression <span class="op">=</span> <span class="st">&#39;NONE&#39;</span>);</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb10"><pre class="sourceCode sql code-with-copy"><code class="sourceCode sql"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>UNLOAD (<span class="op">&lt;</span>your report <span class="kw">query</span><span class="op">&gt;</span>)</span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a><span class="kw">TO</span> <span class="st">&#39;s3://436c-hq-inbox-940482406111/inbox/&lt;your account id&gt;/task1-&lt;any name&gt;/&#39;</span></span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a><span class="kw">WITH</span> (format <span class="op">=</span> <span class="st">&#39;JSON&#39;</span>, compression <span class="op">=</span> <span class="st">&#39;NONE&#39;</span>);</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="cell" data-layout-align="default">
 <div class="cell-output-display">
 <div>
@@ -5734,12 +5922,12 @@ z-index: 1000;
 </div>
 </div>
 </div>
-<p>Head office checks every report it receives and replies within a minute, by email if you subscribed. It always also writes the reply <span class="chg">to <code>inbox/&lt;your account id&gt;/replies/&lt;folder name&gt;.json</code>, named after the folder your <code>UNLOAD</code> wrote, such as <code>replies/task1-&lt;any name&gt;.json</code>. Head office checks only folders whose name starts with <code>task1-</code></span>. <code>UNLOAD</code> refuses a folder that already holds files, so each delivery needs a new folder name. After a failed or cancelled <code>UNLOAD</code>, use a new name too.</p>
+<p>Head office checks every report it receives and replies within a minute, by email if you subscribed. It always also writes the reply <span class="chg">to <code>inbox/&lt;your account id&gt;/replies/&lt;folder name&gt;.json</code>, named after the folder your <code>UNLOAD</code> wrote, such as <code>replies/task1-&lt;any name&gt;.json</code>. Head office checks only folders whose name starts with <code>task1-</code></span>. <code>UNLOAD</code> refuses a folder that already holds files, so each delivery needs a new folder name. After a failed or cancelled <code>UNLOAD</code>, use a new name too. <span class="chg"><a href="#cmd-unload-to-head-office-s-inbox">📋 Commands: UNLOAD to head office’s inbox</a> in Setup tests the path with a toy report first.</span></p>
 <p>👀 <strong>Quick check.</strong> The report returns 72 rows, one per month and segment, in under a minute. Head office’s reply is organised by the requirements your report answers, R70 and R20, with each requirement and each of its constraints marked met or not met.</p>
 <p><span class="chg">⭐ <strong>Optional.</strong></span> The starter’s <a href="https://github.com/cpsc436c-2026w1/a3-starter/blob/main/features/task1_report.feature"><code>features/task1_report.feature</code></a> holds the same checks as scenarios, in L9’s Gherkin. If you want to run them on your report yourself, the <a href="https://github.com/cpsc436c-2026w1/a3-starter/blob/main/README.md">starter README</a> shows how, with <code>behave</code>.</p>
 <p>📸 <strong>Screenshot 2.</strong> Head office’s reply email to your task 1 report. If the email did not arrive, the reply file from <code>inbox/&lt;your account id&gt;/replies/</code> instead.</p>
 <div class="callout callout-style-default callout-note callout-titled" title="👀 Compare with our run: open after you have written your explanation">
-<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-5-contents" aria-controls="callout-5" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-9-contents" aria-controls="callout-9" aria-expanded="false" aria-label="Toggle callout">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
@@ -5748,7 +5936,7 @@ z-index: 1000;
 </div>
 <div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
 </div>
-<div id="callout-5" class="callout-5-contents callout-collapse collapse">
+<div id="callout-9" class="callout-9-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
 <p>Our run’s Data scanned was 7.6 GB, in about 15 seconds, and head office accepted it.</p>
 </div>
@@ -5787,12 +5975,102 @@ z-index: 1000;
 <section id="run-the-ready-job" class="level2">
 <h2 class="anchored" data-anchor-id="run-the-ready-job">2.1 Run the ready job</h2>
 <p><strong>Predict, before you start it:</strong> how many rows the job will write into <code>branch.receipts</code>, and how many seconds the run will take. The file list <code>_files.json</code> gives the day file’s rows and size, and tutorial 2’s job gives you a run time to compare with. Write both into your task 2 row.</p>
-<p><strong>Run it.</strong> In CloudShell: <code>aws glue start-job-run --job-name branch-receipts</code>. When the run ends (Glue console, <strong>ETL jobs</strong>, <code>branch-receipts</code>, <strong>Runs</strong>), count the day’s rows in Athena and read the run’s figures: <code>aws glue get-job-runs --job-name branch-receipts --max-items 1 --query &#39;JobRuns[0].[ExecutionTime,DPUSeconds]&#39;</code>. Record the rows, the seconds and the DPU-seconds. If a run fails, the job aid shows where to read its error.</p>
+<p><strong>Run it.</strong> In CloudShell: <code>aws glue start-job-run --job-name branch-receipts</code>. When the run ends (Glue console, <strong>ETL jobs</strong>, <code>branch-receipts</code>, <strong>Runs</strong>), count the day’s rows in Athena and read the run’s figures: <code>aws glue get-job-runs --job-name branch-receipts --max-items 1 --query &#39;JobRuns[0].[ExecutionTime,DPUSeconds]&#39;</code>. Record the rows, the seconds and the DPU-seconds. If a run fails, <span class="chg">step 5 of <a href="#cmd-changing-a-glue-job-from-csv-to-json-lines">📋 Commands: Changing a Glue job from CSV to JSON Lines</a> in task 2.2 shows</span> where to read its error.</p>
 </section>
 <section id="adapt-it-for-the-price-changes" class="level2">
 <h2 class="anchored" data-anchor-id="adapt-it-for-the-price-changes">2.2 Adapt it for the price changes</h2>
 <p><strong>Predict, before you change anything:</strong> which lines of the script must change for a JSON Lines input with different columns and a different target table, and how many rows the new job will write (<code>_files.json</code> lists the export files and their rows). <span class="chg">In the clone’s script, keep the export’s field names: <code>store_id</code>, <code>product_code</code>, <code>old_price_eur</code>, <code>price_eur</code>, <code>changed_at</code> and <code>source</code>. Cast <code>store_id</code> to <code>int</code> and both prices to <code>double</code>, convert <code>changed_at</code> to a timestamp with <code>F.to_timestamp(&quot;changed_at&quot;)</code>, and partition by day of <code>changed_at</code>, as the receipts job does with <code>sold_at</code>. Leave out the receipts job’s format string, because the app writes times such as <code>2026-10-16T23:00:00Z</code>. Task 3.5 queries these names.</span> In CloudShell, look at one record first: <code>aws s3 cp s3://436c-glue-&lt;account&gt;/branch/raw/price_events/dt=2026-10-16/hour=23/changes.jsonl - 2&gt;/dev/null | head -2</code>.</p>
-<p><strong>Change and run it.</strong> In the Glue console, clone <code>branch-receipts</code> (<strong>Actions</strong>, <strong>Clone job</strong>), give the clone its own name and script file, change the reader to JSON Lines, the column mapping, and the target table <code>branch.price_events</code>, then run it. The job aid shows a worked diff from CSV to JSON Lines on another file, and why a clone works where a new empty job does not. Record the rows and the DPU-seconds.</p>
+<p><strong>Change and run it.</strong> In the Glue console, clone <code>branch-receipts</code> (<strong>Actions</strong>, <strong>Clone job</strong>), give the clone its own name and script file, change the reader to JSON Lines, the column mapping, and the target table <code>branch.price_events</code>, then run it. <span class="chg">The 📋 box below shows</span> a worked diff from CSV to JSON Lines on another file, and why a clone works where a new empty job does not. Record the rows and the DPU-seconds.</p>
+<p><span id="cmd-changing-a-glue-job-from-csv-to-json-lines"></span></p>
+<div class="callout callout-style-default callout-note no-icon callout-titled" title="📋 Commands: Changing a Glue job from CSV to JSON Lines">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-11-contents" aria-controls="callout-11" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon no-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>📋 Commands: Changing a Glue job from CSV to JSON Lines
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-11" class="callout-11-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p>Create the second job as a clone of the first. A clone keeps the job’s Spark settings and parameters: <code>--datalake-formats iceberg</code>, the <code>--conf</code> settings that define <code>glue_catalog</code>, <code>--BUCKET</code> and <code>--DAY</code>. A job created from scratch lacks them and fails when it writes to <code>glue_catalog</code>.</p>
+<ol type="1">
+<li><strong>Glue console</strong> → <strong>ETL jobs</strong> → select <code>branch-receipts</code> → <strong>Actions</strong> → <strong>Clone job</strong>.</li>
+<li>Give the clone a new name.</li>
+<li><strong>Job details</strong> tab → <strong>Advanced properties</strong>: set the script filename to a new file in <code>s3://436c-glue-&lt;account&gt;/branch/jobs/</code>, so that saving the clone’s script leaves <code>branch_receipts.py</code> as it is. Task 3.3 runs <code>branch-receipts</code> again.</li>
+<li><strong>Script</strong> tab: edit the script, then <strong>Save</strong>.</li>
+<li>On the <strong>Runs</strong> tab, open the run. For a failed run, you see its <strong>Error message</strong>; select <strong>Output logs</strong> to open the full log.</li>
+</ol>
+<p>Step 3 matters whichever path the clone starts with: a script file of its own is the only way an edit cannot reach <code>branch_receipts.py</code>.</p>
+<p><strong>Worked diff on another file.</strong> A made-up chain’s fridge sensors write one JSON Lines file an hour, with records such as <code>{&quot;sensor_id&quot;: &quot;f-07&quot;, &quot;store_id&quot;: 12, &quot;read_at&quot;: &quot;2026-10-16T23:00:05Z&quot;, &quot;temp_c&quot;: 3.4}</code>. The diff turns <code>branch_receipts.py</code> into a job that loads them into <code>demo.fridge_readings</code>. It is an example to read, not to run.</p>
+<p>A job reads every file under the folder <code>RAW</code> names, subfolders included: a <code>RAW</code> that ends at <code>dt=&lt;day&gt;/</code> reads every hour of that day.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb11"><pre class="sourceCode diff code-with-copy"><code class="sourceCode diff"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="st">-RAW = f&quot;s3://{args[&#39;BUCKET&#39;]}/branch/raw/receipts/dt={args[&#39;DAY&#39;]}/&quot;</span></span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a><span class="st">-TABLE = &quot;glue_catalog.branch.receipts&quot;</span></span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a><span class="va">+RAW = f&quot;s3://{args[&#39;BUCKET&#39;]}/demo/raw/fridge_temps/dt={args[&#39;DAY&#39;]}/&quot;</span></span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a><span class="va">+TABLE = &quot;glue_catalog.demo.fridge_readings&quot;</span></span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a><span class="st">-# 1. Read the day&#39;s till export: one CSV file with a header row</span></span>
+<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a><span class="st">-raw = spark.read.option(&quot;header&quot;, &quot;true&quot;).csv(RAW)</span></span>
+<span id="cb11-8"><a href="#cb11-8" aria-hidden="true" tabindex="-1"></a><span class="va">+# 1. Read the day&#39;s sensor files: JSON Lines, one record per line</span></span>
+<span id="cb11-9"><a href="#cb11-9" aria-hidden="true" tabindex="-1"></a><span class="va">+raw = spark.read.json(RAW)</span></span>
+<span id="cb11-10"><a href="#cb11-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-11"><a href="#cb11-11" aria-hidden="true" tabindex="-1"></a><span class="st">-receipts = raw.select(</span></span>
+<span id="cb11-12"><a href="#cb11-12" aria-hidden="true" tabindex="-1"></a><span class="st">-    F.col(&quot;receipt_id&quot;),</span></span>
+<span id="cb11-13"><a href="#cb11-13" aria-hidden="true" tabindex="-1"></a><span class="st">-    ...</span></span>
+<span id="cb11-14"><a href="#cb11-14" aria-hidden="true" tabindex="-1"></a><span class="st">-    F.col(&quot;payment_method&quot;),</span></span>
+<span id="cb11-15"><a href="#cb11-15" aria-hidden="true" tabindex="-1"></a><span class="st">-)</span></span>
+<span id="cb11-16"><a href="#cb11-16" aria-hidden="true" tabindex="-1"></a><span class="va">+readings = raw.select(</span></span>
+<span id="cb11-17"><a href="#cb11-17" aria-hidden="true" tabindex="-1"></a><span class="va">+    F.col(&quot;sensor_id&quot;),</span></span>
+<span id="cb11-18"><a href="#cb11-18" aria-hidden="true" tabindex="-1"></a><span class="va">+    F.col(&quot;store_id&quot;).cast(&quot;int&quot;),</span></span>
+<span id="cb11-19"><a href="#cb11-19" aria-hidden="true" tabindex="-1"></a><span class="va">+    F.to_timestamp(&quot;read_at&quot;).alias(&quot;read_at&quot;),</span></span>
+<span id="cb11-20"><a href="#cb11-20" aria-hidden="true" tabindex="-1"></a><span class="va">+    F.col(&quot;temp_c&quot;).cast(&quot;double&quot;),</span></span>
+<span id="cb11-21"><a href="#cb11-21" aria-hidden="true" tabindex="-1"></a><span class="va">+)</span></span>
+<span id="cb11-22"><a href="#cb11-22" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-23"><a href="#cb11-23" aria-hidden="true" tabindex="-1"></a><span class="st">-exists = spark.sql(&quot;SHOW TABLES IN glue_catalog.branch LIKE &#39;receipts&#39;&quot;).count() &gt; 0</span></span>
+<span id="cb11-24"><a href="#cb11-24" aria-hidden="true" tabindex="-1"></a><span class="va">+exists = spark.sql(&quot;SHOW TABLES IN glue_catalog.demo LIKE &#39;fridge_readings&#39;&quot;).count() &gt; 0</span></span>
+<span id="cb11-25"><a href="#cb11-25" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-26"><a href="#cb11-26" aria-hidden="true" tabindex="-1"></a><span class="st">-        .partitionedBy(F.days(&quot;sold_at&quot;))</span></span>
+<span id="cb11-27"><a href="#cb11-27" aria-hidden="true" tabindex="-1"></a><span class="va">+        .partitionedBy(F.days(&quot;read_at&quot;))</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Rename <code>receipts</code> to <code>readings</code> on the remaining lines. The lines that changed:</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 50%">
+<col style="width: 50%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Line</th>
+<th>Why it changed</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>RAW</code>, <code>TABLE</code></td>
+<td>the input folder and the target table</td>
+</tr>
+<tr class="even">
+<td>the reader</td>
+<td><code>spark.read.json</code> reads JSON Lines and takes the column names from the records</td>
+</tr>
+<tr class="odd">
+<td>the <code>select</code></td>
+<td>the file’s own fields; a time arrives as a string and needs <code>to_timestamp</code>, and the casts fix each type</td>
+</tr>
+<tr class="even">
+<td><code>exists</code></td>
+<td>the check looks for the new table’s name</td>
+</tr>
+<tr class="odd">
+<td><code>partitionedBy</code></td>
+<td>the new table’s time column</td>
+</tr>
+</tbody>
+</table>
+<p>The table properties, <code>repartition</code> and <code>job.commit()</code> stay as they are.</p>
+</div>
+</div>
+</div>
 </section>
 <section id="explain-and-price" class="level2">
 <h2 class="anchored" data-anchor-id="explain-and-price">2.3 Explain and price</h2>
@@ -5831,8 +6109,73 @@ z-index: 1000;
 </section>
 <section id="apply-the-changes-with-merge" class="level2">
 <h2 class="anchored" data-anchor-id="apply-the-changes-with-merge">3.2 Apply the changes with MERGE</h2>
-<p>Add the new column with <code>ALTER TABLE branch.members ADD COLUMNS (marketing_consent boolean)</code>. Then apply the <code>upsert</code> records with <code>MERGE</code>: one statement that updates the rows whose <code>household_id</code> matches a record in the change file and inserts the rest, reading the change file through <code>branch.raw_households</code>. <code>merge_members.sql</code> gives the statement with two clauses blank.</p>
+<p>Add the new column with <code>ALTER TABLE branch.members ADD COLUMNS (marketing_consent boolean)</code>. Then apply the <code>upsert</code> records with <code>MERGE</code>: one statement that updates the rows whose <code>household_id</code> matches a record in the change file and inserts the rest, reading the change file through <code>branch.raw_households</code>. <code>merge_members.sql</code> gives the statement with two clauses blank. <span class="chg">The 📋 box below shows a <code>MERGE</code> on tutorial 2’s zones.</span></p>
 <p><strong>Predict first:</strong> how many rows <code>branch.members</code> holds after the <code>MERGE</code>, how many of them changed, and how many snapshots the table has afterwards. Then run it, count, and list the snapshots.</p>
+<p><span id="cmd-merge"></span></p>
+<div class="callout callout-style-default callout-note no-icon callout-titled" title="📋 Commands: MERGE">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-13-contents" aria-controls="callout-13" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon no-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>📋 Commands: MERGE
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-13" class="callout-13-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p><code>MERGE</code> matches each incoming row to the table by a key. It updates the rows that match and inserts the rest. The example is tutorial 2’s extra exercise, run in the <strong>Athena query editor</strong>. Its <code>sql/06_extra_merge.sql</code> creates both tables, so if you did not run it, read the statement as a pattern.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb12"><pre class="sourceCode sql code-with-copy"><code class="sourceCode sql"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="kw">MERGE</span> <span class="kw">INTO</span> tutorial.zones t</span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a><span class="kw">USING</span> tutorial.zone_changes c</span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a><span class="kw">ON</span> t.locationid <span class="op">=</span> c.locationid</span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a><span class="cf">WHEN</span> MATCHED <span class="cf">THEN</span> <span class="kw">UPDATE</span> <span class="kw">SET</span> borough <span class="op">=</span> c.borough, <span class="dt">zone</span> <span class="op">=</span> c.<span class="dt">zone</span>, service_zone <span class="op">=</span> c.service_zone</span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a><span class="cf">WHEN</span> <span class="kw">NOT</span> MATCHED <span class="cf">THEN</span> <span class="kw">INSERT</span> (locationid, borough, <span class="dt">zone</span>, service_zone)</span>
+<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a>  <span class="kw">VALUES</span> (c.locationid, c.borough, c.<span class="dt">zone</span>, c.service_zone);</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 50%">
+<col style="width: 50%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Clause</th>
+<th>What it does</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>MERGE INTO tutorial.zones t</code></td>
+<td>the target: an Iceberg table, here with the alias <code>t</code></td>
+</tr>
+<tr class="even">
+<td><code>USING tutorial.zone_changes c</code></td>
+<td>the incoming rows: a table or a query in brackets</td>
+</tr>
+<tr class="odd">
+<td><code>ON t.locationid = c.locationid</code></td>
+<td>the key that pairs an incoming row with a target row</td>
+</tr>
+<tr class="even">
+<td><code>WHEN MATCHED THEN UPDATE SET …</code></td>
+<td>for a pair: set the target’s columns from the incoming row</td>
+</tr>
+<tr class="odd">
+<td><code>WHEN NOT MATCHED THEN INSERT (…) VALUES (…)</code></td>
+<td>for an incoming row with no pair: add it. List the target’s columns bare, and the values with the source alias</td>
+</tr>
+</tbody>
+</table>
+<p><code>WHEN MATCHED THEN DELETE</code> removes the paired target row, and <code>AND &lt;condition&gt;</code> after <code>MATCHED</code> narrows a clause. For each incoming row, only the first clause that applies runs.</p>
+<p>What you should see: 265 zones before, 266 after (two updated, one inserted), and 266 after the same <code>MERGE</code> again. Each <code>MERGE</code> adds one snapshot.</p>
+<p><strong>Two incoming rows for one key.</strong> If two incoming rows match the same target row, the <code>MERGE</code> fails and changes nothing:</p>
+<pre><code>MERGE_TARGET_ROW_MULTIPLE_MATCHES: One MERGE target table row matched more than one source row</code></pre>
+<p>Keep one incoming row per key before the <code>MERGE</code>.</p>
+<p><strong>Deleting the rows another table lists.</strong> A <code>DELETE</code> can take its keys from a query:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb14"><pre class="sourceCode sql code-with-copy"><code class="sourceCode sql"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="kw">DELETE</span> <span class="kw">FROM</span> tutorial.zones</span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a><span class="kw">WHERE</span> locationid <span class="kw">IN</span> (<span class="kw">SELECT</span> locationid <span class="kw">FROM</span> tutorial.zone_changes <span class="kw">WHERE</span> <span class="dt">zone</span> <span class="op">=</span> <span class="st">&#39;New test zone&#39;</span>);</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+</div>
+</div>
 </section>
 <section id="run-the-receipts-load-a-second-time" class="level2">
 <h2 class="anchored" data-anchor-id="run-the-receipts-load-a-second-time">3.3 Run the receipts load a second time</h2>
@@ -5841,14 +6184,43 @@ z-index: 1000;
 </section>
 <section id="process-the-erasures" class="level2">
 <h2 class="anchored" data-anchor-id="process-the-erasures">3.4 Process the erasures</h2>
-<p>Before you delete anything, note the paths of <code>branch.members</code>’ data files (<code>SELECT file_path FROM branch.&quot;members$files&quot;</code>): task 4 asks where the erased members’ rows still are. Then delete the members whose records say <code>erase</code>, from <code>branch.members</code> and their lines from <code>branch.receipts</code>.</p>
+<p>Before you delete anything, note the paths of <code>branch.members</code>’ data files (<code>SELECT file_path FROM branch.&quot;members$files&quot;</code>): task 4 asks where the erased members’ rows still are. Then delete the members whose records say <code>erase</code>, from <code>branch.members</code> and their lines from <code>branch.receipts</code>. <span class="chg">The <code>DELETE</code> at the end of <a href="#cmd-merge">📋 Commands: MERGE</a> in task 3.2 takes its keys from a query.</span></p>
 <p><strong>Predict first:</strong> what a query for one erased member returns at the current snapshot, and what it returns at the snapshot just before the <code>DELETE</code>. Then run both queries and record what each returns. <span class="chg">Are the files you noted still listed in <code>&quot;members$files&quot;</code>?</span></p>
 </section>
 <section id="one-price-in-four-places" class="level2">
 <h2 class="anchored" data-anchor-id="one-price-in-four-places">3.5 One price in four places</h2>
 <p>On 16 October 2026 at 23:14:04 UTC, the shelf-price app changed the price of Evian 6×100cl (product <code>3068320011707</code>) in store 43 from 3.51 € to 3.68 €. That price is held in four places: the app’s DynamoDB table (<code>shelf.default.course_shelf_prices</code>), the app’s hourly change export for that hour in <code>branch/raw/price_events/</code>, your <code>branch.price_events</code> from task 2.2, and the company’s <code>current_prices</code>.</p>
-<p><strong>Predict first:</strong> which of the four show 3.68 € and which still show 3.51 €, and why. Then query each, and record the price it shows and the time it carries (<code>updated_at</code>, <code>changed_at</code> or <code>observed_at</code>). The job aid gives a statement for each place. <span class="chg">To tell what refreshes each place, use the case for where the company’s prices come from, the architecture diagram for what the app writes and how often, and R31 for when your load runs.</span></p>
-<!--src: change measured:demos/a3-hq updater run, hour 2026-10-16T23 (s3://436c-l6-bench-940482406111/lake/apps/shelf-prices/changes/dt=2026-10-16/hour=23/changes.jsonl, 3,295 changes) | DynamoDB item store 43 / 3068320011707: price_eur 3.68, updated_at 2026-10-16T23:14:04Z, source app (strongly consistent get-item, 2026-10-23) | course_lake.current_prices: 3.51, observed_at 2025-12-31 10:49:09 (Athena, 2026-10-23) | expected: DynamoDB and the export show 3.68; branch.price_events shows 3.68 once 2.2 has loaded the hour-23 file; current_prices shows 3.51, because it is built from price observations and nothing feeds the app's changes into it | build: the generator (BUILD-STATE D1) copies this hour-23 export into branch/raw/price_events/dt=2026-10-16/hour=23/; the updater stays unscheduled until A3 closes, or the item changes again -->
+<p><strong>Predict first:</strong> which of the four show 3.68 € and which still show 3.51 €, and why. Then query each, and record the price it shows and the time it carries (<code>updated_at</code>, <code>changed_at</code> or <code>observed_at</code>). <span class="chg">The 📋 box below gives</span> a statement for each place. <span class="chg">To tell what refreshes each place, use the case for where the company’s prices come from, the architecture diagram for what the app writes and how often, and R31 for when your load runs.</span></p>
+<p><span id="cmd-one-price-in-four-places"></span></p>
+<div class="callout callout-style-default callout-note no-icon callout-titled" title="📋 Commands: One price in four places">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-14-contents" aria-controls="callout-14" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon no-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>📋 Commands: One price in four places
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-14" class="callout-14-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p>The four statements for task 3.5, one per place. Each shows a price and the time it carries.</p>
+<ol type="1">
+<li><p><strong>The app’s DynamoDB table</strong>, Data source <code>shelf</code> (a federated query):</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb15"><pre class="sourceCode sql code-with-copy"><code class="sourceCode sql"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> price_eur, updated_at <span class="kw">FROM</span> shelf.<span class="kw">default</span>.course_shelf_prices</span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a><span class="kw">WHERE</span> store_id <span class="op">=</span> <span class="dv">43</span> <span class="kw">AND</span> product_code <span class="op">=</span> <span class="st">&#39;3068320011707&#39;</span>;</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div></li>
+<li><p><strong>The hourly export in your raw zone</strong>, in CloudShell:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb16"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="ex">aws</span> s3 cp s3://436c-glue-<span class="op">&lt;</span>account<span class="op">&gt;</span>/branch/raw/price_events/dt=2026-10-16/hour=23/changes.jsonl <span class="at">-</span> <span class="kw">|</span> <span class="fu">grep</span> <span class="st">&#39;&quot;store_id&quot;: 43, &quot;product_code&quot;: &quot;3068320011707&quot;&#39;</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div></li>
+<li><p><strong>Your branch table</strong>, Data source <code>AwsDataCatalog</code>:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb17"><pre class="sourceCode sql code-with-copy"><code class="sourceCode sql"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> price_eur, changed_at <span class="kw">FROM</span> branch.price_events</span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a><span class="kw">WHERE</span> store_id <span class="op">=</span> <span class="dv">43</span> <span class="kw">AND</span> product_code <span class="op">=</span> <span class="st">&#39;3068320011707&#39;</span>;</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div></li>
+<li><p><strong>The company table</strong>, Data source <code>course</code>:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb18"><pre class="sourceCode sql code-with-copy"><code class="sourceCode sql"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> current_unit_price_eur, observed_at <span class="kw">FROM</span> course.course_lake.current_prices</span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a><span class="kw">WHERE</span> store_id <span class="op">=</span> <span class="dv">43</span> <span class="kw">AND</span> product_code <span class="op">=</span> <span class="st">&#39;3068320011707&#39;</span>;</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div></li>
+</ol>
+</div>
+</div>
+</div>
 </section>
 <section id="explain" class="level2">
 <h2 class="anchored" data-anchor-id="explain">3.6 Explain</h2>
@@ -5880,12 +6252,53 @@ z-index: 1000;
 </ul>
 </div>
 </div>
-<p>You maintain the three tables your loads and changes have written, <code>branch.members</code>, <code>branch.receipts</code> and <code>branch.price_events</code>, with the moves from tutorial 2: table properties that set how much history to keep, <code>OPTIMIZE</code> to compact small files, and <code>VACUUM</code> to expire old snapshots and delete the files no snapshot needs.</p>
+<p>You maintain the three tables your loads and changes have written, <code>branch.members</code>, <code>branch.receipts</code> and <code>branch.price_events</code>, with the moves from tutorial 2: table properties that set how much history to keep, <code>OPTIMIZE</code> to compact small files, and <code>VACUUM</code> to expire old snapshots and delete the files no snapshot needs. <span class="chg">The 📋 box below has the statements for all three.</span></p>
+<p><span id="cmd-table-properties-optimize-and-vacuum"></span></p>
+<div class="callout callout-style-default callout-note no-icon callout-titled" title="📋 Commands: Table properties, OPTIMIZE and VACUUM">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-16-contents" aria-controls="callout-16" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon no-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>📋 Commands: Table properties, OPTIMIZE and VACUUM
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-16" class="callout-16-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p>All in the <strong>Athena query editor</strong>, one statement at a time, for each of <code>branch.members</code>, <code>branch.receipts</code> and <code>branch.price_events</code>. The statements below use <code>branch.&lt;table&gt;</code>.</p>
+<ol type="1">
+<li><p>Set how old a snapshot may get before <code>VACUUM</code> expires it, then check:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb19"><pre class="sourceCode sql code-with-copy"><code class="sourceCode sql"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="kw">ALTER</span> <span class="kw">TABLE</span> branch.<span class="op">&lt;</span><span class="kw">table</span><span class="op">&gt;</span> <span class="kw">SET</span> TBLPROPERTIES (<span class="st">&#39;vacuum_max_snapshot_age_seconds&#39;</span> <span class="op">=</span> <span class="st">&#39;60&#39;</span>);</span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>SHOW TBLPROPERTIES branch.<span class="op">&lt;</span><span class="kw">table</span><span class="op">&gt;</span>;</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>You should see <code>vacuum_max_snapshot_age_seconds</code> with <code>60</code>. The default is 432000 seconds (5 days). VACUUM always keeps at least one snapshot.</p></li>
+<li><p>Compact:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb20"><pre class="sourceCode sql code-with-copy"><code class="sourceCode sql"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a>OPTIMIZE branch.<span class="op">&lt;</span><span class="kw">table</span><span class="op">&gt;</span> <span class="kw">REWRITE</span> <span class="kw">DATA</span> <span class="kw">USING</span> BIN_PACK;</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p><code>OPTIMIZE</code> leaves a partition alone until it has at least 5 small files, or a data file has at least 2 delete files (Athena’s defaults). It bills the data it reads.</p>
+<p><code>VACUUM</code> shows its own Data scanned. AWS adds S3 request charges for the files it lists and deletes. For a plan, price each maintenance statement at least at Athena’s 10 MB minimum and say so. S3 Standard storage is $0.025 per GB-month (L11). Each month, EventBridge Scheduler in <code>ca-central-1</code> includes 14 million scheduled invocations at no charge. Each further million costs $1.10.</p></li>
+<li><p>Wait one minute after the table’s last snapshot, then expire old snapshots. An <code>OPTIMIZE</code> or a write makes a snapshot, and a property change makes none. Steps 1 and 2 can run in either order. Then run this statement.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb21"><pre class="sourceCode sql code-with-copy"><code class="sourceCode sql"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>VACUUM branch.<span class="op">&lt;</span><span class="kw">table</span><span class="op">&gt;</span>;</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p><code>VACUUM</code> expires only snapshots older than 60 seconds. If old snapshots remain, wait a minute and run it again.</p></li>
+<li><p>Look at the result:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb22"><pre class="sourceCode sql code-with-copy"><code class="sourceCode sql"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> <span class="fu">count</span>(<span class="op">*</span>) <span class="kw">AS</span> files, <span class="fu">sum</span>(record_count) <span class="kw">AS</span> <span class="kw">rows</span> <span class="kw">FROM</span> branch.<span class="ot">&quot;&lt;table&gt;$files&quot;</span>;</span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> snapshot_id, committed_at, operation, <span class="kw">summary</span>[<span class="st">&#39;added-delete-files&#39;</span>] <span class="kw">AS</span> delete_files,</span>
+<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a>       <span class="kw">summary</span>[<span class="st">&#39;total-delete-files&#39;</span>] <span class="kw">AS</span> all_delete_files</span>
+<span id="cb22-4"><a href="#cb22-4" aria-hidden="true" tabindex="-1"></a><span class="kw">FROM</span> branch.<span class="ot">&quot;&lt;table&gt;$snapshots&quot;</span> <span class="kw">ORDER</span> <span class="kw">BY</span> committed_at;</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>To read the table as it was at one of those snapshots, paste its <code>snapshot_id</code> as a number:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb23"><pre class="sourceCode sql code-with-copy"><code class="sourceCode sql"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> <span class="fu">count</span>(<span class="op">*</span>) <span class="kw">FROM</span> branch.<span class="op">&lt;</span><span class="kw">table</span><span class="op">&gt;</span> <span class="cf">FOR</span> VERSION <span class="kw">AS</span> <span class="kw">OF</span> <span class="op">&lt;</span>snapshot_id<span class="op">&gt;</span> <span class="kw">WHERE</span> <span class="op">&lt;</span>condition<span class="op">&gt;</span>;</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div></li>
+</ol>
+<p><code>record_count</code> also counts the rows a delete file hides. Once <code>OPTIMIZE</code> rewrites the data file, those rows are gone from it. To know how many rows the table has, count the table itself.</p>
+<p><code>$files</code> lists data files only. Delete files show in the <code>$snapshots</code> summaries, or in S3. To count every file in S3, take the folder from any <code>file_path</code> in <code>$files</code> and list it in CloudShell:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb24"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a><span class="ex">aws</span> s3 ls s3://436c-glue-<span class="op">&lt;</span>account<span class="op">&gt;</span>/<span class="op">&lt;</span>folder up to data/<span class="op">&gt;</span> --recursive <span class="kw">|</span> <span class="fu">wc</span> <span class="at">-l</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Where the files are: a table a Glue job created is under <code>branch/tables/branch.db/&lt;table&gt;/</code>, and a table made with <code>CREATE TABLE ... AS SELECT</code> is under the <code>location</code> you gave it.</p>
+</div>
+</div>
+</div>
 <section id="compact" class="level2">
 <h2 class="anchored" data-anchor-id="compact">4.1 Compact</h2>
 <p>Look at each table’s files: <code>SELECT count(*), avg(file_size_in_bytes) FROM branch.&quot;receipts$files&quot;</code> (and the same for <code>members</code> and <code>price_events</code>). <strong>Predict first:</strong> how many files each table will have after <code>OPTIMIZE ... REWRITE DATA USING BIN_PACK</code> (BIN_PACK combines small files into larger ones, up to a target size: compaction, L10). Then run it and count again.</p>
 <div class="callout callout-style-default callout-note callout-titled" title="👀 Compare with our run: open after you have written your explanation">
-<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-9-contents" aria-controls="callout-9" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-17-contents" aria-controls="callout-17" aria-expanded="false" aria-label="Toggle callout">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
@@ -5894,7 +6307,7 @@ z-index: 1000;
 </div>
 <div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
 </div>
-<div id="callout-9" class="callout-9-contents callout-collapse collapse">
+<div id="callout-17" class="callout-17-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
 <p><span class="chg">In our run of A3 (2026-10-24), <code>OPTIMIZE</code> rewrote each branch table into one data file. <code>branch.receipts</code> had 64 small files from its two loads and <code>branch.price_events</code> had 32. <code>branch.members</code> had 2 data files, and its first data file had two delete files, one from the <code>MERGE</code> and one from the <code>DELETE</code>.</span></p>
 </div>
@@ -5903,11 +6316,44 @@ z-index: 1000;
 </section>
 <section id="expire-old-snapshots" class="level2">
 <h2 class="anchored" data-anchor-id="expire-old-snapshots">4.2 Expire old snapshots</h2>
-<p>Set <code>vacuum_max_snapshot_age_seconds</code> on the three tables (the job aid gives the statement), check it with <code>SHOW TBLPROPERTIES</code>, and run <code>VACUUM</code> on each. <strong>Predict first:</strong> what the query for an erased member at the snapshot before the erasures returns after <code>VACUUM</code>, <span class="chg">whether the data files you noted in 3.4 are still in S3, and how many files each table keeps under <code>data/</code>. Then run the query, check each file you noted with <code>aws s3 ls</code>, and count each table’s files under <code>data/</code> as the job aid shows. The three counts go in <code>results.csv</code>, and the query’s result and the files you noted go in your PDF</span>. <code>VACUUM</code> expires only snapshots older than the age you set, so let a minute pass after <span class="chg">the table’s last snapshot before you run it. An <code>OPTIMIZE</code> or a write makes a snapshot, and a property change makes none</span>.</p>
+<p>Set <code>vacuum_max_snapshot_age_seconds</code> on the three tables (<span class="chg"><a href="#cmd-table-properties-optimize-and-vacuum">📋 Commands: Table properties, OPTIMIZE and VACUUM</a> at the start of task 4 gives the statement</span>), check it with <code>SHOW TBLPROPERTIES</code>, and run <code>VACUUM</code> on each. <strong>Predict first:</strong> what the query for an erased member at the snapshot before the erasures returns after <code>VACUUM</code>, <span class="chg">whether the data files you noted in 3.4 are still in S3, and how many files each table keeps under <code>data/</code>. Then run the query, check each file you noted with <code>aws s3 ls</code>, and count each table’s files under <code>data/</code> as the same 📋 box shows. The three counts go in <code>results.csv</code>, and the query’s result and the files you noted go in your PDF</span>. <code>VACUUM</code> expires only snapshots older than the age you set, so let a minute pass after <span class="chg">the table’s last snapshot before you run it. An <code>OPTIMIZE</code> or a write makes a snapshot, and a property change makes none</span>.</p>
 </section>
 <section id="plan" class="level2">
 <h2 class="anchored" data-anchor-id="plan">4.3 Plan</h2>
-<p>One paragraph to the director: what runs, when, on which engine, and at what monthly cost, item by item. Say in what order an erasure goes through <code>DELETE</code>, <code>OPTIMIZE</code> and <code>VACUUM</code>, which snapshot age you would set in production to meet rule 2 (not the 60 seconds used here), and how the raw zone meets data-use rules 2 and 4 (describe the S3 Lifecycle rule you would set. <span class="chg">⭐ Applying it is optional</span>). Use your own numbers. Your plan should be motivated with the numbers from your <code>results.csv</code> and relevant prices.</p>
+<p>One paragraph to the director: what runs, when, on which engine, and at what monthly cost, item by item. Say in what order an erasure goes through <code>DELETE</code>, <code>OPTIMIZE</code> and <code>VACUUM</code>, which snapshot age you would set in production to meet rule 2 (not the 60 seconds used here), and how the raw zone meets data-use rules 2 and 4 (describe the S3 Lifecycle rule you would set. <span class="chg">⭐ Applying it is optional</span><span class="chg">, and the 📋 box below shows how</span>). Use your own numbers. Your plan should be motivated with the numbers from your <code>results.csv</code> and relevant prices.</p>
+<p><span id="cmd-s3-lifecycle-rule-on-the-raw-zone"></span></p>
+<div class="callout callout-style-default callout-note no-icon callout-titled" title="📋 Commands: S3 Lifecycle rule on the raw zone">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-18-contents" aria-controls="callout-18" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon no-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>📋 Commands: S3 Lifecycle rule on the raw zone
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-18" class="callout-18-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<p>A Lifecycle rule tells S3 to delete objects under a prefix once they reach an age.</p>
+<ol type="1">
+<li><p><strong>CloudShell</strong>: check whether your bucket already has a configuration:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb25"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="ex">aws</span> s3api get-bucket-lifecycle-configuration <span class="at">--bucket</span> 436c-glue-<span class="op">&lt;</span>account<span class="op">&gt;</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p><code>NoSuchLifecycleConfiguration</code> means none. If you see rules, copy them into the file in step 2: <code>put-bucket-lifecycle-configuration</code> replaces the bucket’s whole configuration.</p></li>
+<li><p>Write the rule to a file:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb26"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span> <span class="op">&gt;</span> lifecycle.json <span class="op">&lt;&lt;&#39;EOF&#39;</span></span>
+<span id="cb26-2"><a href="#cb26-2" aria-hidden="true" tabindex="-1"></a><span class="st">{&quot;Rules&quot;: [{&quot;ID&quot;: &quot;raw-30-days&quot;, &quot;Filter&quot;: {&quot;Prefix&quot;: &quot;branch/raw/&quot;},</span></span>
+<span id="cb26-3"><a href="#cb26-3" aria-hidden="true" tabindex="-1"></a><span class="st">            &quot;Status&quot;: &quot;Enabled&quot;, &quot;Expiration&quot;: {&quot;Days&quot;: 30}}]}</span></span>
+<span id="cb26-4"><a href="#cb26-4" aria-hidden="true" tabindex="-1"></a><span class="op">EOF</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div></li>
+<li><p>Apply it, then check:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb27"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a><span class="ex">aws</span> s3api put-bucket-lifecycle-configuration <span class="at">--bucket</span> 436c-glue-<span class="op">&lt;</span>account<span class="op">&gt;</span> <span class="dt">\</span></span>
+<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">--lifecycle-configuration</span> file://lifecycle.json</span>
+<span id="cb27-3"><a href="#cb27-3" aria-hidden="true" tabindex="-1"></a><span class="ex">aws</span> s3api get-bucket-lifecycle-configuration <span class="at">--bucket</span> 436c-glue-<span class="op">&lt;</span>account<span class="op">&gt;</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>You should see the rule <code>raw-30-days</code> with <code>&quot;Status&quot;: &quot;Enabled&quot;</code>.</p></li>
+</ol>
+<p>The rule deletes a file by its age in S3, counted from when the file was written, and never on request: S3 removes expired files in the background, some time after they reach 30 days.</p>
+</div>
+</div>
+</div>
 <p>📚 <strong>Lecture:</strong> L11, <code>OPTIMIZE</code> then <code>VACUUM</code>, scheduling with EventBridge Scheduler, storage classes and S3 Lifecycle; tutorial 2, <code>OPTIMIZE</code> and <code>VACUUM</code> <span class="chg">(README steps 4 and 5)</span>.</p>
 </section>
 </section>
@@ -5931,7 +6377,7 @@ z-index: 1000;
 <li>3 to 5 sentences: how the option you explored works, what might and might not be a good fit for this mechanism, and how you would expand it in a production system.</li>
 </ul>
 <div class="callout callout-style-default callout-tip callout-titled" title="💡 Hint: scenario examples">
-<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-10-contents" aria-controls="callout-10" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-19-contents" aria-controls="callout-19" aria-expanded="false" aria-label="Toggle callout">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
@@ -5940,7 +6386,7 @@ z-index: 1000;
 </div>
 <div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
 </div>
-<div id="callout-10" class="callout-10-contents callout-collapse collapse">
+<div id="callout-19" class="callout-19-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
 <ul>
 <li>R11: every row of <code>branch.members</code> has <code>is_lyon</code> true.</li>
@@ -5954,7 +6400,7 @@ z-index: 1000;
 </div>
 </div>
 <div class="callout callout-style-default callout-tip callout-titled" title="💡 Hint: Iceberg table internals">
-<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-11-contents" aria-controls="callout-11" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-20-contents" aria-controls="callout-20" aria-expanded="false" aria-label="Toggle callout">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
@@ -5963,7 +6409,7 @@ z-index: 1000;
 </div>
 <div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
 </div>
-<div id="callout-11" class="callout-11-contents callout-collapse collapse">
+<div id="callout-20" class="callout-20-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
 <p><a href="https://github.com/cpsc436c-2026w1/a3-starter/tree/main/extensions/iceberg-internals"><code>extensions/iceberg-internals/</code></a> in the starter reads a table’s metadata through Athena: snapshots from <code>&quot;&lt;table&gt;$snapshots&quot;</code>, data files and their sizes from <code>&quot;&lt;table&gt;$files&quot;</code>, row groups from <code>split_offsets</code>, and each file’s minimum and maximum per column from <code>lower_bounds</code> and <code>upper_bounds</code>. Run <code>python3 internals.py branch.receipts --sort-column sold_at</code> there to see what your scenarios can check. The gate’s steps use the same functions.</p>
 </div>
@@ -5986,7 +6432,7 @@ z-index: 1000;
 <li>3 to 5 sentences: how the option you explored works, what might and might not be a good fit for this mechanism, and how you would expand it in a production system.</li>
 </ul>
 <div class="callout callout-style-default callout-tip callout-titled" title="💡 Hint: where the numbers are">
-<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-12-contents" aria-controls="callout-12" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-21-contents" aria-controls="callout-21" aria-expanded="false" aria-label="Toggle callout">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
@@ -5995,7 +6441,7 @@ z-index: 1000;
 </div>
 <div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
 </div>
-<div id="callout-12" class="callout-12-contents callout-collapse collapse">
+<div id="callout-21" class="callout-21-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
 <ul>
 <li>Athena’s <strong>Recent queries</strong> gives each run’s state and Data scanned. An <code>OPTIMIZE</code> on a table with nothing left to merge scans 0 bytes, so a run straight after task 4 is the cheap case.</li>
@@ -6011,7 +6457,37 @@ z-index: 1000;
 <h1>Submission and shutdown</h1>
 <section id="shut-down-first" class="level2">
 <h2 class="anchored" data-anchor-id="shut-down-first">Shut down first</h2>
-<p><span class="chg">⭐</span> If you did an optional task, remove its resources first. For Optional A, run <code>bash teardown_gate.sh</code> in <code>extensions/quality-gate/</code>. For Optional B, run <code>bash teardown_schedule.sh</code> in <code>extensions/scheduled-maintenance/</code>. <span class="chg">Before you delete the Glue jobs, copy your price job’s script to CloudShell for task 2’s hand-in: <code>aws s3 cp &quot;$(aws glue get-job --job-name &lt;your price job&gt; --query &#39;Job.Command.ScriptLocation&#39; --output text)&quot; .</code></span> Then delete the Glue jobs you created and set the Data scanned limit back to 2 GB. The job aid shows how to do both. If you no longer need the tables in <code>branch</code>, delete them too. Athena’s query history is your evidence and stays. Head office keeps your delivered reports.</p>
+<p><span class="chg">⭐</span> If you did an optional task, remove its resources first. For Optional A, run <code>bash teardown_gate.sh</code> in <code>extensions/quality-gate/</code>. For Optional B, run <code>bash teardown_schedule.sh</code> in <code>extensions/scheduled-maintenance/</code>. <span class="chg">Before you delete the Glue jobs, copy your price job’s script to CloudShell for task 2’s hand-in: <code>aws s3 cp &quot;$(aws glue get-job --job-name &lt;your price job&gt; --query &#39;Job.Command.ScriptLocation&#39; --output text)&quot; .</code></span> Then delete the Glue jobs you created and set the Data scanned limit back to 2 GB. <span class="chg">The 📋 box below shows</span> how to do both. If you no longer need the tables in <code>branch</code>, delete them too. Athena’s query history is your evidence and stays. Head office keeps your delivered reports.</p>
+<p><span id="cmd-shut-down"></span></p>
+<div class="callout callout-style-default callout-note no-icon callout-titled" title="📋 Commands: Shut down">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-22-contents" aria-controls="callout-22" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon no-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Note</span>📋 Commands: Shut down
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-22" class="callout-22-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<ol type="1">
+<li><p><strong>CloudShell</strong>: delete both Glue jobs:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb28"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a><span class="ex">aws</span> glue delete-job <span class="at">--job-name</span> branch-receipts</span>
+<span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a><span class="ex">aws</span> glue delete-job <span class="at">--job-name</span> <span class="op">&lt;</span>your price job<span class="op">&gt;</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Then set the Data scanned limit back to tutorial 1’s 2 GB:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb29"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a><span class="ex">aws</span> athena update-work-group <span class="at">--work-group</span> primary <span class="dt">\</span></span>
+<span id="cb29-2"><a href="#cb29-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">--configuration-updates</span> BytesScannedCutoffPerQuery=2000000000</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div></li>
+<li><p>Optional, <strong>Athena query editor</strong>, once your numbers are in <code>results.csv</code>:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb30"><pre class="sourceCode sql code-with-copy"><code class="sourceCode sql"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a><span class="kw">DROP</span> <span class="kw">TABLE</span> <span class="cf">IF</span> <span class="kw">EXISTS</span> branch.members;</span>
+<span id="cb30-2"><a href="#cb30-2" aria-hidden="true" tabindex="-1"></a><span class="kw">DROP</span> <span class="kw">TABLE</span> <span class="cf">IF</span> <span class="kw">EXISTS</span> branch.receipts;</span>
+<span id="cb30-3"><a href="#cb30-3" aria-hidden="true" tabindex="-1"></a><span class="kw">DROP</span> <span class="kw">TABLE</span> <span class="cf">IF</span> <span class="kw">EXISTS</span> branch.price_events;</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Dropping an Iceberg table also deletes its data files. <code>branch.raw_households</code> is not an Iceberg table: dropping it removes only the catalog entry, and the raw files stay in the raw zone.</p></li>
+<li><p>Keep the query history. Athena keeps it for 45 days, and it is your evidence. Head office keeps your delivered reports.</p></li>
+</ol>
+</div>
+</div>
+</div>
 </section>
 <section id="then-submit-to-canvas" class="level2">
 <h2 class="anchored" data-anchor-id="then-submit-to-canvas">Then submit to Canvas</h2>

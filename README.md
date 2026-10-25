@@ -1,7 +1,7 @@
 # A3: a branch lake beside the company lakehouse
 
-The assignment is [`a3.qmd`](a3.qmd) and the commands are in [`job-aid.md`](job-aid.md). Read the assignment first, then
-the job aid, then use these files. Run the shell scripts in CloudShell
+The assignment is [`a3.qmd`](a3.qmd), and its commands are in the collapsed 📋 Commands boxes inside it, placed where
+each task first needs them. Read the task first, then open its box, then use these files. Run the shell scripts in CloudShell
 (Region ca-central-1) after cloning this repository with the line in the assignment's "Before you start".
 
 | File | What it is | Where you use it |

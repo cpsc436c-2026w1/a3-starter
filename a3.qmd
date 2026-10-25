@@ -126,8 +126,39 @@ system is the branch lake you build. Each task below says which requirements it 
 On every task, we ask you to predict, measure and explain. **Predict** what will happen: give an estimate of Data scanned,
 rows, seconds or dollars, from the numbers you can look up, before executing anything, and write it into `results.csv` first. **Measure**: run it, then
 write the figures into your row: Data scanned and run time from Athena's Query stats, or, for a Glue run, its
-DPU-seconds (DPUs × seconds of run time).
+DPU-seconds (DPUs × seconds of run time). [The 📋 box below shows where to read both.]{.chg}
 **Explain** the difference between your estimate and the measurement, and name the mechanism behind it.
+
+[]{#cmd-reading-what-a-query-and-a-glue-run-cost}
+
+::::: {.callout-note collapse="true" icon=false title="📋 Commands: Reading what a query and a Glue run cost"}
+**Athena query.** After a query ends, the editor shows **Run time** and **Data scanned** under the results, and
+the **Query stats** tab shows the same. Athena bills $5.50 per TB of Data scanned in `ca-central-1`, with a 10 MB
+minimum per query.
+
+**Glue run.** In CloudShell, after the run ends:
+
+```bash
+aws glue get-job-runs --job-name rides-month --max-items 1 \
+  --query 'JobRuns[0].[ExecutionTime,DPUSeconds]'
+```
+
+The first number is the run time in seconds, the second the DPU-seconds. If the second is `null`, multiply the
+seconds by the job's DPUs: two G.1X workers are 2 DPUs. Glue 5.0 bills $0.44 per DPU-hour, per second, with a
+1-minute minimum.
+
+**Worked example: tutorial 2's rides.**
+
+| Item | Measured | Arithmetic | Cost |
+|---|---|---|---|
+| Glue run, `rides-month` | `[189, 379.0]` | 379 / 3,600 × $0.44 | $0.046 a run |
+| Same run, every night for a year | | $0.046 × 365 | about $17 |
+| Week report in Athena | 13.1 MB | 13.1 MB / 1,000,000 MB per TB × $5.50 | $0.00007 |
+| `MERGE` on the zones | under 1 KB | billed as 10 MB: 10 / 1,000,000 × $5.50 | $0.000055 |
+
+A run shorter than a minute is billed as a minute: a 40-second run on 2 DPUs costs 2 × 60 DPU-seconds.
+
+:::::
 
 In predictions we ask for order-of-magnitude comparisons and don't ask for a precise estimate. As a rule of thumb,
 you should be able to do a back-of-the-envelope prediction looking at the numbers or their estimates, seldom needing
@@ -162,7 +193,7 @@ access at all, so you can write it with the console closed.
 
 The tutorials practised most moves in this assignment on the New York rides: tutorial 1 the query, a copy, a
 delete, snapshots, time travel, a load run twice, a new column and a join; tutorial 2 a Glue load, `OPTIMIZE` and
-`VACUUM`. The job aid shows the moves they did not practise: `MERGE`, `UNLOAD`, changing a job from CSV to JSON
+`VACUUM`. [The 📋 Commands boxes show]{.chg} the moves they did not practise: `MERGE`, `UNLOAD`, changing a job from CSV to JSON
 Lines, an S3 Lifecycle rule and a federated query. Here you make these moves on the grocer data, with less given to
 you.
 
@@ -177,8 +208,9 @@ you.
   get-caller-identity --query Account --output text` prints it. Before you run a command, replace both with that
   number, and replace `<any name>` with a name you choose.]{.chg}
 - The Data scanned limit you set in tutorial 1 (2 GB) is too low for task 1's report. Raise it to 10 GB for A3, as
-  the job aid shows.
-- The job aid has every command. Read the assignment first, the job aid second.
+  [[📋 Commands: Data scanned limit, once per account](#cmd-data-scanned-limit-once-per-account) in Setup shows]{.chg}.
+- [Every command is in a collapsed 📋 Commands box where a task first needs it. Read the task first, then open its
+  box.]{.chg}
 - [⭐ shows optional work. It earns no points, and you can leave it out.]{.chg}
 :::
 
@@ -202,7 +234,7 @@ Running a command in the wrong place is the most common way to lose an hour.
 file**) and edit it on your laptop.
 :::
 
-0. [**Data scanned limit.** In CloudShell, raise it to 10 GB and check it, as the job aid's first section shows.
+0. [**Data scanned limit.** In CloudShell, raise it to 10 GB and check it, as [📋 Commands: Data scanned limit, once per account below shows]{.chg}.
    You should see `10000000000`.]{.chg}
 1. **The course data source.** Tutorial 1 already added the course catalog as the data source `course`. In the Athena
    query editor, with **Data source** `course`, check that `SHOW TABLES IN course_lake` lists the company tables. It also lists tables of other exercises
@@ -211,12 +243,119 @@ file**) and edit it on your laptop.
 2. **The shelf-price app's DynamoDB table.** In CloudShell, register the connector head office shares:
    `aws athena create-data-catalog --name shelf --type LAMBDA --parameters function=arn:aws:lambda:ca-central-1:940482406111:function:436c-ddb-connector`.
    [If you run it again, it fails with an error saying the catalog already exists. The catalog is there and you can go on.]{.chg}
+   [📋 Commands: Company lakehouse, `branch` database and `shelf` data source below walks through steps 1 and 2 with what you should see.]{.chg}
 3. **The raw zone and the ready job.** In CloudShell, in the `a3-starter` folder, run `bash setup_a3.sh`. It lands
    the branch's raw files in `s3://436c-glue-<account>/branch/raw/`, creates your Glue database `branch`, registers
    the members' change files as the table `branch.raw_households` (Athena reads a table, not an S3 path, so `MERGE`
    in task 3 reads this one), and creates the Glue job `branch-receipts`. You can safely run it again.
 4. **Head office's replies.** In CloudShell, run `bash subscribe.sh <your email>` and confirm the email AWS sends.
    Head office then emails you its check of every report you deliver.
+   [📋 Commands: UNLOAD to head office's inbox below tests the inbox with a toy report before task 1.]{.chg}
+
+[]{#cmd-data-scanned-limit-once-per-account}
+
+::::: {.callout-note collapse="true" icon=false title="📋 Commands: Data scanned limit, once per account"}
+Tutorial 1 set a Data scanned limit of 2 GB on the workgroup `primary`. Task 1's report reads more, so raise the
+limit to 10 GB.
+
+**In the console:**
+
+1. Athena → **Workgroups** → `primary` → **Execution controls** tab → **Edit controls**.
+2. Set **Data scanned limit** to 10 GB → **Save**.
+
+**Or in CloudShell:**
+
+```bash
+aws athena update-work-group --work-group primary \
+  --configuration-updates BytesScannedCutoffPerQuery=10000000000
+```
+
+The command changes only the limit. The result location from tutorial 1 stays.
+
+**Check it** in CloudShell. You should see `10000000000`:
+
+```bash
+aws athena get-work-group --work-group primary \
+  --query WorkGroup.Configuration.BytesScannedCutoffPerQuery
+```
+
+:::::
+
+[]{#cmd-company-lakehouse-branch-database-and-shelf-data-source}
+
+::::: {.callout-note collapse="true" icon=false title="📋 Commands: Company lakehouse, `branch` database and `shelf` data source"}
+**Data source**, on the left of the query editor, sets the catalog for table names you do not write in full.
+
+| Data source | What it holds | Name in full |
+|---|---|---|
+| `course` | the company lakehouse, read-only | `course.course_lake.<table>` |
+| `AwsDataCatalog` | your own catalog: the `branch` database | `awsdatacatalog.branch.<table>` (`branch.<table>` under this Data source) |
+| `shelf` | the shelf-price app's DynamoDB table, through a Lambda connector | `shelf.default.course_shelf_prices` |
+
+1. **Athena query editor**, Data source `course`: run `SHOW TABLES IN course_lake`. You should see the company
+   tables, `consumption` among them.
+2. **CloudShell**: register the connector once, as Setup step 2 says:
+
+   ```bash
+   aws athena create-data-catalog --name shelf --type LAMBDA \
+     --parameters function=arn:aws:lambda:ca-central-1:940482406111:function:436c-ddb-connector
+   ```
+
+3. **Athena query editor**: reload the Data source list. You should see `shelf`. Run:
+
+   ```sql
+   SHOW TABLES IN shelf.default;
+   ```
+
+   You should see `course_shelf_prices`, and other tables of the course account that you cannot read. A query on
+   `course_shelf_prices` is a federated query, through the connector.
+4. Data source `AwsDataCatalog`: run `SHOW TABLES IN branch`. After setup you should see `raw_households`.
+
+A statement that names every table in full runs under any Data source. Numbers from `shelf` arrive as `decimal(38,9)`: cast a key with `CAST(store_id AS bigint)`
+before you join on it.
+
+:::::
+
+[]{#cmd-unload-to-head-office-s-inbox}
+
+::::: {.callout-note collapse="true" icon=false title="📋 Commands: UNLOAD to head office's inbox"}
+`UNLOAD` runs a query and writes its result as files to an S3 folder. Head office reads every folder under
+`s3://436c-hq-inbox-940482406111/inbox/<account>/`. Test the path with a toy report before task 1.
+
+1. **Athena query editor**:
+
+   ```sql
+   UNLOAD (SELECT city, count(*) AS stores
+           FROM course.course_lake.stores
+           GROUP BY city)
+   TO 's3://436c-hq-inbox-940482406111/inbox/<account>/toy-stores/'
+   WITH (format = 'JSON', compression = 'NONE');
+   ```
+
+   `format = 'JSON'` writes JSON Lines: one JSON record per line. Set `compression = 'NONE'` to write plain-text JSON Lines.
+   Without it, Athena uses the documented JSON default, gzip.
+2. The folder must be empty. A second `UNLOAD` into the same folder fails with `HIVE_PATH_ALREADY_EXISTS`: use a
+   new folder name each time.
+3. **CloudShell**, within a minute, list the replies and print one:
+
+   ```bash
+   aws s3 ls s3://436c-hq-inbox-940482406111/inbox/<account>/replies/
+   aws s3 cp s3://436c-hq-inbox-940482406111/inbox/<account>/replies/toy-stores.json -
+   ```
+
+   You should see `toy-stores.json`, saying head office does not know a report called `toy-stores`: the path
+   works. Head office checks folders whose name starts with `task1-`.
+
+**Replies by email.** In CloudShell, in the `a3-starter` folder:
+
+```bash
+bash subscribe.sh <your email>
+```
+
+Confirm the subscription in the email from AWS Notifications. Every reply then also arrives by email.
+
+The starter files, `subscribe.sh` among them, are in CloudShell after the Setup's `git clone` of `a3-starter`.
+:::::
 
 👀 **Quick check.** `SELECT count(*) FROM course.course_lake.households` returns 450000, `SHOW TABLES IN
 shelf.default` lists `course_shelf_prices`, and `aws s3 ls s3://436c-glue-<account>/branch/raw/ --recursive` lists
@@ -309,7 +448,8 @@ Head office checks every report it receives and replies within a minute, by emai
 [to `inbox/<your account id>/replies/<folder name>.json`, named after the folder your `UNLOAD` wrote, such as
 `replies/task1-<any name>.json`. Head office
 checks only folders whose name starts with `task1-`]{.chg}. `UNLOAD` refuses a folder that already holds files,
-so each delivery needs a new folder name. After a failed or cancelled `UNLOAD`, use a new name too.
+so each delivery needs a new folder name. After a failed or cancelled `UNLOAD`, use a new name too. [[📋 Commands: UNLOAD to head office's inbox](#cmd-unload-to-head-office-s-inbox) in Setup tests the path
+with a toy report first.]{.chg}
 
 👀 **Quick check.** The report returns 72 rows, one per month and segment, in under a minute. Head office's reply
 is organised by the requirements your report answers, R70 and R20, with each requirement and each of its constraints marked met or not met.
@@ -365,7 +505,7 @@ with. Write both into your task 2 row.
 **Run it.** In CloudShell: `aws glue start-job-run --job-name branch-receipts`. When the run ends (Glue console,
 **ETL jobs**, `branch-receipts`, **Runs**), count the day's rows in Athena and read the run's figures:
 `aws glue get-job-runs --job-name branch-receipts --max-items 1 --query 'JobRuns[0].[ExecutionTime,DPUSeconds]'`.
-Record the rows, the seconds and the DPU-seconds. If a run fails, the job aid shows where to read its error.
+Record the rows, the seconds and the DPU-seconds. If a run fails, [step 5 of [📋 Commands: Changing a Glue job from CSV to JSON Lines](#cmd-changing-a-glue-job-from-csv-to-json-lines) in task 2.2 shows]{.chg} where to read its error.
 
 ## 2.2 Adapt it for the price changes
 
@@ -381,8 +521,78 @@ In CloudShell, look at one record first:
 
 **Change and run it.** In the Glue console, clone `branch-receipts` (**Actions**, **Clone job**), give the clone its
 own name and script file, change the reader to JSON Lines, the column mapping, and the target table
-`branch.price_events`, then run it. The job aid shows a worked diff from CSV to JSON Lines on another file, and why a
+`branch.price_events`, then run it. [The 📋 box below shows]{.chg} a worked diff from CSV to JSON Lines on another file, and why a
 clone works where a new empty job does not. Record the rows and the DPU-seconds.
+
+[]{#cmd-changing-a-glue-job-from-csv-to-json-lines}
+
+::::: {.callout-note collapse="true" icon=false title="📋 Commands: Changing a Glue job from CSV to JSON Lines"}
+Create the second job as a clone of the first. A clone keeps the job's Spark settings and parameters:
+`--datalake-formats iceberg`, the `--conf` settings that define `glue_catalog`, `--BUCKET` and `--DAY`. A job created
+from scratch lacks them and fails when it writes to `glue_catalog`.
+
+1. **Glue console** → **ETL jobs** → select `branch-receipts` → **Actions** → **Clone job**.
+2. Give the clone a new name.
+3. **Job details** tab → **Advanced properties**: set the script filename to a new file in
+   `s3://436c-glue-<account>/branch/jobs/`, so that saving the clone's script leaves `branch_receipts.py` as it is.
+   Task 3.3 runs `branch-receipts` again.
+4. **Script** tab: edit the script, then **Save**.
+5. On the **Runs** tab, open the run. For a failed run, you see its **Error message**; select **Output logs** to open
+   the full log.
+
+Step 3 matters whichever path the clone starts with: a script file of its own is the only way an edit cannot reach
+`branch_receipts.py`.
+
+**Worked diff on another file.** A made-up chain's fridge sensors write one JSON Lines file an hour, with records
+such as `{"sensor_id": "f-07", "store_id": 12, "read_at": "2026-10-16T23:00:05Z", "temp_c": 3.4}`. The diff turns
+`branch_receipts.py` into a job that loads them into `demo.fridge_readings`. It is an example to read, not to run.
+
+A job reads every file under the folder `RAW` names, subfolders included: a `RAW` that ends at `dt=<day>/` reads every
+hour of that day.
+
+```diff
+-RAW = f"s3://{args['BUCKET']}/branch/raw/receipts/dt={args['DAY']}/"
+-TABLE = "glue_catalog.branch.receipts"
++RAW = f"s3://{args['BUCKET']}/demo/raw/fridge_temps/dt={args['DAY']}/"
++TABLE = "glue_catalog.demo.fridge_readings"
+
+-# 1. Read the day's till export: one CSV file with a header row
+-raw = spark.read.option("header", "true").csv(RAW)
++# 1. Read the day's sensor files: JSON Lines, one record per line
++raw = spark.read.json(RAW)
+
+-receipts = raw.select(
+-    F.col("receipt_id"),
+-    ...
+-    F.col("payment_method"),
+-)
++readings = raw.select(
++    F.col("sensor_id"),
++    F.col("store_id").cast("int"),
++    F.to_timestamp("read_at").alias("read_at"),
++    F.col("temp_c").cast("double"),
++)
+
+-exists = spark.sql("SHOW TABLES IN glue_catalog.branch LIKE 'receipts'").count() > 0
++exists = spark.sql("SHOW TABLES IN glue_catalog.demo LIKE 'fridge_readings'").count() > 0
+
+-        .partitionedBy(F.days("sold_at"))
++        .partitionedBy(F.days("read_at"))
+```
+
+Rename `receipts` to `readings` on the remaining lines. The lines that changed:
+
+| Line | Why it changed |
+|---|---|
+| `RAW`, `TABLE` | the input folder and the target table |
+| the reader | `spark.read.json` reads JSON Lines and takes the column names from the records |
+| the `select` | the file's own fields; a time arrives as a string and needs `to_timestamp`, and the casts fix each type |
+| `exists` | the check looks for the new table's name |
+| `partitionedBy` | the new table's time column |
+
+The table properties, `repartition` and `job.commit()` stay as they are.
+
+:::::
 
 ## 2.3 Explain and price
 
@@ -432,10 +642,58 @@ as in tutorial 1. **Predict first:** how many rows the copy holds. Then run it a
 Add the new column with `ALTER TABLE branch.members ADD COLUMNS (marketing_consent boolean)`. Then apply the `upsert`
 records with `MERGE`: one statement that updates the rows whose `household_id` matches a record in the change file
 and inserts the rest, reading the change file through `branch.raw_households`. `merge_members.sql` gives the statement with
-two clauses blank.
+two clauses blank. [The 📋 box below shows a `MERGE` on tutorial 2's zones.]{.chg}
 
 **Predict first:** how many rows `branch.members` holds after the `MERGE`, how many of them changed, and how many
 snapshots the table has afterwards. Then run it, count, and list the snapshots.
+
+[]{#cmd-merge}
+
+::::: {.callout-note collapse="true" icon=false title="📋 Commands: MERGE"}
+`MERGE` matches each incoming row to the table by a key. It updates the rows that match and inserts the rest.
+The example is tutorial 2's extra exercise, run in the **Athena query editor**. Its `sql/06_extra_merge.sql` creates
+both tables, so if you did not run it, read the statement as a pattern.
+
+```sql
+MERGE INTO tutorial.zones t
+USING tutorial.zone_changes c
+ON t.locationid = c.locationid
+WHEN MATCHED THEN UPDATE SET borough = c.borough, zone = c.zone, service_zone = c.service_zone
+WHEN NOT MATCHED THEN INSERT (locationid, borough, zone, service_zone)
+  VALUES (c.locationid, c.borough, c.zone, c.service_zone);
+```
+
+| Clause | What it does |
+|---|---|
+| `MERGE INTO tutorial.zones t` | the target: an Iceberg table, here with the alias `t` |
+| `USING tutorial.zone_changes c` | the incoming rows: a table or a query in brackets |
+| `ON t.locationid = c.locationid` | the key that pairs an incoming row with a target row |
+| `WHEN MATCHED THEN UPDATE SET …` | for a pair: set the target's columns from the incoming row |
+| `WHEN NOT MATCHED THEN INSERT (…) VALUES (…)` | for an incoming row with no pair: add it. List the target's columns bare, and the values with the source alias |
+
+`WHEN MATCHED THEN DELETE` removes the paired target row, and `AND <condition>` after `MATCHED` narrows a clause.
+For each incoming row, only the first clause that applies runs.
+
+What you should see: 265 zones before, 266 after (two updated, one inserted), and 266 after the same `MERGE` again.
+Each `MERGE` adds one snapshot.
+
+**Two incoming rows for one key.** If two incoming rows match the same target row, the `MERGE` fails and changes
+nothing:
+
+```
+MERGE_TARGET_ROW_MULTIPLE_MATCHES: One MERGE target table row matched more than one source row
+```
+
+Keep one incoming row per key before the `MERGE`.
+
+**Deleting the rows another table lists.** A `DELETE` can take its keys from a query:
+
+```sql
+DELETE FROM tutorial.zones
+WHERE locationid IN (SELECT locationid FROM tutorial.zone_changes WHERE zone = 'New test zone');
+```
+
+:::::
 
 ## 3.3 Run the receipts load a second time
 
@@ -450,7 +708,8 @@ change.]{.chg}
 
 Before you delete anything, note the paths of `branch.members`' data files (`SELECT file_path FROM
 branch."members$files"`): task 4 asks where the erased members' rows still are. Then delete the members whose records
-say `erase`, from `branch.members` and their lines from `branch.receipts`.
+say `erase`, from `branch.members` and their lines from `branch.receipts`. [The `DELETE` at the end of
+[📋 Commands: MERGE](#cmd-merge) in task 3.2 takes its keys from a query.]{.chg}
 
 **Predict first:** what a query for one erased member returns at the current snapshot, and what it returns at the
 snapshot just before the `DELETE`. Then run both queries and record what each returns. [Are the files you noted still
@@ -464,11 +723,36 @@ On 16 October 2026 at 23:14:04 UTC, the shelf-price app changed the price of Evi
 `branch/raw/price_events/`, your `branch.price_events` from task 2.2, and the company's `current_prices`.
 
 **Predict first:** which of the four show 3.68 € and which still show 3.51 €, and why. Then query each, and record the
-price it shows and the time it carries (`updated_at`, `changed_at` or `observed_at`). The job aid gives a statement
+price it shows and the time it carries (`updated_at`, `changed_at` or `observed_at`). [The 📋 box below gives]{.chg} a statement
 for each place. [To tell what refreshes each place, use the case for where the company's prices come from, the architecture
 diagram for what the app writes and how often, and R31 for when your load runs.]{.chg}
 
-<!--src: change measured:demos/a3-hq updater run, hour 2026-10-16T23 (s3://436c-l6-bench-940482406111/lake/apps/shelf-prices/changes/dt=2026-10-16/hour=23/changes.jsonl, 3,295 changes) | DynamoDB item store 43 / 3068320011707: price_eur 3.68, updated_at 2026-10-16T23:14:04Z, source app (strongly consistent get-item, 2026-10-23) | course_lake.current_prices: 3.51, observed_at 2025-12-31 10:49:09 (Athena, 2026-10-23) | expected: DynamoDB and the export show 3.68; branch.price_events shows 3.68 once 2.2 has loaded the hour-23 file; current_prices shows 3.51, because it is built from price observations and nothing feeds the app's changes into it | build: the generator (BUILD-STATE D1) copies this hour-23 export into branch/raw/price_events/dt=2026-10-16/hour=23/; the updater stays unscheduled until A3 closes, or the item changes again -->
+[]{#cmd-one-price-in-four-places}
+
+::::: {.callout-note collapse="true" icon=false title="📋 Commands: One price in four places"}
+The four statements for task 3.5, one per place. Each shows a price and the time it carries.
+
+1. **The app's DynamoDB table**, Data source `shelf` (a federated query):
+   ```sql
+   SELECT price_eur, updated_at FROM shelf.default.course_shelf_prices
+   WHERE store_id = 43 AND product_code = '3068320011707';
+   ```
+2. **The hourly export in your raw zone**, in CloudShell:
+   ```bash
+   aws s3 cp s3://436c-glue-<account>/branch/raw/price_events/dt=2026-10-16/hour=23/changes.jsonl - | grep '"store_id": 43, "product_code": "3068320011707"'
+   ```
+3. **Your branch table**, Data source `AwsDataCatalog`:
+   ```sql
+   SELECT price_eur, changed_at FROM branch.price_events
+   WHERE store_id = 43 AND product_code = '3068320011707';
+   ```
+4. **The company table**, Data source `course`:
+   ```sql
+   SELECT current_unit_price_eur, observed_at FROM course.course_lake.current_prices
+   WHERE store_id = 43 AND product_code = '3068320011707';
+   ```
+
+:::::
 
 ## 3.6 Explain
 
@@ -502,7 +786,74 @@ rewriting files and expiring snapshots, each with a bill. (R51, R80, R90)
 
 You maintain the three tables your loads and changes have written, `branch.members`, `branch.receipts` and
 `branch.price_events`, with the moves from tutorial 2: table properties that set how much history to keep, `OPTIMIZE` to compact small files, and
-`VACUUM` to expire old snapshots and delete the files no snapshot needs.
+`VACUUM` to expire old snapshots and delete the files no snapshot needs. [The 📋 box below has the statements for all three.]{.chg}
+
+[]{#cmd-table-properties-optimize-and-vacuum}
+
+::::: {.callout-note collapse="true" icon=false title="📋 Commands: Table properties, OPTIMIZE and VACUUM"}
+All in the **Athena query editor**, one statement at a time, for each of `branch.members`, `branch.receipts` and
+`branch.price_events`. The statements below use `branch.<table>`.
+
+1. Set how old a snapshot may get before `VACUUM` expires it, then check:
+
+   ```sql
+   ALTER TABLE branch.<table> SET TBLPROPERTIES ('vacuum_max_snapshot_age_seconds' = '60');
+   SHOW TBLPROPERTIES branch.<table>;
+   ```
+
+   You should see `vacuum_max_snapshot_age_seconds` with `60`. The default is 432000 seconds (5 days). VACUUM
+   always keeps at least one snapshot.
+2. Compact:
+
+   ```sql
+   OPTIMIZE branch.<table> REWRITE DATA USING BIN_PACK;
+   ```
+
+   `OPTIMIZE` leaves a partition alone until it has at least 5 small files, or a data file has at least 2 delete
+   files (Athena's defaults). It bills the data it reads.
+
+   `VACUUM` shows its own Data scanned. AWS adds S3 request charges for the files it lists and deletes. For a plan,
+   price each maintenance statement at least at Athena's 10 MB minimum and say so. S3 Standard storage is $0.025 per
+   GB-month (L11). Each month, EventBridge Scheduler in `ca-central-1` includes 14 million
+   scheduled invocations at no charge. Each further million costs $1.10.
+
+3. Wait one minute after the table's last snapshot, then expire old snapshots. An `OPTIMIZE` or a write makes a
+   snapshot, and a property change makes none. Steps 1 and 2 can run in either order. Then run this statement.
+
+   ```sql
+   VACUUM branch.<table>;
+   ```
+
+   `VACUUM` expires only snapshots older than 60 seconds. If old snapshots remain, wait a minute and run it again.
+4. Look at the result:
+
+   ```sql
+   SELECT count(*) AS files, sum(record_count) AS rows FROM branch."<table>$files";
+   SELECT snapshot_id, committed_at, operation, summary['added-delete-files'] AS delete_files,
+          summary['total-delete-files'] AS all_delete_files
+   FROM branch."<table>$snapshots" ORDER BY committed_at;
+   ```
+
+   To read the table as it was at one of those snapshots, paste its `snapshot_id` as a number:
+
+   ```sql
+   SELECT count(*) FROM branch.<table> FOR VERSION AS OF <snapshot_id> WHERE <condition>;
+   ```
+
+`record_count` also counts the rows a delete file hides. Once `OPTIMIZE` rewrites the data file, those rows are gone
+from it. To know how many rows the table has, count the table itself.
+
+`$files` lists data files only. Delete files show in the `$snapshots` summaries, or in S3. To count every file
+in S3, take the folder from any `file_path` in `$files` and list it in CloudShell:
+
+```bash
+aws s3 ls s3://436c-glue-<account>/<folder up to data/> --recursive | wc -l
+```
+
+Where the files are: a table a Glue job created is under `branch/tables/branch.db/<table>/`, and a table made with
+`CREATE TABLE ... AS SELECT` is under the `location` you gave it.
+
+:::::
 
 ## 4.1 Compact
 
@@ -518,11 +869,11 @@ data file had two delete files, one from the `MERGE` and one from the `DELETE`.]
 
 ## 4.2 Expire old snapshots
 
-Set `vacuum_max_snapshot_age_seconds` on the three tables (the job aid gives the statement), check it with
+Set `vacuum_max_snapshot_age_seconds` on the three tables ([[📋 Commands: Table properties, OPTIMIZE and VACUUM](#cmd-table-properties-optimize-and-vacuum) at the start of task 4 gives the statement]{.chg}), check it with
 `SHOW TBLPROPERTIES`, and run `VACUUM` on each. **Predict first:** what the query for an erased member at the snapshot
 before the erasures returns after `VACUUM`, [whether the data files you noted in 3.4 are still in S3, and how many files
 each table keeps under `data/`. Then run the query, check each file you noted with `aws s3 ls`, and count each
-table's files under `data/` as the job aid shows. The three counts go in `results.csv`, and the query's result and
+table's files under `data/` as the same 📋 box shows. The three counts go in `results.csv`, and the query's result and
 the files you noted go in your PDF]{.chg}. `VACUUM` expires only snapshots older than the
 age you set, so let a minute pass after [the table's last snapshot before you run it. An `OPTIMIZE` or a write makes a
 snapshot, and a property change makes none]{.chg}.
@@ -532,8 +883,45 @@ snapshot, and a property change makes none]{.chg}.
 One paragraph to the director: what runs, when, on which engine, and at what monthly cost, item by item. Say in what
 order an erasure goes through `DELETE`, `OPTIMIZE` and `VACUUM`, which snapshot age you would set in production to
 meet rule 2 (not the 60 seconds used here), and how the raw zone meets data-use rules 2 and 4 (describe the S3 Lifecycle rule
-you would set. [⭐ Applying it is optional]{.chg}). Use your own numbers. Your plan should be motivated with the numbers from your
+you would set. [⭐ Applying it is optional]{.chg}[, and the 📋 box below shows how]{.chg}). Use your own numbers. Your plan should be motivated with the numbers from your
 `results.csv` and relevant prices.
+
+[]{#cmd-s3-lifecycle-rule-on-the-raw-zone}
+
+::::: {.callout-note collapse="true" icon=false title="📋 Commands: S3 Lifecycle rule on the raw zone"}
+A Lifecycle rule tells S3 to delete objects under a prefix once they reach an age.
+
+1. **CloudShell**: check whether your bucket already has a configuration:
+
+   ```bash
+   aws s3api get-bucket-lifecycle-configuration --bucket 436c-glue-<account>
+   ```
+
+   `NoSuchLifecycleConfiguration` means none. If you see rules, copy them into the file in step 2:
+   `put-bucket-lifecycle-configuration` replaces the bucket's whole configuration.
+2. Write the rule to a file:
+
+   ```bash
+   cat > lifecycle.json <<'EOF'
+   {"Rules": [{"ID": "raw-30-days", "Filter": {"Prefix": "branch/raw/"},
+               "Status": "Enabled", "Expiration": {"Days": 30}}]}
+   EOF
+   ```
+
+3. Apply it, then check:
+
+   ```bash
+   aws s3api put-bucket-lifecycle-configuration --bucket 436c-glue-<account> \
+     --lifecycle-configuration file://lifecycle.json
+   aws s3api get-bucket-lifecycle-configuration --bucket 436c-glue-<account>
+   ```
+
+   You should see the rule `raw-30-days` with `"Status": "Enabled"`.
+
+The rule deletes a file by its age in S3, counted from when the file was written, and never on request: S3 removes
+expired files in the background, some time after they reach 30 days.
+
+:::::
 
 📚 **Lecture:** L11, `OPTIMIZE` then `VACUUM`, scheduling with EventBridge Scheduler, storage classes and S3 Lifecycle;
 tutorial 2, `OPTIMIZE` and `VACUUM` [(README steps 4 and 5)]{.chg}.
@@ -631,9 +1019,41 @@ it calls Athena directly, with no Lambda in between.
 [⭐]{.chg} If you did an optional task, remove its resources first. For Optional A, run `bash teardown_gate.sh` in
 `extensions/quality-gate/`. For Optional B, run `bash teardown_schedule.sh` in `extensions/scheduled-maintenance/`.
 [Before you delete the Glue jobs, copy your price job's script to CloudShell for task 2's hand-in:
-`aws s3 cp "$(aws glue get-job --job-name <your price job> --query 'Job.Command.ScriptLocation' --output text)" .`]{.chg} Then delete the Glue jobs you created and set the Data scanned limit back to 2 GB. The job aid shows how to do both.
+`aws s3 cp "$(aws glue get-job --job-name <your price job> --query 'Job.Command.ScriptLocation' --output text)" .`]{.chg} Then delete the Glue jobs you created and set the Data scanned limit back to 2 GB. [The 📋 box below shows]{.chg} how to do both.
 If you no longer need the tables in `branch`, delete them too.
 Athena's query history is your evidence and stays. Head office keeps your delivered reports.
+
+[]{#cmd-shut-down}
+
+::::: {.callout-note collapse="true" icon=false title="📋 Commands: Shut down"}
+1. **CloudShell**: delete both Glue jobs:
+
+   ```bash
+   aws glue delete-job --job-name branch-receipts
+   aws glue delete-job --job-name <your price job>
+   ```
+
+   Then set the Data scanned limit back to tutorial 1's 2 GB:
+
+   ```bash
+   aws athena update-work-group --work-group primary \
+     --configuration-updates BytesScannedCutoffPerQuery=2000000000
+   ```
+
+2. Optional, **Athena query editor**, once your numbers are in `results.csv`:
+
+   ```sql
+   DROP TABLE IF EXISTS branch.members;
+   DROP TABLE IF EXISTS branch.receipts;
+   DROP TABLE IF EXISTS branch.price_events;
+   ```
+
+   Dropping an Iceberg table also deletes its data files. `branch.raw_households` is not an Iceberg table: dropping
+   it removes only the catalog entry, and the raw files stay in the raw zone.
+3. Keep the query history. Athena keeps it for 45 days, and it is your evidence. Head office keeps your delivered
+   reports.
+
+:::::
 
 ## Then submit to Canvas
 
