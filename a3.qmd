@@ -228,7 +228,7 @@ and a federated query. Here you make these moves on the grocer data, with less g
   [[📋 Commands: Data scanned limit, once per account](#cmd-data-scanned-limit-once-per-account) in Setup shows]{.chg}.
 - [The commands sit in collapsed 📋 Commands boxes, each where a task first needs it. Read the task first, then open its
   box.]{.chg}
-- [⭐ shows optional work. It earns no points, and you can leave it out.]{.chg} [🔬 marks optional work you explore on your own, with docs to search and no worked answer.]{.chg}
+- [⭐ shows optional work. It earns no points, and you can leave it out.]{.chg} [🔬 marks optional work you explore on your own, without a worked-out answer.]{.chg}
 - [If a script stops with a line starting `STOP:`, run the setup it names first. If]{.chg} [`setup_a3.sh` stops with any
   other error, or]{.chg} [`SHOW TABLES IN shelf.default`
   or the toy `UNLOAD` fails with an access error, send the full error text and your account number to your TA.]{.chg}
@@ -1052,7 +1052,7 @@ functions.
 ## [⭐]{.chg} Optional B. Nightly maintenance
 
 Your task 4.3 plan says how often maintenance runs and what it costs. EventBridge Scheduler (L11) can run that plan:
-it calls Athena directly, with no Lambda in between.
+it calls Athena directly, and you don't need a Lambda in between.
 
 1. Read [`extensions/scheduled-maintenance/README.md`](https://github.com/cpsc436c-2026w1/a3-starter/blob/main/extensions/scheduled-maintenance/README.md) in the starter.
 2. From `extensions/scheduled-maintenance/`, run `bash setup_schedule.sh --now`. Each `OPTIMIZE` runs 3 minutes

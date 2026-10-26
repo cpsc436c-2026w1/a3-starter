@@ -5694,7 +5694,7 @@ z-index: 1000;
 <li><span class="chg"><code>&lt;account&gt;</code> and <code>&lt;your account id&gt;</code> both stand for your 12-digit account number. In CloudShell, <code>aws sts get-caller-identity --query Account --output text</code> prints it. Before you run a command, replace both with that number, and replace <code>&lt;any name&gt;</code> with a name you choose. Replace every other word in angle brackets in a command the same way, such as <code>&lt;your email&gt;</code> and <code>&lt;your price job&gt;</code>.</span></li>
 <li>The Data scanned limit you set in <a href="https://github.com/cpsc436c-2026w1/b3-t1-athena-rides">Tutorial 1</a> (2 GB) is too low for task 1’s report. Raise it to 10 GB for A3, as <span class="chg"><a href="#cmd-data-scanned-limit-once-per-account">📋 Commands: Data scanned limit, once per account</a> in Setup shows</span>.</li>
 <li><span class="chg">The commands sit in collapsed 📋 Commands boxes, each where a task first needs it. Read the task first, then open its box.</span></li>
-<li><span class="chg">⭐ shows optional work. It earns no points, and you can leave it out.</span> <span class="chg">🔬 marks optional work you explore on your own, with docs to search and no worked answer.</span></li>
+<li><span class="chg">⭐ shows optional work. It earns no points, and you can leave it out.</span> <span class="chg">🔬 marks optional work you explore on your own, without a worked-out answer.</span></li>
 <li><span class="chg">If a script stops with a line starting <code>STOP:</code>, run the setup it names first. If</span> <span class="chg"><code>setup_a3.sh</code> stops with any other error, or</span> <span class="chg"><code>SHOW TABLES IN shelf.default</code> or the toy <code>UNLOAD</code> fails with an access error, send the full error text and your account number to your TA.</span></li>
 </ul>
 </div>
@@ -6438,7 +6438,7 @@ z-index: 1000;
 </section>
 <section id="optional-b.-nightly-maintenance" class="level2">
 <h2 class="anchored" data-anchor-id="optional-b.-nightly-maintenance"><span class="chg">⭐</span> Optional B. Nightly maintenance</h2>
-<p>Your task 4.3 plan says how often maintenance runs and what it costs. EventBridge Scheduler (L11) can run that plan: it calls Athena directly, with no Lambda in between.</p>
+<p>Your task 4.3 plan says how often maintenance runs and what it costs. EventBridge Scheduler (L11) can run that plan: it calls Athena directly, and you don’t need a Lambda in between.</p>
 <ol type="1">
 <li>Read <a href="https://github.com/cpsc436c-2026w1/a3-starter/blob/main/extensions/scheduled-maintenance/README.md"><code>extensions/scheduled-maintenance/README.md</code></a> in the starter.</li>
 <li>From <code>extensions/scheduled-maintenance/</code>, run <code>bash setup_schedule.sh --now</code>. Each <code>OPTIMIZE</code> runs 3 minutes later and each <code>VACUUM</code> 5 minutes later. Do not start a Glue job until all of them have finished. In Athena’s <strong>Recent queries</strong>, you should then see one run for each statement.</li>
