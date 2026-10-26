@@ -5357,7 +5357,7 @@ z-index: 1000;
   <ul class="collapse">
   <li><a href="#optional-a.-quality-gate-for-your-branch-lake" id="toc-optional-a.-quality-gate-for-your-branch-lake" class="nav-link" data-scroll-target="#optional-a.-quality-gate-for-your-branch-lake"><span class="chg">⭐</span> Optional A. Quality gate for your branch lake</a></li>
   <li><a href="#optional-b.-nightly-maintenance" id="toc-optional-b.-nightly-maintenance" class="nav-link" data-scroll-target="#optional-b.-nightly-maintenance"><span class="chg">⭐</span> Optional B. Nightly maintenance</a></li>
-  <li><a href="#optional-c.-glue-6.0-for-your-branch-jobs" id="toc-optional-c.-glue-6.0-for-your-branch-jobs" class="nav-link" data-scroll-target="#optional-c.-glue-6.0-for-your-branch-jobs"><span class="chg">⭐ Optional C. Glue 6.0 for your branch jobs</span></a></li>
+  <li><a href="#optional-c.-glue-6.0-for-your-branch-jobs" id="toc-optional-c.-glue-6.0-for-your-branch-jobs" class="nav-link" data-scroll-target="#optional-c.-glue-6.0-for-your-branch-jobs"><span class="chg">🔬 Optional C. Glue 6.0 for your branch jobs</span></a></li>
   </ul></li>
   <li><a href="#submission-and-shutdown" id="toc-submission-and-shutdown" class="nav-link" data-scroll-target="#submission-and-shutdown">Submission and shutdown</a>
   <ul class="collapse">
@@ -5694,7 +5694,7 @@ z-index: 1000;
 <li><span class="chg"><code>&lt;account&gt;</code> and <code>&lt;your account id&gt;</code> both stand for your 12-digit account number. In CloudShell, <code>aws sts get-caller-identity --query Account --output text</code> prints it. Before you run a command, replace both with that number, and replace <code>&lt;any name&gt;</code> with a name you choose. Replace every other word in angle brackets in a command the same way, such as <code>&lt;your email&gt;</code> and <code>&lt;your price job&gt;</code>.</span></li>
 <li>The Data scanned limit you set in <a href="https://github.com/cpsc436c-2026w1/b3-t1-athena-rides">Tutorial 1</a> (2 GB) is too low for task 1’s report. Raise it to 10 GB for A3, as <span class="chg"><a href="#cmd-data-scanned-limit-once-per-account">📋 Commands: Data scanned limit, once per account</a> in Setup shows</span>.</li>
 <li><span class="chg">The commands sit in collapsed 📋 Commands boxes, each where a task first needs it. Read the task first, then open its box.</span></li>
-<li><span class="chg">⭐ shows optional work. It earns no points, and you can leave it out.</span></li>
+<li><span class="chg">⭐ shows optional work. It earns no points, and you can leave it out.</span> <span class="chg">🔬 marks optional work you explore on your own, with docs to search and no worked answer.</span></li>
 <li><span class="chg">If a script stops with a line starting <code>STOP:</code>, run the setup it names first. If</span> <span class="chg"><code>setup_a3.sh</code> stops with any other error, or</span> <span class="chg"><code>SHOW TABLES IN shelf.default</code> or the toy <code>UNLOAD</code> fails with an access error, send the full error text and your account number to your TA.</span></li>
 </ul>
 </div>
@@ -6473,7 +6473,7 @@ z-index: 1000;
 </div>
 </section>
 <section id="optional-c.-glue-6.0-for-your-branch-jobs" class="level2">
-<h2 class="anchored" data-anchor-id="optional-c.-glue-6.0-for-your-branch-jobs"><span class="chg">⭐ Optional C. Glue 6.0 for your branch jobs</span></h2>
+<h2 class="anchored" data-anchor-id="optional-c.-glue-6.0-for-your-branch-jobs"><span class="chg">🔬 Optional C. Glue 6.0 for your branch jobs</span></h2>
 <p><span class="chg">Glue 6.0, released in August 2026, prices a standard job run at $0.308 per DPU-hour in ca-central-1, against $0.44 for the Glue 5.0 your jobs use. A newer version can also change how a job behaves. In this task you switch one of your branch jobs to Glue 6.0 and compare it with the Glue 5.0 run you measured in task 2.</span></p>
 <ol type="1">
 <li><span class="chg">Before you run anything, write 1 or 2 sentences on how you would organise the experiment: which job, what you keep the same, what you measure, and how you make sure both versions load the same data.</span></li>
