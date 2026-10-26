@@ -992,7 +992,7 @@ rule expires them by age, so this rule deletes small files too.]{.chg}
 
 # [⭐]{.chg} Going further (optional)
 
-If you have time and want to dig into the topic a bit, there are two optional tasks which lead you to rebuild some of
+If you have time and want to dig into the topic a bit, there are [three]{.chg} optional tasks which lead you to rebuild some of
 the features of the course lake and get into some maintenance mechanisms for data lakes and AWS. They are a bit closer
 to production work (though still a bit simplified for the sake of time). Chat with me if you attempted to do them,
 even if you haven't finished!
@@ -1076,12 +1076,51 @@ it calls Athena directly, with no Lambda in between.
 - Your task 4.3 plan gives the planned frequency and monthly cost. State the prices you use.
 :::
 
+## [⭐ Optional C. Glue 6.0 for your branch jobs]{.chg}
+
+[Glue 6.0, released in August 2026, prices a standard job run at $0.308 per DPU-hour in ca-central-1, against $0.44
+for the Glue 5.0 your jobs use. A newer version can also change how a job behaves. In this task you switch one of your
+branch jobs to Glue 6.0 and compare it with the Glue 5.0 run you measured in task 2.]{.chg}
+
+1. [Before you run anything, write 1 or 2 sentences on how you would organise the experiment: which job, what you
+   keep the same, what you measure, and how you make sure both versions load the same data.]{.chg}
+2. [Read what changed in Glue 6.0 and check your job's script against it. Note anything that could make your job fail
+   or give different results.]{.chg}
+3. [Make a Glue 6.0 copy of your job, clean up what the copy will write again, run it once, and read its run time and
+   DPU-seconds.]{.chg}
+4. [Compare the two runs: the rows each wrote, the run time and the cost. Then price a year of nightly runs on each
+   version.]{.chg}
+
+**[Add to your PDF, after task 4:]{.chg}**
+
+- [your 1 or 2 sentences on how you organised the experiment, written before the run;]{.chg}
+- [what you found in the Glue 6.0 notes that applies to your script, or that nothing did, and how you checked;]{.chg}
+- [the results: both runs' rows, run time, DPU-seconds and cost, and the yearly cost on each version;]{.chg}
+- [3 to 5 sentences: what changed and why, whether you would switch, and what you would check before switching a
+  production pipeline.]{.chg}
+
+::: {.callout-tip collapse="true" title="💡 Hint: what can help you"}
+- [The prices are on the [Glue pricing page](https://aws.amazon.com/glue/pricing/). Choose Canada (Central).]{.chg}
+- [Glue's [migration notes for 6.0](https://docs.aws.amazon.com/glue/latest/dg/migrating-version-60.html) list what
+  behaves differently. Search them for what your script uses: the casts in its `select`, `getResolvedOptions` and the
+  Iceberg write. For example, Spark's ANSI mode is on by default in Glue 6.0, so a cast that cannot convert a value
+  fails the job instead of returning null.]{.chg}
+- [[Tutorial 2](https://github.com/cpsc436c-2026w1/b3-t2-glue-rides)'s
+  [`rerun_glue6.sh`](https://github.com/cpsc436c-2026w1/b3-t2-glue-rides/blob/main/rerun_glue6.sh) makes a Glue 6.0
+  copy of a job and leaves the original as it is. Change its `SRC` and `NEW` names to your job's.]{.chg}
+- [Your receipts job appends, as task 3.3 showed. Load the copy into a new table, or note the day's row count before
+  and after, so the comparison is fair.]{.chg}
+- [One run of each version is too few to call either faster, because run times vary by tens of seconds. The price
+  per DPU-hour is the difference you can rely on.]{.chg}
+:::
+
 # Submission and shutdown
 
 ## Shut down first
 
 [⭐]{.chg} If you did an optional task, remove its resources first. For Optional A, run `bash teardown_gate.sh` in
 `extensions/quality-gate/`. For Optional B, run `bash teardown_schedule.sh` in `extensions/scheduled-maintenance/`.
+[For Optional C, delete the Glue 6.0 copy of your job with `aws glue delete-job --job-name <your copy's name>`.]{.chg}
 [Before you delete the Glue jobs, copy your price job's script to CloudShell for task 2's hand-in:
 `aws s3 cp "$(aws glue get-job --job-name <your price job> --query 'Job.Command.ScriptLocation' --output text)" .`]{.chg} Then delete the Glue jobs you created and set the Data scanned limit back to 2 GB. [The 📋 box below shows]{.chg} how to do both.
 If you no longer need the tables in `branch`, delete them too.

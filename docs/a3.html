@@ -5357,6 +5357,7 @@ z-index: 1000;
   <ul class="collapse">
   <li><a href="#optional-a.-quality-gate-for-your-branch-lake" id="toc-optional-a.-quality-gate-for-your-branch-lake" class="nav-link" data-scroll-target="#optional-a.-quality-gate-for-your-branch-lake"><span class="chg">⭐</span> Optional A. Quality gate for your branch lake</a></li>
   <li><a href="#optional-b.-nightly-maintenance" id="toc-optional-b.-nightly-maintenance" class="nav-link" data-scroll-target="#optional-b.-nightly-maintenance"><span class="chg">⭐</span> Optional B. Nightly maintenance</a></li>
+  <li><a href="#optional-c.-glue-6.0-for-your-branch-jobs" id="toc-optional-c.-glue-6.0-for-your-branch-jobs" class="nav-link" data-scroll-target="#optional-c.-glue-6.0-for-your-branch-jobs"><span class="chg">⭐ Optional C. Glue 6.0 for your branch jobs</span></a></li>
   </ul></li>
   <li><a href="#submission-and-shutdown" id="toc-submission-and-shutdown" class="nav-link" data-scroll-target="#submission-and-shutdown">Submission and shutdown</a>
   <ul class="collapse">
@@ -6378,7 +6379,7 @@ z-index: 1000;
 </section>
 <section id="going-further-optional" class="level1">
 <h1><span class="chg">⭐</span> Going further (optional)</h1>
-<p>If you have time and want to dig into the topic a bit, there are two optional tasks which lead you to rebuild some of the features of the course lake and get into some maintenance mechanisms for data lakes and AWS. They are a bit closer to production work (though still a bit simplified for the sake of time). Chat with me if you attempted to do them, even if you haven’t finished!</p>
+<p>If you have time and want to dig into the topic a bit, there are <span class="chg">three</span> optional tasks which lead you to rebuild some of the features of the course lake and get into some maintenance mechanisms for data lakes and AWS. They are a bit closer to production work (though still a bit simplified for the sake of time). Chat with me if you attempted to do them, even if you haven’t finished!</p>
 <section id="optional-a.-quality-gate-for-your-branch-lake" class="level2">
 <h2 class="anchored" data-anchor-id="optional-a.-quality-gate-for-your-branch-lake"><span class="chg">⭐</span> Optional A. Quality gate for your branch lake</h2>
 <p>Head office checks your report with scenarios in task 1. A quality gate applies the same method to your own tables: your Gherkin scenarios (L9) run on a table every time it commits.</p>
@@ -6471,15 +6472,54 @@ z-index: 1000;
 </div>
 </div>
 </section>
+<section id="optional-c.-glue-6.0-for-your-branch-jobs" class="level2">
+<h2 class="anchored" data-anchor-id="optional-c.-glue-6.0-for-your-branch-jobs"><span class="chg">⭐ Optional C. Glue 6.0 for your branch jobs</span></h2>
+<p><span class="chg">Glue 6.0, released in August 2026, prices a standard job run at $0.308 per DPU-hour in ca-central-1, against $0.44 for the Glue 5.0 your jobs use. A newer version can also change how a job behaves. In this task you switch one of your branch jobs to Glue 6.0 and compare it with the Glue 5.0 run you measured in task 2.</span></p>
+<ol type="1">
+<li><span class="chg">Before you run anything, write 1 or 2 sentences on how you would organise the experiment: which job, what you keep the same, what you measure, and how you make sure both versions load the same data.</span></li>
+<li><span class="chg">Read what changed in Glue 6.0 and check your job’s script against it. Note anything that could make your job fail or give different results.</span></li>
+<li><span class="chg">Make a Glue 6.0 copy of your job, clean up what the copy will write again, run it once, and read its run time and DPU-seconds.</span></li>
+<li><span class="chg">Compare the two runs: the rows each wrote, the run time and the cost. Then price a year of nightly runs on each version.</span></li>
+</ol>
+<p><strong><span class="chg">Add to your PDF, after task 4:</span></strong></p>
+<ul>
+<li><span class="chg">your 1 or 2 sentences on how you organised the experiment, written before the run;</span></li>
+<li><span class="chg">what you found in the Glue 6.0 notes that applies to your script, or that nothing did, and how you checked;</span></li>
+<li><span class="chg">the results: both runs’ rows, run time, DPU-seconds and cost, and the yearly cost on each version;</span></li>
+<li><span class="chg">3 to 5 sentences: what changed and why, whether you would switch, and what you would check before switching a production pipeline.</span></li>
+</ul>
+<div class="callout callout-style-default callout-tip callout-titled" title="💡 Hint: what can help you">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-22-contents" aria-controls="callout-22" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Tip</span>💡 Hint: what can help you
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-22" class="callout-22-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<ul>
+<li><span class="chg">The prices are on the <a href="https://aws.amazon.com/glue/pricing/">Glue pricing page</a>. Choose Canada (Central).</span></li>
+<li><span class="chg">Glue’s <a href="https://docs.aws.amazon.com/glue/latest/dg/migrating-version-60.html">migration notes for 6.0</a> list what behaves differently. Search them for what your script uses: the casts in its <code>select</code>, <code>getResolvedOptions</code> and the Iceberg write. For example, Spark’s ANSI mode is on by default in Glue 6.0, so a cast that cannot convert a value fails the job instead of returning null.</span></li>
+<li><span class="chg"><a href="https://github.com/cpsc436c-2026w1/b3-t2-glue-rides">Tutorial 2</a>’s <a href="https://github.com/cpsc436c-2026w1/b3-t2-glue-rides/blob/main/rerun_glue6.sh"><code>rerun_glue6.sh</code></a> makes a Glue 6.0 copy of a job and leaves the original as it is. Change its <code>SRC</code> and <code>NEW</code> names to your job’s.</span></li>
+<li><span class="chg">Your receipts job appends, as task 3.3 showed. Load the copy into a new table, or note the day’s row count before and after, so the comparison is fair.</span></li>
+<li><span class="chg">One run of each version is too few to call either faster, because run times vary by tens of seconds. The price per DPU-hour is the difference you can rely on.</span></li>
+</ul>
+</div>
+</div>
+</div>
+</section>
 </section>
 <section id="submission-and-shutdown" class="level1">
 <h1>Submission and shutdown</h1>
 <section id="shut-down-first" class="level2">
 <h2 class="anchored" data-anchor-id="shut-down-first">Shut down first</h2>
-<p><span class="chg">⭐</span> If you did an optional task, remove its resources first. For Optional A, run <code>bash teardown_gate.sh</code> in <code>extensions/quality-gate/</code>. For Optional B, run <code>bash teardown_schedule.sh</code> in <code>extensions/scheduled-maintenance/</code>. <span class="chg">Before you delete the Glue jobs, copy your price job’s script to CloudShell for task 2’s hand-in: <code>aws s3 cp &quot;$(aws glue get-job --job-name &lt;your price job&gt; --query &#39;Job.Command.ScriptLocation&#39; --output text)&quot; .</code></span> Then delete the Glue jobs you created and set the Data scanned limit back to 2 GB. <span class="chg">The 📋 box below shows</span> how to do both. If you no longer need the tables in <code>branch</code>, delete them too. Athena’s query history is your evidence and stays. Head office keeps your delivered reports.</p>
+<p><span class="chg">⭐</span> If you did an optional task, remove its resources first. For Optional A, run <code>bash teardown_gate.sh</code> in <code>extensions/quality-gate/</code>. For Optional B, run <code>bash teardown_schedule.sh</code> in <code>extensions/scheduled-maintenance/</code>. <span class="chg">For Optional C, delete the Glue 6.0 copy of your job with <code>aws glue delete-job --job-name &lt;your copy&#39;s name&gt;</code>.</span> <span class="chg">Before you delete the Glue jobs, copy your price job’s script to CloudShell for task 2’s hand-in: <code>aws s3 cp &quot;$(aws glue get-job --job-name &lt;your price job&gt; --query &#39;Job.Command.ScriptLocation&#39; --output text)&quot; .</code></span> Then delete the Glue jobs you created and set the Data scanned limit back to 2 GB. <span class="chg">The 📋 box below shows</span> how to do both. If you no longer need the tables in <code>branch</code>, delete them too. Athena’s query history is your evidence and stays. Head office keeps your delivered reports.</p>
 <p><span id="cmd-shut-down"></span></p>
 <div class="callout callout-style-default callout-note no-icon callout-titled" title="📋 Commands: Shut down">
-<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-22-contents" aria-controls="callout-22" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-23-contents" aria-controls="callout-23" aria-expanded="false" aria-label="Toggle callout">
 <div class="callout-icon-container">
 <i class="callout-icon no-icon"></i>
 </div>
@@ -6488,7 +6528,7 @@ z-index: 1000;
 </div>
 <div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
 </div>
-<div id="callout-22" class="callout-22-contents callout-collapse collapse">
+<div id="callout-23" class="callout-23-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
 <ol type="1">
 <li><p><strong>CloudShell</strong>: delete both Glue jobs:</p>
