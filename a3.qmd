@@ -540,7 +540,7 @@ one hour of the app's exports, the file for 23:00 on day 1.
 run will take. The file list `_files.json` gives the day file's rows and size, and [Tutorial 2](https://github.com/cpsc436c-2026w1/b3-t2-glue-rides)'s job gives you a run time to compare
 with. [Write each in the `predicted` cell of its 2.1 row of `results.csv`.]{.chg}
 
-**Run it.** In CloudShell: `aws glue start-job-run --job-name branch-receipts`. [Wait until the run shows **Succeeded**
+**Run it.** In CloudShell, run `aws glue start-job-run --job-name branch-receipts`. [Wait until the run shows **Succeeded**
 on the **Runs** tab (Glue console, **ETL jobs**, `branch-receipts`). Then count the day's rows in the Athena query editor
 with `SELECT count(*) FROM branch.receipts`, and read the run's figures in CloudShell:]{.chg}
 `aws glue get-job-runs --job-name branch-receipts --max-items 1 --query 'JobRuns[0].[ExecutionTime,DPUSeconds]'`.
@@ -628,8 +628,8 @@ Rename `receipts` to `readings` on the remaining lines. The lines that changed:
 | Line | Why it changed |
 |---|---|
 | `RAW`, `TABLE` | the input folder and the target table |
-| the reader | `spark.read.json` reads JSON Lines and takes the column names from the records |
-| the `select` | the file's own fields. A time arrives as a string and needs `to_timestamp`, and the casts fix each type |
+| reader | `spark.read.json` reads JSON Lines and takes the column names from the records |
+| `select` | It selects the file's own fields. A time arrives as a string and needs `to_timestamp`, and the casts fix each type |
 | `exists` | the check looks for the new table's name |
 | `partitionedBy` | the new table's time column |
 
@@ -902,7 +902,7 @@ A table that a Glue job created is under `branch/tables/branch.db/<table>/`, and
 **Prices for your plan**
 
 `VACUUM` shows its own Data scanned. AWS adds S3 request charges for the files it lists and deletes. For a plan,
-price each maintenance statement at least at Athena's 10 MB minimum and say so. S3 Standard storage is $0.025 per
+price each maintenance statement at no less than Athena's 10 MB minimum and say so. S3 Standard storage is $0.025 per
 GB-month (L11). Each month, EventBridge Scheduler in `ca-central-1` includes 14 million
 scheduled invocations at no charge. Each further million costs $1.10.
 

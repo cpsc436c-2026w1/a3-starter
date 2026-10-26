@@ -5986,7 +5986,7 @@ z-index: 1000;
 <section id="run-the-ready-job" class="level2">
 <h2 class="anchored" data-anchor-id="run-the-ready-job">2.1 Run the ready job</h2>
 <p><strong>Predict, before you start it:</strong> how many rows the job will write into <code>branch.receipts</code>, and how many seconds the run will take. The file list <code>_files.json</code> gives the day file’s rows and size, and <a href="https://github.com/cpsc436c-2026w1/b3-t2-glue-rides">Tutorial 2</a>’s job gives you a run time to compare with. <span class="chg">Write each in the <code>predicted</code> cell of its 2.1 row of <code>results.csv</code>.</span></p>
-<p><strong>Run it.</strong> In CloudShell: <code>aws glue start-job-run --job-name branch-receipts</code>. <span class="chg">Wait until the run shows <strong>Succeeded</strong> on the <strong>Runs</strong> tab (Glue console, <strong>ETL jobs</strong>, <code>branch-receipts</code>). Then count the day’s rows in the Athena query editor with <code>SELECT count(*) FROM branch.receipts</code>, and read the run’s figures in CloudShell:</span> <code>aws glue get-job-runs --job-name branch-receipts --max-items 1 --query &#39;JobRuns[0].[ExecutionTime,DPUSeconds]&#39;</code>. Record the rows, the seconds and the DPU-seconds. If a run fails, <span class="chg">step 5 of <a href="#cmd-changing-a-glue-job-from-csv-to-json-lines">📋 Commands: Changing a Glue job from CSV to JSON Lines</a> in task 2.2 shows</span> where to read its error.</p>
+<p><strong>Run it.</strong> In CloudShell, run <code>aws glue start-job-run --job-name branch-receipts</code>. <span class="chg">Wait until the run shows <strong>Succeeded</strong> on the <strong>Runs</strong> tab (Glue console, <strong>ETL jobs</strong>, <code>branch-receipts</code>). Then count the day’s rows in the Athena query editor with <code>SELECT count(*) FROM branch.receipts</code>, and read the run’s figures in CloudShell:</span> <code>aws glue get-job-runs --job-name branch-receipts --max-items 1 --query &#39;JobRuns[0].[ExecutionTime,DPUSeconds]&#39;</code>. Record the rows, the seconds and the DPU-seconds. If a run fails, <span class="chg">step 5 of <a href="#cmd-changing-a-glue-job-from-csv-to-json-lines">📋 Commands: Changing a Glue job from CSV to JSON Lines</a> in task 2.2 shows</span> where to read its error.</p>
 </section>
 <section id="adapt-it-for-the-price-changes" class="level2">
 <h2 class="anchored" data-anchor-id="adapt-it-for-the-price-changes">2.2 Adapt it for the price changes</h2>
@@ -6061,12 +6061,12 @@ z-index: 1000;
 <td>the input folder and the target table</td>
 </tr>
 <tr class="even">
-<td>the reader</td>
+<td>reader</td>
 <td><code>spark.read.json</code> reads JSON Lines and takes the column names from the records</td>
 </tr>
 <tr class="odd">
-<td>the <code>select</code></td>
-<td>the file’s own fields. A time arrives as a string and needs <code>to_timestamp</code>, and the casts fix each type</td>
+<td><code>select</code></td>
+<td>It selects the file’s own fields. A time arrives as a string and needs <code>to_timestamp</code>, and the casts fix each type</td>
 </tr>
 <tr class="even">
 <td><code>exists</code></td>
@@ -6303,7 +6303,7 @@ z-index: 1000;
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb25"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="ex">aws</span> s3 ls s3://436c-glue-<span class="op">&lt;</span>account<span class="op">&gt;</span>/<span class="op">&lt;</span>folder up to data/<span class="op">&gt;</span> --recursive <span class="kw">|</span> <span class="fu">wc</span> <span class="at">-l</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <p>A table that a Glue job created is under <code>branch/tables/branch.db/&lt;table&gt;/</code>, and a table made with <code>CREATE TABLE ... AS SELECT</code> is under the <code>location</code> you gave it.</p>
 <p><strong>Prices for your plan</strong></p>
-<p><code>VACUUM</code> shows its own Data scanned. AWS adds S3 request charges for the files it lists and deletes. For a plan, price each maintenance statement at least at Athena’s 10 MB minimum and say so. S3 Standard storage is $0.025 per GB-month (L11). Each month, EventBridge Scheduler in <code>ca-central-1</code> includes 14 million scheduled invocations at no charge. Each further million costs $1.10.</p>
+<p><code>VACUUM</code> shows its own Data scanned. AWS adds S3 request charges for the files it lists and deletes. For a plan, price each maintenance statement at no less than Athena’s 10 MB minimum and say so. S3 Standard storage is $0.025 per GB-month (L11). Each month, EventBridge Scheduler in <code>ca-central-1</code> includes 14 million scheduled invocations at no charge. Each further million costs $1.10.</p>
 </div>
 </div>
 </div>
