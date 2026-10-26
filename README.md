@@ -6,6 +6,7 @@ each task first needs them. Read the task first, then open its box, then use the
 
 | File | What it is | Where you use it |
 |---|---|---|
+| `check_a3.sh` | checks your account for the earlier setups and A3's Setup steps 0 to 3, changes nothing, and says what to run for anything missing | Setup, and whenever a step fails |
 | `setup_a3.sh` | copies the branch's raw files into your raw zone, creates the database `branch`, the table `branch.raw_households` and the Glue job `branch-receipts` | Setup, once |
 | `branch_receipts.py` | the ready Glue job: till export (CSV) into `branch.receipts` | tasks 2 and 3 |
 | `subscribe.sh` | subscribes your email to head office's replies | Setup |

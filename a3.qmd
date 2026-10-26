@@ -82,7 +82,7 @@ prices and store locations, so that the assignment has answers we can check.
 <tr><td>What is there</td><td><code>consumption</code> (the receipt lines), <code>products</code> (Open Food Facts records as published), <code>catalogue</code> (one row per product, with its grades), <code>stores</code>, <code>households</code>, <code>prices</code>, <code>current_prices</code></td><td>the branch's files as they arrive: till exports (CSV, one file a day), the shelf-price app's <span class="chg">price-change exports</span> (JSON Lines, one JSON record per line, one file an hour), changes to members' records (JSON Lines)</td><td>the tables you build: <code>branch.receipts</code>, <code>branch.price_events</code>, <code>branch.members</code></td></tr>
 <tr><td>Where it is</td><td>the course account's catalog, database <code>course_lake</code>, read in Athena as <code>course.course_lake.&lt;table&gt;</code></td><td>your bucket, <code>s3://436c-glue-&lt;account&gt;/branch/raw/</code></td><td>your Glue database <code>branch</code>, data under <code>s3://436c-glue-&lt;account&gt;/branch/tables/</code></td></tr>
 <tr><td>What you can do</td><td>read</td><td>read and add files</td><td>create, change, compact, delete</td></tr>
-<tr><td>What it costs you</td><td>Athena, $5.50 per TB of Data scanned, 10 MB minimum per query</td><td>S3 storage, less than a cent for the assignment's files</td><td>Athena per TB of Data scanned, and Glue $0.44 per DPU-hour for each load</td></tr>
+<tr><td>What it costs you</td><td>Athena, $5.50 per TB of Data scanned, 10 MB minimum per query</td><td>S3 storage, < $0.01 for the assignment's files</td><td>Athena per TB of Data scanned, and Glue $0.44 per DPU-hour for each load</td></tr>
 </tbody>
 </table>
 ```
@@ -385,6 +385,13 @@ Confirm the subscription in the email from AWS Notifications. Every reply then a
 The starter files, `subscribe.sh` among them, are in CloudShell after the `git clone` of `a3-starter` in Before you start.
 :::::
 
+[To check your setup, run this in CloudShell. It only reads your account. Each line says ✔ or ✗, and each ✗ says what
+to run. Run it again whenever a step fails.]{.chg}
+
+```bash
+curl -fsSO https://raw.githubusercontent.com/cpsc436c-2026w1/a3-starter/main/check_a3.sh && bash check_a3.sh
+```
+
 👀 **Quick check.** `SELECT count(*) FROM course.course_lake.households` returns 450000, `SHOW TABLES IN
 shelf.default` lists `course_shelf_prices`, and `aws s3 ls s3://436c-glue-<account>/branch/raw/ --recursive` lists
 the four raw files, including `_files.json`.
@@ -540,7 +547,8 @@ one hour of the app's exports, the file for 23:00 on day 1.
 run will take. The file list `_files.json` gives the day file's rows and size, and [Tutorial 2](https://github.com/cpsc436c-2026w1/b3-t2-glue-rides)'s job gives you a run time to compare
 with. [Write each in the `predicted` cell of its 2.1 row of `results.csv`.]{.chg}
 
-**Run it.** In CloudShell, run `aws glue start-job-run --job-name branch-receipts`. [Wait until the run shows **Succeeded**
+**Run it.** In CloudShell, run `aws glue start-job-run --job-name branch-receipts`. [Start it once, and don't press
+**Run** on the job's page as well. Task 3.3 runs it a second time on purpose.]{.chg} [Wait until the run shows **Succeeded**
 on the **Runs** tab (Glue console, **ETL jobs**, `branch-receipts`). Then count the day's rows in the Athena query editor
 with `SELECT count(*) FROM branch.receipts`, and read the run's figures in CloudShell:]{.chg}
 `aws glue get-job-runs --job-name branch-receipts --max-items 1 --query 'JobRuns[0].[ExecutionTime,DPUSeconds]'`.
@@ -581,7 +589,8 @@ from scratch lacks them and fails when it writes to `glue_catalog`.
    Task 3.3 runs `branch-receipts` again.
 4. **Script** tab: edit the script, then **Save**.
 5. On the **Runs** tab, open the run. For a failed run, you see its **Error message**. Select **Output logs** to open
-   the full log.
+   the full log. [If Glue refuses a start with `ConcurrentRunsExceededException` just after a run ends, wait 30 seconds
+   and start the job again.]{.chg}
 
 Step 3 matters whichever path the clone starts with: a script file of its own is the only way an edit cannot reach
 `branch_receipts.py`.
