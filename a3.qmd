@@ -34,7 +34,7 @@ Nutri-Score is a five-grade scale from A, the healthiest, to E, and the catalogu
 or not applicable. NOVA is a four-group processing scale on which group 4 is ultra-processed.
 
 Every branch can read the company lakehouse, and no branch can change it. In this course, the company lakehouse is
-the course tables you registered in tutorial 1 as the data source `course`.
+the course tables you registered in [Tutorial 1](https://github.com/cpsc436c-2026w1/b3-t1-athena-rides) as the data source `course`.
 
 Dean, head office's data architect, built the company lakehouse in a weekend: three years of receipt lines in one
 load, one partition per month, done. It has worked well enough that nobody has reorganised it since. When a branch
@@ -97,7 +97,7 @@ reads through a Lambda connector as `shelf.default.course_shelf_prices`. That is
 source outside the lake through a connector (L10).
 
 📚 **Lecture:** L10 (Iceberg tables, catalogs, engines), L11 (building, changing and maintaining tables, their bills)
-and L12 (DynamoDB); tutorial 1 ran a load twice.
+and L12 (DynamoDB); [Tutorial 1](https://github.com/cpsc436c-2026w1/b3-t1-athena-rides) ran a load twice.
 
 ## Director's requests, as requirements
 
@@ -149,7 +149,7 @@ The first number is the run time in seconds, the second the DPU-seconds. If the 
 seconds by the job's DPUs: two G.1X workers are 2 DPUs. Glue 5.0 bills $0.44 per DPU-hour, per second, with a
 1-minute minimum.
 
-**Worked example: tutorial 2's rides.**
+**Worked example: [Tutorial 2](https://github.com/cpsc436c-2026w1/b3-t2-glue-rides)'s rides.**
 
 | Item | Measured | Arithmetic | Cost |
 |---|---|---|---|
@@ -176,7 +176,7 @@ export into `branch.receipts`, create a second job from its script to load the s
 and price a month of nightly runs of both jobs on Glue against an EMR cluster of one primary and two core m7g.xlarge nodes. Hand in [the lines of
 your price job's script that differ from `branch_receipts.py`]{.chg}, five rows of `results.csv`, the price table and
 four sentences. [The price table has one row for Glue and one for the EMR cluster, and it shows each item's arithmetic
-as the worked example on tutorial 2's rides does.]{.chg}
+as the worked example on [Tutorial 2](https://github.com/cpsc436c-2026w1/b3-t2-glue-rides)'s rides does.]{.chg}
 
 **Task 3. Keeping the members correct (change, about 100 minutes).** Copy the branch's members from the company
 lakehouse into `branch.members`, apply day 2's change file with `MERGE`, rerun a load to test R40, process the 25
@@ -199,24 +199,24 @@ task 2 needs your raw zone and the Glue role. Task 3 needs `branch.receipts` fro
 from tasks 2 and 3, so it comes last. The maintenance plan in task 4 needs your numbers from every task and no cloud
 access at all, so you can write it with the console closed.
 
-The tutorials practised most moves in this assignment on the New York rides: tutorial 1 the query, a copy, a
-delete, snapshots, time travel, a load run twice, a new column and a join; tutorial 2 a Glue load, `OPTIMIZE` and
+The tutorials practised most moves in this assignment on the New York rides: [Tutorial 1](https://github.com/cpsc436c-2026w1/b3-t1-athena-rides) the query, a copy, a
+delete, snapshots, time travel, a load run twice, a new column and a join; [Tutorial 2](https://github.com/cpsc436c-2026w1/b3-t2-glue-rides) a Glue load, `OPTIMIZE` and
 `VACUUM`. [The 📋 Commands boxes show]{.chg} the moves they did not practise [in their main steps. These are]{.chg} `MERGE`
-[(tutorial 2's extra exercise)]{.chg}, `UNLOAD`, changing a job from CSV to JSON Lines, an S3 Lifecycle rule
+[([Tutorial 2](https://github.com/cpsc436c-2026w1/b3-t2-glue-rides)'s extra exercise)]{.chg}, `UNLOAD`, changing a job from CSV to JSON Lines, an S3 Lifecycle rule
 and a federated query. Here you make these moves on the grocer data, with less given to you.
 
 ::: {.callout-important title="Before you start"}
 - Region `ca-central-1` throughout. The company lakehouse is read-only to you.
-- You need tutorial 1's setup (the `course` data source and Athena's result location) and L7's `setup_glue.sh` (your
-  bucket `436c-glue-<account>` and the Glue role `436c-glue-notebook`). Tutorial 2
-  ([b3-t2-glue-rides](https://github.com/cpsc436c-2026w1/b3-t2-glue-rides)) is useful here: it runs a Glue load,
+- You need [Tutorial 1](https://github.com/cpsc436c-2026w1/b3-t1-athena-rides)'s setup (the `course` data source and Athena's result location) and L7's `setup_glue.sh` (your
+  bucket `436c-glue-<account>` and the Glue role `436c-glue-notebook`). [Tutorial 2](https://github.com/cpsc436c-2026w1/b3-t2-glue-rides)
+  is useful here: it runs a Glue load,
   `OPTIMIZE` and `VACUUM` on the rides.
 - Get the starter files into CloudShell: `git clone https://github.com/cpsc436c-2026w1/a3-starter.git && cd a3-starter`.
 - [`<account>` and `<your account id>` both stand for your 12-digit account number. In CloudShell, `aws sts
   get-caller-identity --query Account --output text` prints it. Before you run a command, replace both with that
   number, and replace `<any name>` with a name you choose. Replace every other word in angle brackets in a command
   the same way, such as `<your email>` and `<your price job>`.]{.chg}
-- The Data scanned limit you set in tutorial 1 (2 GB) is too low for task 1's report. Raise it to 10 GB for A3, as
+- The Data scanned limit you set in [Tutorial 1](https://github.com/cpsc436c-2026w1/b3-t1-athena-rides) (2 GB) is too low for task 1's report. Raise it to 10 GB for A3, as
   [[📋 Commands: Data scanned limit, once per account](#cmd-data-scanned-limit-once-per-account) in Setup shows]{.chg}.
 - [Every command is in a collapsed 📋 Commands box where a task first needs it. Read the task first, then open its
   box.]{.chg}
@@ -247,7 +247,7 @@ file**) and edit it on your laptop.
 
 0. [**Data scanned limit.** In CloudShell, raise it to 10 GB and check it, as [📋 Commands: Data scanned limit, once per account below shows]{.chg}.
    You should see `10000000000`.]{.chg}
-1. [**Course data source.**]{.chg} Tutorial 1 already added the course catalog as the data source `course`. In the Athena
+1. [**Course data source.**]{.chg} [Tutorial 1](https://github.com/cpsc436c-2026w1/b3-t1-athena-rides) already added the course catalog as the data source `course`. In the Athena
    query editor, with **Data source** `course`, check that `SHOW TABLES IN course_lake` lists the company tables. It also lists tables of other exercises
    (`customer`, `store_sales` and others): A3 uses only [the seven tables]{.chg} that "What lives where" names.
    Step 3 creates your own database `branch`.
@@ -271,7 +271,7 @@ file**) and edit it on your laptop.
 []{#cmd-data-scanned-limit-once-per-account}
 
 ::::: {.callout-note collapse="true" icon=false title="📋 Commands: Data scanned limit, once per account"}
-Tutorial 1 set a Data scanned limit of 2 GB on the workgroup `primary`. Task 1's report reads more, so raise the
+[Tutorial 1](https://github.com/cpsc436c-2026w1/b3-t1-athena-rides) set a Data scanned limit of 2 GB on the workgroup `primary`. Task 1's report reads more, so raise the
 limit to 10 GB.
 
 **In the console:**
@@ -286,7 +286,7 @@ aws athena update-work-group --work-group primary \
   --configuration-updates BytesScannedCutoffPerQuery=10000000000
 ```
 
-The command changes only the limit. The result location from tutorial 1 stays.
+The command changes only the limit. The result location from [Tutorial 1](https://github.com/cpsc436c-2026w1/b3-t1-athena-rides) stays.
 
 **Check it** in CloudShell. You should see `10000000000`:
 
@@ -424,7 +424,7 @@ estimate in your task 1 row of `results.csv` before you run the report. How far 
 from the size of the whole table? [The four-column estimate and the whole-table sum are both in bytes, so divide each by 1,000,000 to get MB. The
 estimate goes in the `predicted` cell of the Data scanned row, and the whole-table size goes in your PDF.]{.chg}
 
-📚 **Lecture:** L10, manifests; L11, the 🔍 box on `column_sizes` and `UNLOAD`; tutorial 1, metadata tables and predict
+📚 **Lecture:** L10, manifests; L11, the 🔍 box on `column_sizes` and `UNLOAD`; [Tutorial 1](https://github.com/cpsc436c-2026w1/b3-t1-athena-rides), metadata tables and predict
 then query.
 
 ## 1.2 Measure
@@ -521,7 +521,7 @@ one hour of the app's exports, the file for 23:00 on day 1.
 ## 2.1 Run the ready job
 
 **Predict, before you start it:** how many rows the job will write into `branch.receipts`, and how many seconds the
-run will take. The file list `_files.json` gives the day file's rows and size, and tutorial 2's job gives you a run time to compare
+run will take. The file list `_files.json` gives the day file's rows and size, and [Tutorial 2](https://github.com/cpsc436c-2026w1/b3-t2-glue-rides)'s job gives you a run time to compare
 with. [Write each in the `predicted` cell of its 2.1 row of `results.csv`.]{.chg}
 
 **Run it.** In CloudShell: `aws glue start-job-run --job-name branch-receipts`. When the run ends (Glue console,
@@ -630,7 +630,7 @@ Athena could run the same loads too: we could declare a Hive table over the raw 
 the catalog, no snapshots or manifests), then run `INSERT INTO branch.receipts SELECT …`, and we would pay only for
 Data scanned. [In one more sentence, say when you would choose that over a Glue job.]{.chg}
 
-📚 **Lecture:** L11, billing units and rules of thumb; tutorial 2, a Glue load and its DPU-seconds.
+📚 **Lecture:** L11, billing units and rules of thumb; [Tutorial 2](https://github.com/cpsc436c-2026w1/b3-t2-glue-rides), a Glue load and its DPU-seconds.
 
 # Task 3. Keeping the members correct
 
@@ -658,7 +658,7 @@ or new record (with a new field, `marketing_consent`), and `erase` for a member 
 [In the Athena editor, Data source `AwsDataCatalog`, copy the Lyon members from `course.course_lake.households`]{.chg}
 into `branch.members`, with a `CREATE TABLE ... AS SELECT` and
 `table_type = 'ICEBERG'`, `location = 's3://436c-glue-<account>/branch/tables/members/'` and `is_external = false`,
-as in tutorial 1. **Predict first:** how many rows the copy holds. Then run it and count.
+as in [Tutorial 1](https://github.com/cpsc436c-2026w1/b3-t1-athena-rides). **Predict first:** how many rows the copy holds. Then run it and count.
 
 ## 3.2 Apply the changes with MERGE
 
@@ -674,7 +674,7 @@ snapshots the table has afterwards. Then run it, count, and list the snapshots.
 
 ::::: {.callout-note collapse="true" icon=false title="📋 Commands: MERGE"}
 `MERGE` matches each incoming row to the table by a key. It updates the rows that match and inserts the rest.
-The example is tutorial 2's extra exercise, run in the **Athena query editor**. Its `sql/06_extra_merge.sql` creates
+The example is [Tutorial 2](https://github.com/cpsc436c-2026w1/b3-t2-glue-rides)'s extra exercise, run in the **Athena query editor**. Its `sql/06_extra_merge.sql` creates
 both tables, so if you did not run it, read the statement as a pattern.
 
 ```sql
@@ -785,7 +785,7 @@ that it does? Would the price load meet R40? What does an older snapshot still h
 can each place that holds a shelf price promise the director under R60?]{.chg}
 
 📚 **Lecture:** L11, `ADD COLUMNS` (no data file rewritten) and `DELETE` and `MERGE` with delete files; L12, DynamoDB;
-tutorial 1, delete, time travel and a load run twice; tutorial 2, a Glue load and `MERGE` (extra exercise).
+[Tutorial 1](https://github.com/cpsc436c-2026w1/b3-t1-athena-rides), delete, time travel and a load run twice; [Tutorial 2](https://github.com/cpsc436c-2026w1/b3-t2-glue-rides), a Glue load and `MERGE` (extra exercise).
 
 # Task 4. Maintenance for the year
 
@@ -810,7 +810,7 @@ against data-use rule 2. Maintenance means rewriting files and expiring snapshot
 :::
 
 You maintain the three tables your loads and changes have written, `branch.members`, `branch.receipts` and
-`branch.price_events`, with the moves from tutorial 2: table properties that set how much history to keep, `OPTIMIZE` to compact small files, and
+`branch.price_events`, with the moves from [Tutorial 2](https://github.com/cpsc436c-2026w1/b3-t2-glue-rides): table properties that set how much history to keep, `OPTIMIZE` to compact small files, and
 `VACUUM` to expire old snapshots and delete the files no snapshot needs. [The 📋 box below has the statements for all three.]{.chg}
 
 []{#cmd-table-properties-optimize-and-vacuum}
@@ -953,7 +953,7 @@ file that `setup_a3.sh` copied counts its age from the copy, not from the day in
 :::::
 
 📚 **Lecture:** L11, `OPTIMIZE` then `VACUUM`, scheduling with EventBridge Scheduler, storage classes and S3 Lifecycle;
-tutorial 2, `OPTIMIZE` and `VACUUM` [(README steps 4 and 5)]{.chg}.
+[Tutorial 2](https://github.com/cpsc436c-2026w1/b3-t2-glue-rides), `OPTIMIZE` and `VACUUM` [(README steps 4 and 5)]{.chg}.
 
 # [⭐]{.chg} Going further (optional)
 
@@ -1062,7 +1062,7 @@ Athena's query history is your evidence and stays. Head office keeps your delive
    aws glue delete-job --job-name <your price job>
    ```
 
-   Then set the Data scanned limit back to tutorial 1's 2 GB:
+   Then set the Data scanned limit back to [Tutorial 1](https://github.com/cpsc436c-2026w1/b3-t1-athena-rides)'s 2 GB:
 
    ```bash
    aws athena update-work-group --work-group primary \
