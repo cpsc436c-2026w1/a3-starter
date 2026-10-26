@@ -5472,7 +5472,7 @@ z-index: 1000;
 <tr class="even">
 <td>What it costs you</td>
 <td>Athena, $5.50 per TB of Data scanned, 10 MB minimum per query</td>
-<td>S3 storage, far below a cent for the assignment&#39;s files</td>
+<td>S3 storage, less than a cent for the assignment&#39;s files</td>
 <td>Athena per TB of Data scanned, and Glue $0.44 per DPU-hour for each load</td>
 </tr>
 </tbody>
@@ -5612,7 +5612,7 @@ z-index: 1000;
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="ex">aws</span> glue get-job-runs <span class="at">--job-name</span> rides-month <span class="at">--max-items</span> 1 <span class="dt">\</span></span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">--query</span> <span class="st">&#39;JobRuns[0].[ExecutionTime,DPUSeconds]&#39;</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <p>The first number is the run time in seconds, the second the DPU-seconds. If the second is <code>null</code>, multiply the seconds by the job’s DPUs: two G.1X workers are 2 DPUs. Glue 5.0 bills $0.44 per DPU-hour, per second, with a 1-minute minimum.</p>
-<p><strong>Worked example: <a href="https://github.com/cpsc436c-2026w1/b3-t2-glue-rides">Tutorial 2</a>’s rides.</strong></p>
+<p><strong>Worked example on <a href="https://github.com/cpsc436c-2026w1/b3-t2-glue-rides">Tutorial 2</a>’s rides.</strong></p>
 <table class="caption-top table">
 <colgroup>
 <col style="width: 25%">
@@ -5631,15 +5631,15 @@ z-index: 1000;
 <tbody>
 <tr class="odd">
 <td>Glue run, <code>rides-month</code></td>
-<td><code>[189, 379.0]</code></td>
-<td>379 / 3,600 × $0.44</td>
-<td>$0.046 a run</td>
+<td><span class="chg">about <code>[150, 300]</code>, between <code>[138, 276]</code> and <code>[170, 341]</code> over five runs</span></td>
+<td><span class="chg">300 / 3,600 × $0.44</span></td>
+<td><span class="chg">about $0.037 a run, $0.034 to $0.042</span></td>
 </tr>
 <tr class="even">
 <td>Same run, every night for a year</td>
 <td></td>
-<td>$0.046 × 365</td>
-<td>about $17</td>
+<td><span class="chg">$0.037 × 365</span></td>
+<td><span class="chg">about $13</span></td>
 </tr>
 <tr class="odd">
 <td>Week report in Athena</td>
@@ -5655,13 +5655,13 @@ z-index: 1000;
 </tr>
 <tr class="odd">
 <td><span class="chg">Same job on an EMR cluster of three m7g.xlarge nodes, launched for the run</span></td>
-<td><span class="chg">189 s run, plus about 300 s from launch until ready (L11)</span></td>
-<td><span class="chg">(300 + 189) / 3,600 × $0.67</span></td>
-<td><span class="chg">$0.091 a run</span></td>
+<td><span class="chg">about 150 s run, plus about 300 s from launch until ready (L11)</span></td>
+<td><span class="chg">(300 + 150) / 3,600 × $0.67</span></td>
+<td><span class="chg">about $0.084 a run</span></td>
 </tr>
 </tbody>
 </table>
-<p>A run shorter than a minute is billed as a minute: a 40-second run on 2 DPUs costs 2 × 60 DPU-seconds. <span class="chg">The EMR row assumes the job runs as long on the cluster as its Glue <code>ExecutionTime</code>. The cluster bills per second from launch until the job ends, at $0.67 an hour for the three nodes.</span></p>
+<p><span class="chg">The job’s run time varies from run to run, so these costs are approximate. Your own run will land near them, not on them.</span> A run shorter than a minute is billed as a minute: a 40-second run on 2 DPUs costs 2 × 60 DPU-seconds. <span class="chg">The EMR row assumes the job runs as long on the cluster as its Glue <code>ExecutionTime</code>. The cluster bills per second from launch until the job ends, at $0.67 an hour for the three nodes.</span></p>
 </div>
 </div>
 </div>
@@ -5692,7 +5692,7 @@ z-index: 1000;
 <li>Get the starter files into CloudShell: <code>git clone https://github.com/cpsc436c-2026w1/a3-starter.git &amp;&amp; cd a3-starter</code>.</li>
 <li><span class="chg"><code>&lt;account&gt;</code> and <code>&lt;your account id&gt;</code> both stand for your 12-digit account number. In CloudShell, <code>aws sts get-caller-identity --query Account --output text</code> prints it. Before you run a command, replace both with that number, and replace <code>&lt;any name&gt;</code> with a name you choose. Replace every other word in angle brackets in a command the same way, such as <code>&lt;your email&gt;</code> and <code>&lt;your price job&gt;</code>.</span></li>
 <li>The Data scanned limit you set in <a href="https://github.com/cpsc436c-2026w1/b3-t1-athena-rides">Tutorial 1</a> (2 GB) is too low for task 1’s report. Raise it to 10 GB for A3, as <span class="chg"><a href="#cmd-data-scanned-limit-once-per-account">📋 Commands: Data scanned limit, once per account</a> in Setup shows</span>.</li>
-<li><span class="chg">Every command is in a collapsed 📋 Commands box where a task first needs it. Read the task first, then open its box.</span></li>
+<li><span class="chg">The commands sit in collapsed 📋 Commands boxes, each where a task first needs it. Read the task first, then open its box.</span></li>
 <li><span class="chg">⭐ shows optional work. It earns no points, and you can leave it out.</span></li>
 <li><span class="chg">If a script stops with a line starting <code>STOP:</code>, run the setup it names first. If <code>SHOW TABLES IN shelf.default</code> or the toy <code>UNLOAD</code> fails with an access error, send the full error text and your account number to your TA.</span></li>
 </ul>
@@ -5757,12 +5757,12 @@ z-index: 1000;
 <div id="callout-5" class="callout-5-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
 <p><a href="https://github.com/cpsc436c-2026w1/b3-t1-athena-rides">Tutorial 1</a> set a Data scanned limit of 2 GB on the workgroup <code>primary</code>. Task 1’s report reads more, so raise the limit to 10 GB.</p>
-<p><strong>In the console:</strong></p>
+<p><strong>In the console</strong></p>
 <ol type="1">
 <li>Athena → <strong>Workgroups</strong> → <code>primary</code> → <strong>Execution controls</strong> tab → <strong>Edit controls</strong>.</li>
 <li>Set <strong>Data scanned limit</strong> to 10 GB → <strong>Save</strong>.</li>
 </ol>
-<p><strong>Or in CloudShell:</strong></p>
+<p><strong>Or in CloudShell</strong></p>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="ex">aws</span> athena update-work-group <span class="at">--work-group</span> primary <span class="dt">\</span></span>
 <span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">--configuration-updates</span> BytesScannedCutoffPerQuery=10000000000</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <p>The command changes only the limit. The result location from <a href="https://github.com/cpsc436c-2026w1/b3-t1-athena-rides">Tutorial 1</a> stays.</p>
@@ -5977,7 +5977,7 @@ z-index: 1000;
 <li>Glue is priced per DPU-hour, billed per second, with a 1-minute minimum. Athena bills per TB of Data scanned. A nightly job pays for each run, busy day or quiet.</li>
 <li>The till export and the app’s <span class="chg">price-change exports</span> differ in format and in columns. Which lines of the job care about which?</li>
 <li>An EMR cluster takes minutes from launch until it is ready (L11), and those minutes are billed too. Each node bills per second while it is up, busy or idle, at the EC2 price plus the EMR price (L11).</li>
-<li>Dean runs head office’s jobs on a cluster that never shuts down, like his old car: always warm, always billing. If you argue for that, price it at 24 hours a day.</li>
+<li>Dean runs head office’s jobs on a cluster that never shuts down, like his old car, so it is always warm and always billing. If you argue for that, price it at 24 hours a day.</li>
 <li>Things to look up before promising anything: …</li>
 </ul>
 </div>
@@ -6217,15 +6217,15 @@ z-index: 1000;
 <div class="callout-body-container callout-body">
 <p>The four statements for task 3.5, one per place. Each shows a price and the time it carries.</p>
 <ol type="1">
-<li><p><strong>The app’s DynamoDB table</strong>, Data source <code>shelf</code> (a federated query):</p>
+<li><p><strong>Shelf-price app’s DynamoDB table</strong>, Data source <code>shelf</code> (a federated query):</p>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb16"><pre class="sourceCode sql code-with-copy"><code class="sourceCode sql"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> price_eur, updated_at <span class="kw">FROM</span> shelf.<span class="kw">default</span>.course_shelf_prices</span>
 <span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a><span class="kw">WHERE</span> store_id <span class="op">=</span> <span class="dv">43</span> <span class="kw">AND</span> product_code <span class="op">=</span> <span class="st">&#39;3068320011707&#39;</span>;</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div></li>
-<li><p><strong>The hourly export in your raw zone</strong>, in CloudShell:</p>
+<li><p><strong>Hourly export in your raw zone</strong>, in CloudShell:</p>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb17"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="ex">aws</span> s3 cp s3://436c-glue-<span class="op">&lt;</span>account<span class="op">&gt;</span>/branch/raw/price_events/dt=2026-10-16/hour=23/changes.jsonl <span class="at">-</span> <span class="kw">|</span> <span class="fu">grep</span> <span class="st">&#39;&quot;store_id&quot;: 43, &quot;product_code&quot;: &quot;3068320011707&quot;&#39;</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div></li>
 <li><p><strong>Your branch table</strong>, Data source <code>AwsDataCatalog</code>:</p>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb18"><pre class="sourceCode sql code-with-copy"><code class="sourceCode sql"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> price_eur, changed_at <span class="kw">FROM</span> branch.price_events</span>
 <span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a><span class="kw">WHERE</span> store_id <span class="op">=</span> <span class="dv">43</span> <span class="kw">AND</span> product_code <span class="op">=</span> <span class="st">&#39;3068320011707&#39;</span>;</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div></li>
-<li><p><strong>The company table</strong>, Data source <code>course</code>:</p>
+<li><p><strong>Company table</strong>, Data source <code>course</code>:</p>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb19"><pre class="sourceCode sql code-with-copy"><code class="sourceCode sql"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> current_unit_price_eur, observed_at <span class="kw">FROM</span> course.course_lake.current_prices</span>
 <span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a><span class="kw">WHERE</span> store_id <span class="op">=</span> <span class="dv">43</span> <span class="kw">AND</span> product_code <span class="op">=</span> <span class="st">&#39;3068320011707&#39;</span>;</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div></li>
 </ol>

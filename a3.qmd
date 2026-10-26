@@ -82,7 +82,7 @@ prices and store locations, so that the assignment has answers we can check.
 <tr><td>What is there</td><td><code>consumption</code> (the receipt lines), <code>products</code> (Open Food Facts records as published), <code>catalogue</code> (one row per product, with its grades), <code>stores</code>, <code>households</code>, <code>prices</code>, <code>current_prices</code></td><td>the branch's files as they arrive: till exports (CSV, one file a day), the shelf-price app's <span class="chg">price-change exports</span> (JSON Lines, one JSON record per line, one file an hour), changes to members' records (JSON Lines)</td><td>the tables you build: <code>branch.receipts</code>, <code>branch.price_events</code>, <code>branch.members</code></td></tr>
 <tr><td>Where it is</td><td>the course account's catalog, database <code>course_lake</code>, read in Athena as <code>course.course_lake.&lt;table&gt;</code></td><td>your bucket, <code>s3://436c-glue-&lt;account&gt;/branch/raw/</code></td><td>your Glue database <code>branch</code>, data under <code>s3://436c-glue-&lt;account&gt;/branch/tables/</code></td></tr>
 <tr><td>What you can do</td><td>read</td><td>read and add files</td><td>create, change, compact, delete</td></tr>
-<tr><td>What it costs you</td><td>Athena, $5.50 per TB of Data scanned, 10 MB minimum per query</td><td>S3 storage, far below a cent for the assignment's files</td><td>Athena per TB of Data scanned, and Glue $0.44 per DPU-hour for each load</td></tr>
+<tr><td>What it costs you</td><td>Athena, $5.50 per TB of Data scanned, 10 MB minimum per query</td><td>S3 storage, less than a cent for the assignment's files</td><td>Athena per TB of Data scanned, and Glue $0.44 per DPU-hour for each load</td></tr>
 </tbody>
 </table>
 ```
@@ -149,17 +149,17 @@ The first number is the run time in seconds, the second the DPU-seconds. If the 
 seconds by the job's DPUs: two G.1X workers are 2 DPUs. Glue 5.0 bills $0.44 per DPU-hour, per second, with a
 1-minute minimum.
 
-**Worked example: [Tutorial 2](https://github.com/cpsc436c-2026w1/b3-t2-glue-rides)'s rides.**
+**Worked example on [Tutorial 2](https://github.com/cpsc436c-2026w1/b3-t2-glue-rides)'s rides.**
 
 | Item | Measured | Arithmetic | Cost |
 |---|---|---|---|
-| Glue run, `rides-month` | `[189, 379.0]` | 379 / 3,600 × $0.44 | $0.046 a run |
-| Same run, every night for a year | | $0.046 × 365 | about $17 |
+| Glue run, `rides-month` | [about `[150, 300]`, between `[138, 276]` and `[170, 341]` over five runs]{.chg} | [300 / 3,600 × $0.44]{.chg} | [about $0.037 a run, $0.034 to $0.042]{.chg} |
+| Same run, every night for a year | | [$0.037 × 365]{.chg} | [about $13]{.chg} |
 | Week report in Athena | 13.1 MB | 13.1 MB / 1,000,000 MB per TB × $5.50 | $0.00007 |
 | `MERGE` on the zones | under 1 KB | billed as 10 MB: 10 / 1,000,000 × $5.50 | $0.000055 |
-| [Same job on an EMR cluster of three m7g.xlarge nodes, launched for the run]{.chg} | [189 s run, plus about 300 s from launch until ready (L11)]{.chg} | [(300 + 189) / 3,600 × $0.67]{.chg} | [$0.091 a run]{.chg} |
+| [Same job on an EMR cluster of three m7g.xlarge nodes, launched for the run]{.chg} | [about 150 s run, plus about 300 s from launch until ready (L11)]{.chg} | [(300 + 150) / 3,600 × $0.67]{.chg} | [about $0.084 a run]{.chg} |
 
-A run shorter than a minute is billed as a minute: a 40-second run on 2 DPUs costs 2 × 60 DPU-seconds.
+[The job's run time varies from run to run, so these costs are approximate. Your own run will land near them, not on them.]{.chg} A run shorter than a minute is billed as a minute: a 40-second run on 2 DPUs costs 2 × 60 DPU-seconds.
 [The EMR row assumes the job runs as long on the cluster as its Glue `ExecutionTime`. The cluster bills per second
 from launch until the job ends, at $0.67 an hour for the three nodes.]{.chg}
 
@@ -223,7 +223,7 @@ and a federated query. Here you make these moves on the grocer data, with less g
   the same way, such as `<your email>` and `<your price job>`.]{.chg}
 - The Data scanned limit you set in [Tutorial 1](https://github.com/cpsc436c-2026w1/b3-t1-athena-rides) (2 GB) is too low for task 1's report. Raise it to 10 GB for A3, as
   [[📋 Commands: Data scanned limit, once per account](#cmd-data-scanned-limit-once-per-account) in Setup shows]{.chg}.
-- [Every command is in a collapsed 📋 Commands box where a task first needs it. Read the task first, then open its
+- [The commands sit in collapsed 📋 Commands boxes, each where a task first needs it. Read the task first, then open its
   box.]{.chg}
 - [⭐ shows optional work. It earns no points, and you can leave it out.]{.chg}
 - [If a script stops with a line starting `STOP:`, run the setup it names first. If `SHOW TABLES IN shelf.default`
@@ -279,12 +279,12 @@ file**) and edit it on your laptop.
 [Tutorial 1](https://github.com/cpsc436c-2026w1/b3-t1-athena-rides) set a Data scanned limit of 2 GB on the workgroup `primary`. Task 1's report reads more, so raise the
 limit to 10 GB.
 
-**In the console:**
+**In the console**
 
 1. Athena → **Workgroups** → `primary` → **Execution controls** tab → **Edit controls**.
 2. Set **Data scanned limit** to 10 GB → **Save**.
 
-**Or in CloudShell:**
+**Or in CloudShell**
 
 ```bash
 aws athena update-work-group --work-group primary \
@@ -512,7 +512,7 @@ different engine. (R30, R31)
 - The till export and the app's [price-change exports]{.chg} differ in format and in columns. Which lines of the job care about which?
 - An EMR cluster takes minutes from launch until it is ready (L11), and those minutes are billed too. Each node bills
   per second while it is up, busy or idle, at the EC2 price plus the EMR price (L11).
-- Dean runs head office's jobs on a cluster that never shuts down, like his old car: always warm, always billing.
+- Dean runs head office's jobs on a cluster that never shuts down, like his old car, so it is always warm and always billing.
   If you argue for that, price it at 24 hours a day.
 - Things to look up before promising anything: …
 :::
@@ -763,12 +763,12 @@ diagram for what the app writes and how often, and R31 for when your load runs.]
 ::::: {.callout-note collapse="true" icon=false title="📋 Commands: One price in four places"}
 The four statements for task 3.5, one per place. Each shows a price and the time it carries.
 
-1. **The app's DynamoDB table**, Data source `shelf` (a federated query):
+1. **Shelf-price app's DynamoDB table**, Data source `shelf` (a federated query):
    ```sql
    SELECT price_eur, updated_at FROM shelf.default.course_shelf_prices
    WHERE store_id = 43 AND product_code = '3068320011707';
    ```
-2. **The hourly export in your raw zone**, in CloudShell:
+2. **Hourly export in your raw zone**, in CloudShell:
    ```bash
    aws s3 cp s3://436c-glue-<account>/branch/raw/price_events/dt=2026-10-16/hour=23/changes.jsonl - | grep '"store_id": 43, "product_code": "3068320011707"'
    ```
@@ -777,7 +777,7 @@ The four statements for task 3.5, one per place. Each shows a price and the time
    SELECT price_eur, changed_at FROM branch.price_events
    WHERE store_id = 43 AND product_code = '3068320011707';
    ```
-4. **The company table**, Data source `course`:
+4. **Company table**, Data source `course`:
    ```sql
    SELECT current_unit_price_eur, observed_at FROM course.course_lake.current_prices
    WHERE store_id = 43 AND product_code = '3068320011707';
