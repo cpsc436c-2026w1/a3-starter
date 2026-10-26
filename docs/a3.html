@@ -5655,9 +5655,9 @@ z-index: 1000;
 </tr>
 <tr class="odd">
 <td><span class="chg">Same job on an EMR cluster of three m7g.xlarge nodes, launched for the run</span></td>
-<td><span class="chg">189 s, plus 300 s from launch until ready</span></td>
+<td><span class="chg">189 s run, plus about 300 s from launch until ready (L11)</span></td>
 <td><span class="chg">(300 + 189) / 3,600 × $0.67</span></td>
-<td><span class="chg">$0.091 a night</span></td>
+<td><span class="chg">$0.091 a run</span></td>
 </tr>
 </tbody>
 </table>
@@ -5688,7 +5688,7 @@ z-index: 1000;
 <ul>
 <li>Region <code>ca-central-1</code> throughout. The company lakehouse is read-only to you.</li>
 <li>You need <a href="https://github.com/cpsc436c-2026w1/b3-t1-athena-rides">Tutorial 1</a>’s setup (the <code>course</code> data source and Athena’s result location) and L7’s <code>setup_glue.sh</code> (your bucket <code>436c-glue-&lt;account&gt;</code> and the Glue role <code>436c-glue-notebook</code>). <a href="https://github.com/cpsc436c-2026w1/b3-t2-glue-rides">Tutorial 2</a> is useful here: it runs a Glue load, <code>OPTIMIZE</code> and <code>VACUUM</code> on the rides.</li>
-<li><span class="chg"><a href="https://github.com/cpsc436c-2026w1/b3-t2-glue-rides">Tutorial 2</a> runs in this week’s tutorial session. Tasks 1, 3.1 and 3.2 can come before it, and tasks 2 and 4 practise the moves it shows on the rides.</span></li>
+<li><span class="chg"><a href="https://github.com/cpsc436c-2026w1/b3-t2-glue-rides">Tutorial 2</a> runs in the tutorial session of the week of 26 October. Tasks 1, 3.1 and 3.2 can come before it. Tasks 2, 3.4 and 4 make on the grocer data the moves it shows on the rides.</span></li>
 <li>Get the starter files into CloudShell: <code>git clone https://github.com/cpsc436c-2026w1/a3-starter.git &amp;&amp; cd a3-starter</code>.</li>
 <li><span class="chg"><code>&lt;account&gt;</code> and <code>&lt;your account id&gt;</code> both stand for your 12-digit account number. In CloudShell, <code>aws sts get-caller-identity --query Account --output text</code> prints it. Before you run a command, replace both with that number, and replace <code>&lt;any name&gt;</code> with a name you choose. Replace every other word in angle brackets in a command the same way, such as <code>&lt;your email&gt;</code> and <code>&lt;your price job&gt;</code>.</span></li>
 <li>The Data scanned limit you set in <a href="https://github.com/cpsc436c-2026w1/b3-t1-athena-rides">Tutorial 1</a> (2 GB) is too low for task 1’s report. Raise it to 10 GB for A3, as <span class="chg"><a href="#cmd-data-scanned-limit-once-per-account">📋 Commands: Data scanned limit, once per account</a> in Setup shows</span>.</li>

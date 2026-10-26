@@ -157,7 +157,7 @@ seconds by the job's DPUs: two G.1X workers are 2 DPUs. Glue 5.0 bills $0.44 per
 | Same run, every night for a year | | $0.046 × 365 | about $17 |
 | Week report in Athena | 13.1 MB | 13.1 MB / 1,000,000 MB per TB × $5.50 | $0.00007 |
 | `MERGE` on the zones | under 1 KB | billed as 10 MB: 10 / 1,000,000 × $5.50 | $0.000055 |
-| [Same job on an EMR cluster of three m7g.xlarge nodes, launched for the run]{.chg} | [189 s, plus 300 s from launch until ready]{.chg} | [(300 + 189) / 3,600 × $0.67]{.chg} | [$0.091 a night]{.chg} |
+| [Same job on an EMR cluster of three m7g.xlarge nodes, launched for the run]{.chg} | [189 s run, plus about 300 s from launch until ready (L11)]{.chg} | [(300 + 189) / 3,600 × $0.67]{.chg} | [$0.091 a run]{.chg} |
 
 A run shorter than a minute is billed as a minute: a 40-second run on 2 DPUs costs 2 × 60 DPU-seconds.
 [The EMR row assumes the job runs as long on the cluster as its Glue `ExecutionTime`. The cluster bills per second
@@ -214,8 +214,8 @@ and a federated query. Here you make these moves on the grocer data, with less g
   bucket `436c-glue-<account>` and the Glue role `436c-glue-notebook`). [Tutorial 2](https://github.com/cpsc436c-2026w1/b3-t2-glue-rides)
   is useful here: it runs a Glue load,
   `OPTIMIZE` and `VACUUM` on the rides.
-- [[Tutorial 2](https://github.com/cpsc436c-2026w1/b3-t2-glue-rides) runs in this week's tutorial session. Tasks 1, 3.1 and 3.2 can come before it, and tasks 2
-  and 4 practise the moves it shows on the rides.]{.chg}
+- [[Tutorial 2](https://github.com/cpsc436c-2026w1/b3-t2-glue-rides) runs in the tutorial session of the week of 26 October. Tasks 1, 3.1 and 3.2 can come before it.
+  Tasks 2, 3.4 and 4 make on the grocer data the moves it shows on the rides.]{.chg}
 - Get the starter files into CloudShell: `git clone https://github.com/cpsc436c-2026w1/a3-starter.git && cd a3-starter`.
 - [`<account>` and `<your account id>` both stand for your 12-digit account number. In CloudShell, `aws sts
   get-caller-identity --query Account --output text` prints it. Before you run a command, replace both with that
