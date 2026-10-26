@@ -157,8 +157,11 @@ seconds by the job's DPUs: two G.1X workers are 2 DPUs. Glue 5.0 bills $0.44 per
 | Same run, every night for a year | | $0.046 × 365 | about $17 |
 | Week report in Athena | 13.1 MB | 13.1 MB / 1,000,000 MB per TB × $5.50 | $0.00007 |
 | `MERGE` on the zones | under 1 KB | billed as 10 MB: 10 / 1,000,000 × $5.50 | $0.000055 |
+| [Same job on an EMR cluster of three m7g.xlarge nodes, launched for the run]{.chg} | [189 s, plus 300 s from launch until ready]{.chg} | [(300 + 189) / 3,600 × $0.67]{.chg} | [$0.091 a night]{.chg} |
 
 A run shorter than a minute is billed as a minute: a 40-second run on 2 DPUs costs 2 × 60 DPU-seconds.
+[The EMR row assumes the job runs as long on the cluster as its Glue `ExecutionTime`. The cluster bills per second
+from launch until the job ends, at $0.67 an hour for the three nodes.]{.chg}
 
 :::::
 
@@ -200,7 +203,7 @@ from tasks 2 and 3, so it comes last. The maintenance plan in task 4 needs your 
 access at all, so you can write it with the console closed.
 
 The tutorials practised most moves in this assignment on the New York rides: [Tutorial 1](https://github.com/cpsc436c-2026w1/b3-t1-athena-rides) the query, a copy, a
-delete, snapshots, time travel, a load run twice, a new column and a join; [Tutorial 2](https://github.com/cpsc436c-2026w1/b3-t2-glue-rides) a Glue load, `OPTIMIZE` and
+delete, snapshots, time travel, a load run twice, a new column and a join; [Tutorial 2](https://github.com/cpsc436c-2026w1/b3-t2-glue-rides) a Glue load[ and its price, a `DELETE`]{.chg}, `OPTIMIZE` and
 `VACUUM`. [The 📋 Commands boxes show]{.chg} the moves they did not practise [in their main steps. These are]{.chg} `MERGE`
 [([Tutorial 2](https://github.com/cpsc436c-2026w1/b3-t2-glue-rides)'s extra exercise)]{.chg}, `UNLOAD`, changing a job from CSV to JSON Lines, an S3 Lifecycle rule
 and a federated query. Here you make these moves on the grocer data, with less given to you.
@@ -211,6 +214,8 @@ and a federated query. Here you make these moves on the grocer data, with less g
   bucket `436c-glue-<account>` and the Glue role `436c-glue-notebook`). [Tutorial 2](https://github.com/cpsc436c-2026w1/b3-t2-glue-rides)
   is useful here: it runs a Glue load,
   `OPTIMIZE` and `VACUUM` on the rides.
+- [[Tutorial 2](https://github.com/cpsc436c-2026w1/b3-t2-glue-rides) runs in this week's tutorial session. Tasks 1, 3.1 and 3.2 can come before it, and tasks 2
+  and 4 practise the moves it shows on the rides.]{.chg}
 - Get the starter files into CloudShell: `git clone https://github.com/cpsc436c-2026w1/a3-starter.git && cd a3-starter`.
 - [`<account>` and `<your account id>` both stand for your 12-digit account number. In CloudShell, `aws sts
   get-caller-identity --query Account --output text` prints it. Before you run a command, replace both with that
@@ -423,6 +428,8 @@ whole table (`sum(column_sizes[<field id>])` over all of `"consumption$files"` a
 estimate in your task 1 row of `results.csv` before you run the report. How far is it
 from the size of the whole table? [The four-column estimate and the whole-table sum are both in bytes, so divide each by 1,000,000 to get MB. The
 estimate goes in the `predicted` cell of the Data scanned row, and the whole-table size goes in your PDF.]{.chg}
+[[Tutorial 2's step 2](https://github.com/cpsc436c-2026w1/b3-t2-glue-rides#step-2-check-what-the-job-built) practises the same prediction from `column_sizes`
+on the rides.]{.chg}
 
 📚 **Lecture:** L10, manifests; L11, the 🔍 box on `column_sizes` and `UNLOAD`; [Tutorial 1](https://github.com/cpsc436c-2026w1/b3-t1-athena-rides), metadata tables and predict
 then query.
@@ -949,6 +956,8 @@ A Lifecycle rule tells S3 to delete objects under a prefix once they reach an ag
 The rule deletes a file by its age in S3[, and never on request. S3 adds the 30 days to the time the file was written
 to your bucket, rounds up to the next midnight UTC, and removes the file in the background some time after that. A
 file that `setup_a3.sh` copied counts its age from the copy, not from the day in its folder name.]{.chg}
+[The 128 KB minimum from L11 applies when a rule moves objects to another storage class, and it does not apply when a
+rule expires them by age, so this rule deletes small files too.]{.chg}
 
 :::::
 
