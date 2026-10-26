@@ -450,7 +450,7 @@ all others, and `ab_share` is the spend on products graded `a` or `b` in `catalo
 and the grades are lower-case letters)]{.chg}, divided by all spend. Run it,
 record Data scanned and run time [in the `measured` cells of your two task 1 rows]{.chg}, then deliver it to head
 office. `UNLOAD` runs a query and writes its result as files to an S3 location. [In the Athena query editor, paste your
-report query inside the brackets, without its final `;`:]{.chg}
+report query inside the parentheses, without its final `;`:]{.chg}
 
 ```sql
 UNLOAD (<your report query>)
