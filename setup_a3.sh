@@ -9,7 +9,7 @@ set -euo pipefail
 export AWS_DEFAULT_REGION=ca-central-1
 ACCOUNT=$(aws sts get-caller-identity --query Account --output text)
 ROLE=436c-glue-notebook
-BUCKET=${BUCKET:-436c-glue-$ACCOUNT}
+BUCKET=436c-glue-$ACCOUNT   # always the Glue tutorial bucket; ignores a BUCKET set by A2 in ~/.bashrc
 SRC=436c-2026w1-public/a3/raw
 JOB=branch-receipts
 DAY=2026-10-16
