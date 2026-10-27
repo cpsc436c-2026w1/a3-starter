@@ -1,5 +1,5 @@
 ---
-title: "Assignment 3. A branch lake beside the company lakehouse"
+title: "Assignment 3. Building and querying data lakehouse"
 subtitle: "How do you build, change and maintain your own tables next to data you can only read?"
 date: last-modified
 toc: true

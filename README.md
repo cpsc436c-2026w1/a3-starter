@@ -1,4 +1,4 @@
-# A3: a branch lake beside the company lakehouse
+# A3: Building and querying data lakehouse
 
 The assignment: <https://cpsc436c-2026w1.github.io/a3-starter/>
 
