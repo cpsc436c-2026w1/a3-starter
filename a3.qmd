@@ -23,8 +23,8 @@ format:
 You have joined the data team of the Lyon branch of a national grocery chain. Head office runs the company
 lakehouse (a lake whose tables have a table format and a catalog, L10), which holds:
 
-- three years of receipt lines from every store's loyalty cards (the table `consumption`), kept as Parquet files in an Iceberg table, one partition
-  per month;
+- three years of receipt lines from every store's loyalty cards (the table `consumption`), which is an Iceberg table of Parquet files with one
+  partition per month;
 - the product catalogue, which is Open Food Facts, the open database of products sold in France, with each product's
   Nutri-Score and NOVA grade;
 - the stores, and the households in the loyalty programme (the branch calls them members);
@@ -101,16 +101,16 @@ and L12 (DynamoDB); [Tutorial 1](https://github.com/cpsc436c-2026w1/b3-t1-athena
 
 ## Director's requests, as requirements
 
-The branch director's requests and head office's data-use rules, written as requirements in L9's EARS form (WHEN / IF … THEN … SHALL). The
+The branch director's requests and head office's data-use rules are written as requirements in L9's EARS form (WHEN / IF … THEN … SHALL). The
 system is the branch lake you build. Each task below says which requirements it works on.
 
 | | Requirement | Its constraints | Tested by | Task |
 |:--|:--|:--|:--|:--|
 | R10 | BRANCH LAKE SHALL read company data only from the company lakehouse, and keep the branch's own data in the branch's account | the company tables are read-only to every branch | the company tables' snapshot lists do not change; your tables are in database `branch` | all |
 | R11 | BRANCH LAKE SHALL copy only the branch's own stores and members from the company lakehouse | Lyon stores are those with `city` = 'Lyon'. Lyon members have `is_lyon` true (data-use rule 1) | every row of every copy you make meets the Lyon condition | 3 |
-| R20 | WHEN the branch director asks for the monthly healthier-basket report<br>BRANCH LAKE SHALL deliver, for each month, the share of spend on Nutri-Score A and B products for Lyon households and for the rest of the company | columns `month`, `segment`, `ab_share`; JSON Lines, in head office's inbox; its Data scanned predicted before it runs | head office's reply (accepted, or returned with the reason); your prediction row in `results.csv` | 1 |
+| R20 | WHEN the branch director asks for the monthly healthier-basket report<br>BRANCH LAKE SHALL deliver, for each month, the share of spend on Nutri-Score A and B products for Lyon households and the rest of the company | columns `month`, `segment`, `ab_share`; JSON Lines, in head office's inbox; its Data scanned predicted before it runs | head office's reply (accepted, or returned with the reason); your prediction row in `results.csv` | 1 |
 | R30 | WHEN the day's till export lands in the raw zone<br>BRANCH LAKE SHALL load it into `branch.receipts` | partitioned by day | rows in `branch.receipts` for that day against the row count in `_files.json` | 2 |
-| R31 | WHEN the nightly price load runs<br>BRANCH LAKE SHALL load every price-change export since the last successful load into `branch.price_events` | every night; the cost of a month of nightly runs known before the director approves it | rows loaded against lines in the export files; your price table for Glue and for an EMR cluster | 2 |
+| R31 | WHEN the nightly price load runs<br>BRANCH LAKE SHALL load every price-change export since the last successful load into `branch.price_events` | every night; the cost of a month of nightly runs known before the director approves it | rows loaded against lines in the export files; your price table for Glue and an EMR cluster | 2 |
 | R40 | IF a load runs a second time on the same input<br>THEN BRANCH LAKE SHALL keep one copy of each row | applies to both loads | rows for the input against the input's own count after a second run; the snapshot list | 3 |
 | R50 | WHEN a change file for the branch's members arrives<br>BRANCH LAKE SHALL apply it to `branch.members` | updates and new members matched on `household_id`; new column `marketing_consent` added | members updated and inserted against the change file; members not in the change file unchanged; the new column present | 3 |
 | R51 | IF a member asks to be erased<br>THEN BRANCH LAKE SHALL remove the member from every table and every file the branch keeps | the member's record and receipt lines; within 7 days (data-use rule 2) | 7 days after the request: a query for the member in every branch table, at the current snapshot and at older ones | 3, 4 |
@@ -417,7 +417,7 @@ the table's manifests before you run it. (R20, R70)
 
 The branch director wants to show the regional board whether Lyon households buy healthier baskets than the rest
 of the company, and whether that is changing: for each of the 36 months, the share of spend on Nutri-Score A and B
-products, for Lyon households and for the rest.
+products, for Lyon households and the rest.
 
 ## 1.1 Predict
 
@@ -456,7 +456,7 @@ columns `month`, `segment` and `ab_share`: `segment` is `lyon` for households wi
 all others, and `ab_share` is the spend on products graded `a` or `b` in `catalogue` [(`DESCRIBE course.course_lake.catalogue` names its Nutri-Score column,
 and the grades are lower-case letters)]{.chg}, divided by all spend. Run it,
 record Data scanned and run time [in the `measured` cells of your two task 1 rows]{.chg}, then deliver it to head
-office. `UNLOAD` runs a query and writes its result as files to an S3 location. [In the Athena query editor, paste your
+office. `UNLOAD` runs a query and writes its result as files to an S3 folder. [In the Athena query editor, paste your
 report query inside the parentheses, without its final `;`:]{.chg}
 
 ```sql
@@ -508,7 +508,7 @@ Our run's Data scanned was 7.6 GB [(about 7,600 MB)]{.chg}, in about 15 seconds,
 
 ## 1.3 Explain the gap
 
-[Write one paragraph. Why]{.chg} did the report read what it did, compared with your estimate and with the whole
+[Write one paragraph. Why]{.chg} did the report read what it did, compared with your estimate and the whole
 table? Name the mechanism that kept the other columns out of the read, and say whether any partition was skipped, and
 why. [Then do the reverse.
 `task1_variants.md` holds three versions of the query (one more column, one month only, the join without the
@@ -525,7 +525,7 @@ different engine. (R30, R31)
   format records which files form the table, and the catalog points Athena at the table's current metadata file (L10).
 - Glue is priced per DPU-hour, billed per second, with a 1-minute minimum. Athena bills per TB of Data scanned. A
   nightly job pays for each run, busy day or quiet.
-- The till export and the app's [price-change exports]{.chg} differ in format and in columns. Which lines of the job care about which?
+- The till export and the app's [price-change exports]{.chg} differ in format and columns. Which lines of the job care about which?
 - An EMR cluster takes minutes from launch until it is ready (L11), and those minutes are billed too. Each node bills
   per second while it is up, busy or idle, at the EC2 price plus the EMR price (L11).
 - Dean runs head office's jobs on a cluster that never shuts down, like his old car, so it is always warm and always billing.
@@ -703,7 +703,7 @@ snapshots the table has afterwards. Then run it, count, and list the snapshots.
 
 ::::: {.callout-note collapse="true" icon=false title="📋 Commands: MERGE"}
 `MERGE` matches each incoming row to the table by a key. It updates the rows that match and inserts the rest.
-The example is [Tutorial 2](https://github.com/cpsc436c-2026w1/b3-t2-glue-rides)'s extra exercise, run in the **Athena query editor**. Its `sql/06_extra_merge.sql` creates
+The example is [Tutorial 2](https://github.com/cpsc436c-2026w1/b3-t2-glue-rides)'s extra exercise, which you run in the **Athena query editor**. Its `sql/06_extra_merge.sql` creates
 both tables, so if you did not run it, read the statement as a pattern.
 
 ```sql

@@ -5400,7 +5400,7 @@ z-index: 1000;
 <h1>💼 Case</h1>
 <p>You have joined the data team of the Lyon branch of a national grocery chain. Head office runs the company lakehouse (a lake whose tables have a table format and a catalog, L10), which holds:</p>
 <ul>
-<li>three years of receipt lines from every store’s loyalty cards (the table <code>consumption</code>), kept as Parquet files in an Iceberg table, one partition per month;</li>
+<li>three years of receipt lines from every store’s loyalty cards (the table <code>consumption</code>), which is an Iceberg table of Parquet files with one partition per month;</li>
 <li>the product catalogue, which is Open Food Facts, the open database of products sold in France, with each product’s Nutri-Score and NOVA grade;</li>
 <li>the stores, and the households in the loyalty programme (the branch calls them members);</li>
 <li>price observations from Open Prices, crowd-sourced and real.</li>
@@ -5485,7 +5485,7 @@ z-index: 1000;
 </section>
 <section id="directors-requests-as-requirements" class="level2">
 <h2 class="anchored" data-anchor-id="directors-requests-as-requirements">Director’s requests, as requirements</h2>
-<p>The branch director’s requests and head office’s data-use rules, written as requirements in L9’s EARS form (WHEN / IF … THEN … SHALL). The system is the branch lake you build. Each task below says which requirements it works on.</p>
+<p>The branch director’s requests and head office’s data-use rules are written as requirements in L9’s EARS form (WHEN / IF … THEN … SHALL). The system is the branch lake you build. Each task below says which requirements it works on.</p>
 <table class="caption-top table">
 <colgroup>
 <col style="width: 5%">
@@ -5520,7 +5520,7 @@ z-index: 1000;
 </tr>
 <tr class="odd">
 <td style="text-align: left;">R20</td>
-<td style="text-align: left;">WHEN the branch director asks for the monthly healthier-basket report<br>BRANCH LAKE SHALL deliver, for each month, the share of spend on Nutri-Score A and B products for Lyon households and for the rest of the company</td>
+<td style="text-align: left;">WHEN the branch director asks for the monthly healthier-basket report<br>BRANCH LAKE SHALL deliver, for each month, the share of spend on Nutri-Score A and B products for Lyon households and the rest of the company</td>
 <td style="text-align: left;">columns <code>month</code>, <code>segment</code>, <code>ab_share</code>; JSON Lines, in head office’s inbox; its Data scanned predicted before it runs</td>
 <td style="text-align: left;">head office’s reply (accepted, or returned with the reason); your prediction row in <code>results.csv</code></td>
 <td style="text-align: left;">1</td>
@@ -5536,7 +5536,7 @@ z-index: 1000;
 <td style="text-align: left;">R31</td>
 <td style="text-align: left;">WHEN the nightly price load runs<br>BRANCH LAKE SHALL load every price-change export since the last successful load into <code>branch.price_events</code></td>
 <td style="text-align: left;">every night; the cost of a month of nightly runs known before the director approves it</td>
-<td style="text-align: left;">rows loaded against lines in the export files; your price table for Glue and for an EMR cluster</td>
+<td style="text-align: left;">rows loaded against lines in the export files; your price table for Glue and an EMR cluster</td>
 <td style="text-align: left;">2</td>
 </tr>
 <tr class="even">
@@ -5894,7 +5894,7 @@ z-index: 1000;
 </ul>
 </div>
 </div>
-<p>The branch director wants to show the regional board whether Lyon households buy healthier baskets than the rest of the company, and whether that is changing: for each of the 36 months, the share of spend on Nutri-Score A and B products, for Lyon households and for the rest.</p>
+<p>The branch director wants to show the regional board whether Lyon households buy healthier baskets than the rest of the company, and whether that is changing: for each of the 36 months, the share of spend on Nutri-Score A and B products, for Lyon households and the rest.</p>
 <section id="predict" class="level2">
 <h2 class="anchored" data-anchor-id="predict">1.1 Predict</h2>
 <p>In L10 you met the manifest: a row per data file, with its partition value, its row count, and the minimum and maximum of each column. The same row also holds how many bytes each column takes in that file. Athena shows the manifests’ rows as the table <code>&quot;consumption$files&quot;</code>, one row per data file. <code>column_sizes</code> holds the bytes per column, keyed by the column’s field id, the number Iceberg gives a column when it is added (L11). No column of <code>consumption</code> has been added or dropped since the table was made, so its field ids follow the order in which <code>DESCRIBE course.course_lake.consumption</code> lists the columns (1 is <code>event_id</code>, 2 is <code>event_ts</code>, and so on). In the Athena editor, run that <code>DESCRIBE</code>, then look at three rows of the manifests:</p>
@@ -5906,7 +5906,7 @@ z-index: 1000;
 </section>
 <section id="measure" class="level2">
 <h2 class="anchored" data-anchor-id="measure">1.2 Measure</h2>
-<p>Complete the report in <code>report_task1.sql</code>: the condition that picks products graded A or B, and the <code>GROUP BY</code>, are left for you. Its result has the columns <code>month</code>, <code>segment</code> and <code>ab_share</code>: <code>segment</code> is <code>lyon</code> for households with <code>is_lyon</code> true and <code>rest</code> for all others, and <code>ab_share</code> is the spend on products graded <code>a</code> or <code>b</code> in <code>catalogue</code> <span class="chg">(<code>DESCRIBE course.course_lake.catalogue</code> names its Nutri-Score column, and the grades are lower-case letters)</span>, divided by all spend. Run it, record Data scanned and run time <span class="chg">in the <code>measured</code> cells of your two task 1 rows</span>, then deliver it to head office. <code>UNLOAD</code> runs a query and writes its result as files to an S3 location. <span class="chg">In the Athena query editor, paste your report query inside the parentheses, without its final <code>;</code>:</span></p>
+<p>Complete the report in <code>report_task1.sql</code>: the condition that picks products graded A or B, and the <code>GROUP BY</code>, are left for you. Its result has the columns <code>month</code>, <code>segment</code> and <code>ab_share</code>: <code>segment</code> is <code>lyon</code> for households with <code>is_lyon</code> true and <code>rest</code> for all others, and <code>ab_share</code> is the spend on products graded <code>a</code> or <code>b</code> in <code>catalogue</code> <span class="chg">(<code>DESCRIBE course.course_lake.catalogue</code> names its Nutri-Score column, and the grades are lower-case letters)</span>, divided by all spend. Run it, record Data scanned and run time <span class="chg">in the <code>measured</code> cells of your two task 1 rows</span>, then deliver it to head office. <code>UNLOAD</code> runs a query and writes its result as files to an S3 folder. <span class="chg">In the Athena query editor, paste your report query inside the parentheses, without its final <code>;</code>:</span></p>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb12"><pre class="sourceCode sql code-with-copy"><code class="sourceCode sql"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>UNLOAD (<span class="op">&lt;</span>your report <span class="kw">query</span><span class="op">&gt;</span>)</span>
 <span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a><span class="kw">TO</span> <span class="st">&#39;s3://436c-hq-inbox-940482406111/inbox/&lt;your account id&gt;/task1-&lt;any name&gt;/&#39;</span></span>
 <span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a><span class="kw">WITH</span> (format <span class="op">=</span> <span class="st">&#39;JSON&#39;</span>, compression <span class="op">=</span> <span class="st">&#39;NONE&#39;</span>);</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
@@ -5959,7 +5959,7 @@ z-index: 1000;
 </section>
 <section id="explain-the-gap" class="level2">
 <h2 class="anchored" data-anchor-id="explain-the-gap">1.3 Explain the gap</h2>
-<p><span class="chg">Write one paragraph. Why</span> did the report read what it did, compared with your estimate and with the whole table? Name the mechanism that kept the other columns out of the read, and say whether any partition was skipped, and why. <span class="chg">Then do the reverse. <code>task1_variants.md</code> holds three versions of the query (one more column, one month only, the join without the catalogue) and three measured Data scanned figures. Match each version to its figure and say why it reads what it reads.</span></p>
+<p><span class="chg">Write one paragraph. Why</span> did the report read what it did, compared with your estimate and the whole table? Name the mechanism that kept the other columns out of the read, and say whether any partition was skipped, and why. <span class="chg">Then do the reverse. <code>task1_variants.md</code> holds three versions of the query (one more column, one month only, the join without the catalogue) and three measured Data scanned figures. Match each version to its figure and say why it reads what it reads.</span></p>
 </section>
 </section>
 <section id="task-2.-loading-the-branchs-files" class="level1">
@@ -5978,7 +5978,7 @@ z-index: 1000;
 <ul>
 <li>A load job does three things: read the raw file, transform its columns into the table’s, write the rows. The table format records which files form the table, and the catalog points Athena at the table’s current metadata file (L10).</li>
 <li>Glue is priced per DPU-hour, billed per second, with a 1-minute minimum. Athena bills per TB of Data scanned. A nightly job pays for each run, busy day or quiet.</li>
-<li>The till export and the app’s <span class="chg">price-change exports</span> differ in format and in columns. Which lines of the job care about which?</li>
+<li>The till export and the app’s <span class="chg">price-change exports</span> differ in format and columns. Which lines of the job care about which?</li>
 <li>An EMR cluster takes minutes from launch until it is ready (L11), and those minutes are billed too. Each node bills per second while it is up, busy or idle, at the EC2 price plus the EMR price (L11).</li>
 <li>Dean runs head office’s jobs on a cluster that never shuts down, like his old car, so it is always warm and always billing. If you argue for that, price it at 24 hours a day.</li>
 <li>Things to look up before promising anything: …</li>
@@ -6138,7 +6138,7 @@ z-index: 1000;
 </div>
 <div id="callout-13" class="callout-13-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
-<p><code>MERGE</code> matches each incoming row to the table by a key. It updates the rows that match and inserts the rest. The example is <a href="https://github.com/cpsc436c-2026w1/b3-t2-glue-rides">Tutorial 2</a>’s extra exercise, run in the <strong>Athena query editor</strong>. Its <code>sql/06_extra_merge.sql</code> creates both tables, so if you did not run it, read the statement as a pattern.</p>
+<p><code>MERGE</code> matches each incoming row to the table by a key. It updates the rows that match and inserts the rest. The example is <a href="https://github.com/cpsc436c-2026w1/b3-t2-glue-rides">Tutorial 2</a>’s extra exercise, which you run in the <strong>Athena query editor</strong>. Its <code>sql/06_extra_merge.sql</code> creates both tables, so if you did not run it, read the statement as a pattern.</p>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb14"><pre class="sourceCode sql code-with-copy"><code class="sourceCode sql"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="kw">MERGE</span> <span class="kw">INTO</span> tutorial.zones t</span>
 <span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a><span class="kw">USING</span> tutorial.zone_changes c</span>
 <span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a><span class="kw">ON</span> t.locationid <span class="op">=</span> c.locationid</span>

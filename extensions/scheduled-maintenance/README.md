@@ -1,7 +1,7 @@
 # Scheduled maintenance: task 4's plan, running every night
 
-EventBridge Scheduler (L11) calls Athena's `StartQueryExecution` directly, with no Lambda in between: `OPTIMIZE` at
-02:00 and `VACUUM` at 02:30, Vancouver time, on `branch.members`, `branch.receipts` and `branch.price_events`. Each
+EventBridge Scheduler (L11) calls Athena's `StartQueryExecution` directly, so you don't need a Lambda in between. It runs `OPTIMIZE`
+at 02:00 and `VACUUM` at 02:30, Vancouver time, on `branch.members`, `branch.receipts` and `branch.price_events`. Each
 statement is its own schedule, because Athena runs one statement per call. The role `436c-maintenance` lets the
 scheduler run them on your tables.
 
