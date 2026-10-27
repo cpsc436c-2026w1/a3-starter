@@ -5353,11 +5353,11 @@ z-index: 1000;
   <li><a href="#expire-old-snapshots" id="toc-expire-old-snapshots" class="nav-link" data-scroll-target="#expire-old-snapshots">4.2 Expire old snapshots</a></li>
   <li><a href="#plan" id="toc-plan" class="nav-link" data-scroll-target="#plan">4.3 Plan</a></li>
   </ul></li>
-  <li><a href="#going-further-optional" id="toc-going-further-optional" class="nav-link" data-scroll-target="#going-further-optional"><span class="chg">⭐</span> Going further (optional)</a>
+  <li><a href="#going-further-optional" id="toc-going-further-optional" class="nav-link" data-scroll-target="#going-further-optional">⭐ Going further (optional)</a>
   <ul class="collapse">
-  <li><a href="#optional-a.-quality-gate-for-your-branch-lake" id="toc-optional-a.-quality-gate-for-your-branch-lake" class="nav-link" data-scroll-target="#optional-a.-quality-gate-for-your-branch-lake"><span class="chg">⭐</span> Optional A. Quality gate for your branch lake</a></li>
-  <li><a href="#optional-b.-nightly-maintenance" id="toc-optional-b.-nightly-maintenance" class="nav-link" data-scroll-target="#optional-b.-nightly-maintenance"><span class="chg">⭐</span> Optional B. Nightly maintenance</a></li>
-  <li><a href="#optional-c.-glue-6.0-for-your-branch-jobs" id="toc-optional-c.-glue-6.0-for-your-branch-jobs" class="nav-link" data-scroll-target="#optional-c.-glue-6.0-for-your-branch-jobs"><span class="chg">🔬 Optional C. Glue 6.0 for your branch jobs</span></a></li>
+  <li><a href="#optional-a.-quality-gate-for-your-branch-lake" id="toc-optional-a.-quality-gate-for-your-branch-lake" class="nav-link" data-scroll-target="#optional-a.-quality-gate-for-your-branch-lake">⭐ Optional A. Quality gate for your branch lake</a></li>
+  <li><a href="#optional-b.-nightly-maintenance" id="toc-optional-b.-nightly-maintenance" class="nav-link" data-scroll-target="#optional-b.-nightly-maintenance">⭐ Optional B. Nightly maintenance</a></li>
+  <li><a href="#optional-c.-glue-6.0-for-your-branch-jobs" id="toc-optional-c.-glue-6.0-for-your-branch-jobs" class="nav-link" data-scroll-target="#optional-c.-glue-6.0-for-your-branch-jobs">🔬 Optional C. Glue 6.0 for your branch jobs</a></li>
   </ul></li>
   <li><a href="#submission-and-shutdown" id="toc-submission-and-shutdown" class="nav-link" data-scroll-target="#submission-and-shutdown">Submission and shutdown</a>
   <ul class="collapse">
@@ -5447,7 +5447,7 @@ z-index: 1000;
 <tr class="even">
 <th data-quarto-table-cell-role="th">Bronze: the raw zone<br>
 (files as they arrived, L8)</th>
-<th data-quarto-table-cell-role="th">Silver: <span class="chg">the branch tables</span><br>
+<th data-quarto-table-cell-role="th">Silver: the branch tables<br>
 (Iceberg tables, typed and queryable, L8, L10)</th>
 </tr>
 </thead>
@@ -5455,7 +5455,7 @@ z-index: 1000;
 <tr class="odd">
 <td>What is there</td>
 <td><code>consumption</code> (the receipt lines), <code>products</code> (Open Food Facts records as published), <code>catalogue</code> (one row per product, with its grades), <code>stores</code>, <code>households</code>, <code>prices</code>, <code>current_prices</code></td>
-<td>the branch&#39;s files as they arrive: till exports (CSV, one file a day), the shelf-price app&#39;s <span class="chg">price-change exports</span> (JSON Lines, one JSON record per line, one file an hour), changes to members&#39; records (JSON Lines)</td>
+<td>the branch&#39;s files as they arrive: till exports (CSV, one file a day), the shelf-price app&#39;s price-change exports (JSON Lines, one JSON record per line, one file an hour), changes to members&#39; records (JSON Lines)</td>
 <td>the tables you build: <code>branch.receipts</code>, <code>branch.price_events</code>, <code>branch.members</code></td>
 </tr>
 <tr class="even">
@@ -5479,7 +5479,7 @@ z-index: 1000;
 </tbody>
 </table>
 </div>
-<p><span class="chg">The report you deliver to head office in task 1 is gold, the level shaped for one consumer. Here it is built straight from head office’s tables. L8 and Strengholt’s <a href="https://learning.oreilly.com/library/view/building-medallion-architectures/9781098178826/ch01.html"><em>Building Medallion Architectures</em>, ch. 1, “What Is a Medallion Architecture?”</a> describe the three levels.</span></p>
+<p>The report you deliver to head office in task 1 is gold, the level shaped for one consumer. Here it is built straight from head office’s tables. L8 and Strengholt’s <a href="https://learning.oreilly.com/library/view/building-medallion-architectures/9781098178826/ch01.html"><em>Building Medallion Architectures</em>, ch. 1, “What Is a Medallion Architecture?”</a> describe the three levels.</p>
 <p>The shelf-price app also keeps the price each Lyon store shows right now in its own DynamoDB table, which Athena reads through a Lambda connector as <code>shelf.default.course_shelf_prices</code>. That is a federated query: Athena reads a source outside the lake through a connector (L10).</p>
 <p>📚 <strong>Lecture:</strong> L10 (Iceberg tables, catalogs, engines), L11 (building, changing and maintaining tables, their bills) and L12 (DynamoDB); <a href="https://github.com/cpsc436c-2026w1/b3-t1-athena-rides">Tutorial 1</a> ran a load twice.</p>
 </section>
@@ -5563,7 +5563,7 @@ z-index: 1000;
 <tr class="odd">
 <td style="text-align: left;">R60</td>
 <td style="text-align: left;">WHEN the shelf-price app changes a price<br>BRANCH LAKE SHALL show the new price in the branch’s reports</td>
-<td style="text-align: left;"><span class="chg">The director has not given a time. Your answer to task 3 tells them what each place can promise.</span></td>
+<td style="text-align: left;">The director has not given a time. Your answer to task 3 tells them what each place can promise.</td>
 <td style="text-align: left;">the time between the app’s change and the price in each place</td>
 <td style="text-align: left;">3</td>
 </tr>
@@ -5584,7 +5584,7 @@ z-index: 1000;
 <tr class="even">
 <td style="text-align: left;">R90</td>
 <td style="text-align: left;">BRANCH LAKE SHALL cost little</td>
-<td style="text-align: left;"><span class="chg">your plan proposes a monthly budget and says what the director gets for it. Athena bills a query only when it runs</span></td>
+<td style="text-align: left;">your plan proposes a monthly budget and says what the director gets for it. Athena bills a query only when it runs</td>
 <td style="text-align: left;">the monthly cost in your plan, item by item; later, the bill against the plan</td>
 <td style="text-align: left;">4</td>
 </tr>
@@ -5594,7 +5594,7 @@ z-index: 1000;
 </section>
 <section id="roadmap" class="level1">
 <h1>Roadmap</h1>
-<p>On every task, we ask you to predict, measure and explain. <strong>Predict</strong> what will happen: give an estimate of Data scanned, rows, seconds or dollars, from the numbers you can look up, before executing anything, and write it into <code>results.csv</code> first. <strong>Measure</strong>: run it, then write the figures into your row: Data scanned and run time from Athena’s Query stats, or, for a Glue run, its DPU-seconds (DPUs × seconds of run time). <span class="chg">The 📋 box below shows where to read both.</span> <span class="chg">Put the Athena query ID or the Glue run ID in <code>query_or_run_id</code>, and a few words on how you got the number in <code>notes</code>.</span> <strong>Explain</strong> the difference between your estimate and the measurement, and name the mechanism behind it. <span class="chg">A prediction or a result that has no row in <code>results.csv</code> goes in your PDF, under its task number.</span></p>
+<p>On every task, we ask you to predict, measure and explain. <strong>Predict</strong> what will happen: give an estimate of Data scanned, rows, seconds or dollars, from the numbers you can look up, before executing anything, and write it into <code>results.csv</code> first. <strong>Measure</strong>: run it, then write the figures into your row: Data scanned and run time from Athena’s Query stats, or, for a Glue run, its DPU-seconds (DPUs × seconds of run time). The 📋 box below shows where to read both. Put the Athena query ID or the Glue run ID in <code>query_or_run_id</code>, and a few words on how you got the number in <code>notes</code>. <strong>Explain</strong> the difference between your estimate and the measurement, and name the mechanism behind it. A prediction or a result that has no row in <code>results.csv</code> goes in your PDF, under its task number.</p>
 <p><span id="cmd-reading-what-a-query-and-a-glue-run-cost"></span></p>
 <div class="callout callout-style-default callout-note no-icon callout-titled" title="📋 Commands: Reading what a query and a Glue run cost">
 <div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-1-contents" aria-controls="callout-1" aria-expanded="false" aria-label="Toggle callout">
@@ -5612,7 +5612,7 @@ z-index: 1000;
 <p><strong>Glue run.</strong> In CloudShell, after the run ends:</p>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="ex">aws</span> glue get-job-runs <span class="at">--job-name</span> rides-month <span class="at">--max-items</span> 1 <span class="dt">\</span></span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">--query</span> <span class="st">&#39;JobRuns[0].[ExecutionTime,DPUSeconds]&#39;</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<p>The first number is the run time in seconds, the second the DPU-seconds. <span class="chg">In A3, use your own job’s name in place of <code>rides-month</code>.</span> If the second is <code>null</code>, multiply the seconds by the job’s DPUs: two G.1X workers are 2 DPUs. Glue 5.0 bills $0.44 per DPU-hour, per second, with a 1-minute minimum.</p>
+<p>The first number is the run time in seconds, the second the DPU-seconds. In A3, use your own job’s name in place of <code>rides-month</code>. If the second is <code>null</code>, multiply the seconds by the job’s DPUs: two G.1X workers are 2 DPUs. Glue 5.0 bills $0.44 per DPU-hour, per second, with a 1-minute minimum.</p>
 <p><strong>Worked example on <a href="https://github.com/cpsc436c-2026w1/b3-t2-glue-rides">Tutorial 2</a>’s rides.</strong></p>
 <table class="caption-top table">
 <colgroup>
@@ -5632,15 +5632,15 @@ z-index: 1000;
 <tbody>
 <tr class="odd">
 <td>Glue run, <code>rides-month</code></td>
-<td><span class="chg">about <code>[150, 300]</code>, between <code>[138, 276]</code> and <code>[170, 341]</code> over five runs</span></td>
-<td><span class="chg">300 / 3,600 × $0.44</span></td>
-<td><span class="chg">about $0.037 a run, $0.034 to $0.042</span></td>
+<td>about <code>[150, 300]</code>, between <code>[138, 276]</code> and <code>[170, 341]</code> over five runs</td>
+<td>300 / 3,600 × $0.44</td>
+<td>about $0.037 a run, $0.034 to $0.042</td>
 </tr>
 <tr class="even">
 <td>Same run, every night for a year</td>
 <td></td>
-<td><span class="chg">$0.037 × 365</span></td>
-<td><span class="chg">about $13</span></td>
+<td>$0.037 × 365</td>
+<td>about $13</td>
 </tr>
 <tr class="odd">
 <td>Week report in Athena</td>
@@ -5655,27 +5655,27 @@ z-index: 1000;
 <td>$0.000055</td>
 </tr>
 <tr class="odd">
-<td><span class="chg">Same job on an EMR cluster of three m7g.xlarge nodes, launched for the run</span></td>
-<td><span class="chg">about 150 s run, plus about 300 s from launch until ready (L11)</span></td>
-<td><span class="chg">(300 + 150) / 3,600 × $0.67</span></td>
-<td><span class="chg">about $0.084 a run</span></td>
+<td>Same job on an EMR cluster of three m7g.xlarge nodes, launched for the run</td>
+<td>about 150 s run, plus about 300 s from launch until ready (L11)</td>
+<td>(300 + 150) / 3,600 × $0.67</td>
+<td>about $0.084 a run</td>
 </tr>
 </tbody>
 </table>
-<p><span class="chg">The job’s run time varies from run to run, so these costs are approximate. Your own run will give figures close to these.</span> A run shorter than a minute is billed as a minute: a 40-second run on 2 DPUs costs 2 × 60 DPU-seconds. <span class="chg">The EMR row assumes the job runs as long on the cluster as its Glue <code>ExecutionTime</code>. The cluster bills per second from launch until the job ends, at $0.67 an hour for the three nodes.</span></p>
+<p>The job’s run time varies from run to run, so these costs are approximate. Your own run will give figures close to these. A run shorter than a minute is billed as a minute: a 40-second run on 2 DPUs costs 2 × 60 DPU-seconds. The EMR row assumes the job runs as long on the cluster as its Glue <code>ExecutionTime</code>. The cluster bills per second from launch until the job ends, at $0.67 an hour for the three nodes.</p>
 </div>
 </div>
 </div>
 <p>In predictions we ask for order-of-magnitude comparisons and don’t ask for a precise estimate. As a rule of thumb, you should be able to do a back-of-the-envelope prediction looking at the numbers or their estimates, seldom needing code or GenAI. Write your prediction down before you run the query, then compare it with the measurement. Learning to do these comparisons is how you build data engineering intuition. You don’t get downgraded for wrong predictions.</p>
-<p><strong>Task 1. Healthier-basket report (use, about 75 minutes).</strong> Predict, from the table’s manifests, how much data the healthier-basket report reads, complete the report’s query and run it, deliver the result to head office’s inbox with <code>UNLOAD</code>, and explain the difference between your prediction and the measurement. Hand in two rows of <code>results.csv</code>, head office’s reply (Screenshot 2), <span class="chg">a paragraph, and your matching of the three versions in <code>task1_variants.md</code> to their figures, with a reason for each</span>.</p>
-<p><strong>Task 2. Loading the branch’s files (build, about 105 minutes).</strong> Run the ready Glue job that loads the till export into <code>branch.receipts</code>, create a second job from its script to load the shelf-price app’s changes into <code>branch.price_events</code>, and price a month of nightly runs of both jobs on Glue against an EMR cluster of one primary and two core m7g.xlarge nodes. Hand in <span class="chg">the lines of your price job’s script that differ from <code>branch_receipts.py</code></span>, five rows of <code>results.csv</code>, the price table and four sentences. <span class="chg">The price table has one row for Glue and one for the EMR cluster, and it shows each item’s arithmetic as the worked example on <a href="https://github.com/cpsc436c-2026w1/b3-t2-glue-rides">Tutorial 2</a>’s rides does.</span></p>
-<p><strong>Task 3. Keeping the members correct (change, about 100 minutes).</strong> Copy the branch’s members from the company lakehouse into <code>branch.members</code>, apply day 2’s change file with <code>MERGE</code>, rerun a load to test R40, process the 25 erasure requests, check what an older snapshot still returns, and compare how fresh a shelf price is in each place. Hand in your <span class="chg">SQL statements in the order you ran them</span>, three rows of <code>results.csv</code>, <span class="chg">what each check in 3.2 to 3.5 returned,</span> and a four-sentence answer. <span class="chg">The checks are the snapshot lists, the erased member’s query at both snapshots, and the four prices with their times.</span></p>
-<p><strong>Task 4. Maintenance for the year (maintain, about 75 minutes).</strong> <span class="chg">Compact <code>branch.members</code>, <code>branch.receipts</code> and <code>branch.price_events</code> with <code>OPTIMIZE</code>, set <code>vacuum_max_snapshot_age_seconds</code> on each, and expire their old snapshots with <code>VACUUM</code></span>, check the erased members again, and write a one-paragraph maintenance plan for the year. Hand in <span class="chg">six rows</span> of <code>results.csv</code>, the properties as <code>SHOW TBLPROPERTIES</code> returns them, <span class="chg">the erased member’s query after <code>VACUUM</code> with what <code>aws s3 ls</code> showed for the files you noted in 3.4,</span> and the plan.</p>
+<p><strong>Task 1. Healthier-basket report (use, about 75 minutes).</strong> Predict, from the table’s manifests, how much data the healthier-basket report reads, complete the report’s query and run it, deliver the result to head office’s inbox with <code>UNLOAD</code>, and explain the difference between your prediction and the measurement. Hand in two rows of <code>results.csv</code>, head office’s reply (Screenshot 2), a paragraph, and your matching of the three versions in <code>task1_variants.md</code> to their figures, with a reason for each.</p>
+<p><strong>Task 2. Loading the branch’s files (build, about 105 minutes).</strong> Run the ready Glue job that loads the till export into <code>branch.receipts</code>, create a second job from its script to load the shelf-price app’s changes into <code>branch.price_events</code>, and price a month of nightly runs of both jobs on Glue against an EMR cluster of one primary and two core m7g.xlarge nodes. Hand in the lines of your price job’s script that differ from <code>branch_receipts.py</code>, five rows of <code>results.csv</code>, the price table and four sentences. The price table has one row for Glue and one for the EMR cluster, and it shows each item’s arithmetic as the worked example on <a href="https://github.com/cpsc436c-2026w1/b3-t2-glue-rides">Tutorial 2</a>’s rides does.</p>
+<p><strong>Task 3. Keeping the members correct (change, about 100 minutes).</strong> Copy the branch’s members from the company lakehouse into <code>branch.members</code>, apply day 2’s change file with <code>MERGE</code>, rerun a load to test R40, process the 25 erasure requests, check what an older snapshot still returns, and compare how fresh a shelf price is in each place. Hand in your SQL statements in the order you ran them, three rows of <code>results.csv</code>, what each check in 3.2 to 3.5 returned, and a four-sentence answer. The checks are the snapshot lists, the erased member’s query at both snapshots, and the four prices with their times.</p>
+<p><strong>Task 4. Maintenance for the year (maintain, about 75 minutes).</strong> Compact <code>branch.members</code>, <code>branch.receipts</code> and <code>branch.price_events</code> with <code>OPTIMIZE</code>, set <code>vacuum_max_snapshot_age_seconds</code> on each, and expire their old snapshots with <code>VACUUM</code>, check the erased members again, and write a one-paragraph maintenance plan for the year. Hand in six rows of <code>results.csv</code>, the properties as <code>SHOW TBLPROPERTIES</code> returns them, the erased member’s query after <code>VACUUM</code> with what <code>aws s3 ls</code> showed for the files you noted in 3.4, and the plan.</p>
 </section>
 <section id="shape-of-the-work" class="level1">
 <h1>🗺️ Shape of the work</h1>
-<p>Do Setup first and once. Tasks 1 and 2 are independent of each other: task 1 needs only the company lakehouse, and task 2 needs your raw zone and the Glue role. Task 3 needs <span class="chg"><code>branch.receipts</code> from task 2.1 and <code>branch.price_events</code> from task 2.2, because 3.3 reruns the receipts job and 3.5 queries the price table</span>. Task 4 works on the tables from tasks 2 and 3, so it comes last. The maintenance plan in task 4 needs your numbers from every task and no cloud access at all, so you can write it with the console closed.</p>
-<p>The tutorials practised most moves in this assignment on the New York rides: <a href="https://github.com/cpsc436c-2026w1/b3-t1-athena-rides">Tutorial 1</a> the query, a copy, a delete, snapshots, time travel, a load run twice, a new column and a join; <a href="https://github.com/cpsc436c-2026w1/b3-t2-glue-rides">Tutorial 2</a> a Glue load<span class="chg">and its price, a <code>DELETE</code></span>, <code>OPTIMIZE</code> and <code>VACUUM</code>. <span class="chg">The 📋 Commands boxes show</span> the moves they did not practise <span class="chg">in their main steps. These are</span> <code>MERGE</code> <span class="chg">(<a href="https://github.com/cpsc436c-2026w1/b3-t2-glue-rides">Tutorial 2</a>’s extra exercise)</span>, <code>UNLOAD</code>, changing a job from CSV to JSON Lines, an S3 Lifecycle rule and a federated query. Here you make these moves on the grocer data, with less given to you.</p>
+<p>Do Setup first and once. Tasks 1 and 2 are independent of each other: task 1 needs only the company lakehouse, and task 2 needs your raw zone and the Glue role. Task 3 needs <code>branch.receipts</code> from task 2.1 and <code>branch.price_events</code> from task 2.2, because 3.3 reruns the receipts job and 3.5 queries the price table. Task 4 works on the tables from tasks 2 and 3, so it comes last. The maintenance plan in task 4 needs your numbers from every task and no cloud access at all, so you can write it with the console closed.</p>
+<p>The tutorials practised most moves in this assignment on the New York rides: <a href="https://github.com/cpsc436c-2026w1/b3-t1-athena-rides">Tutorial 1</a> the query, a copy, a delete, snapshots, time travel, a load run twice, a new column and a join; <a href="https://github.com/cpsc436c-2026w1/b3-t2-glue-rides">Tutorial 2</a> a Glue load and its price, a <code>DELETE</code>, <code>OPTIMIZE</code> and <code>VACUUM</code>. The 📋 Commands boxes show the moves they did not practise in their main steps. These are <code>MERGE</code> (<a href="https://github.com/cpsc436c-2026w1/b3-t2-glue-rides">Tutorial 2</a>’s extra exercise), <code>UNLOAD</code>, changing a job from CSV to JSON Lines, an S3 Lifecycle rule and a federated query. Here you make these moves on the grocer data, with less given to you.</p>
 <div class="callout callout-style-default callout-important callout-titled" title="Before you start">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
@@ -5689,13 +5689,13 @@ z-index: 1000;
 <ul>
 <li>Region <code>ca-central-1</code> throughout. The company lakehouse is read-only to you.</li>
 <li>You need <a href="https://github.com/cpsc436c-2026w1/b3-t1-athena-rides">Tutorial 1</a>’s setup (the <code>course</code> data source and Athena’s result location) and L7’s <code>setup_glue.sh</code> (your bucket <code>436c-glue-&lt;account&gt;</code> and the Glue role <code>436c-glue-notebook</code>). <a href="https://github.com/cpsc436c-2026w1/b3-t2-glue-rides">Tutorial 2</a> is useful here: it runs a Glue load, <code>OPTIMIZE</code> and <code>VACUUM</code> on the rides.</li>
-<li><span class="chg"><a href="https://github.com/cpsc436c-2026w1/b3-t2-glue-rides">Tutorial 2</a> runs in the tutorial session of the week of 26 October. Tasks 1, 3.1 and 3.2 can come before it. Tasks 2, 3.4 and 4 make on the grocer data the moves it shows on the rides.</span> <span class="chg">Tasks 3.3 to 3.5 need the tables task 2 loads.</span></li>
+<li><a href="https://github.com/cpsc436c-2026w1/b3-t2-glue-rides">Tutorial 2</a> runs in the tutorial session of the week of 26 October. Tasks 1, 3.1 and 3.2 can come before it. Tasks 2, 3.4 and 4 make on the grocer data the moves it shows on the rides. Tasks 3.3 to 3.5 need the tables task 2 loads.</li>
 <li>Get the starter files into CloudShell: <code>git clone https://github.com/cpsc436c-2026w1/a3-starter.git &amp;&amp; cd a3-starter</code>.</li>
-<li><span class="chg"><code>&lt;account&gt;</code> and <code>&lt;your account id&gt;</code> both stand for your 12-digit account number. In CloudShell, <code>aws sts get-caller-identity --query Account --output text</code> prints it. Before you run a command, replace both with that number, and replace <code>&lt;any name&gt;</code> with a name you choose. Replace every other word in angle brackets in a command the same way, such as <code>&lt;your email&gt;</code> and <code>&lt;your price job&gt;</code>.</span></li>
-<li>The Data scanned limit you set in <a href="https://github.com/cpsc436c-2026w1/b3-t1-athena-rides">Tutorial 1</a> (2 GB) is too low for task 1’s report. Raise it to 10 GB for A3, as <span class="chg"><a href="#cmd-data-scanned-limit-once-per-account">📋 Commands: Data scanned limit, once per account</a> in Setup shows</span>.</li>
-<li><span class="chg">The commands sit in collapsed 📋 Commands boxes, each where a task first needs it. Read the task first, then open its box.</span></li>
-<li><span class="chg">⭐ shows optional work. It earns no points, and you can leave it out.</span> <span class="chg">🔬 marks optional work you explore on your own, without a worked-out answer.</span></li>
-<li><span class="chg">If a script stops with a line starting <code>STOP:</code>, run the setup it names first. If</span> <span class="chg"><code>setup_a3.sh</code> stops with any other error, or</span> <span class="chg"><code>SHOW TABLES IN shelf.default</code> or the toy <code>UNLOAD</code> fails with an access error, send the full error text and your account number to your TA.</span></li>
+<li><code>&lt;account&gt;</code> and <code>&lt;your account id&gt;</code> both stand for your 12-digit account number. In CloudShell, <code>aws sts get-caller-identity --query Account --output text</code> prints it. Before you run a command, replace both with that number, and replace <code>&lt;any name&gt;</code> with a name you choose. Replace every other word in angle brackets in a command the same way, such as <code>&lt;your email&gt;</code> and <code>&lt;your price job&gt;</code>.</li>
+<li>The Data scanned limit you set in <a href="https://github.com/cpsc436c-2026w1/b3-t1-athena-rides">Tutorial 1</a> (2 GB) is too low for task 1’s report. Raise it to 10 GB for A3, as <a href="#cmd-data-scanned-limit-once-per-account">📋 Commands: Data scanned limit, once per account</a> in Setup shows.</li>
+<li>The commands sit in collapsed 📋 Commands boxes, each where a task first needs it. Read the task first, then open its box.</li>
+<li>⭐ shows optional work. It earns no points, and you can leave it out. 🔬 marks optional work you explore on your own, without a worked-out answer.</li>
+<li>If a script stops with a line starting <code>STOP:</code>, run the setup it names first. If <code>setup_a3.sh</code> stops with any other error, or <code>SHOW TABLES IN shelf.default</code> or the toy <code>UNLOAD</code> fails with an access error, send the full error text and your account number to your TA.</li>
 </ul>
 </div>
 </div>
@@ -5709,7 +5709,7 @@ z-index: 1000;
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p>Athena bills $5.50 per TB of Data scanned, with a 10 MB minimum per query. Task 1’s report is the one large query in this assignment. <span class="chg">You run it at least twice, once on its own and once inside <code>UNLOAD</code>, and Athena bills Data scanned for each run.</span> Predict what it reads before you run it. A <code>SELECT *</code> over <code>consumption</code> reads the whole table. <span class="chg">Do</span> not run it to see what happens.</p>
+<p>Athena bills $5.50 per TB of Data scanned, with a 10 MB minimum per query. Task 1’s report is the one large query in this assignment. You run it at least twice, once on its own and once inside <code>UNLOAD</code>, and Athena bills Data scanned for each run. Predict what it reads before you run it. A <code>SELECT *</code> over <code>consumption</code> reads the whole table. Do not run it to see what happens.</p>
 </div>
 </div>
 </section>
@@ -5731,18 +5731,18 @@ z-index: 1000;
 <li><strong>The Athena query editor, in the browser:</strong> every SQL statement.</li>
 <li><strong>The Glue console, in the browser:</strong> reading and editing the job script, and its run history.</li>
 </ul>
-<p><code>results.csv</code> is in the <code>a3-starter</code> folder in CloudShell: edit it there, or download it (<strong>Actions</strong>, <strong>Download file</strong>) and edit it on your laptop. <span class="chg">The starter’s other files, such as <code>report_task1.sql</code>, are in the same folder and in the <a href="https://github.com/cpsc436c-2026w1/a3-starter">starter repository</a> on GitHub. Print one in CloudShell with <code>cat &lt;file&gt;</code>, and paste its SQL into the Athena query editor.</span></p>
+<p><code>results.csv</code> is in the <code>a3-starter</code> folder in CloudShell: edit it there, or download it (<strong>Actions</strong>, <strong>Download file</strong>) and edit it on your laptop. The starter’s other files, such as <code>report_task1.sql</code>, are in the same folder and in the <a href="https://github.com/cpsc436c-2026w1/a3-starter">starter repository</a> on GitHub. Print one in CloudShell with <code>cat &lt;file&gt;</code>, and paste its SQL into the Athena query editor.</p>
 </div>
 </div>
 <ol start="0" type="1">
-<li><p><span class="chg"><strong>Data scanned limit.</strong> In CloudShell, raise it to 10 GB and check it, as <span class="chg">📋 Commands: Data scanned limit, once per account below shows</span>. You should see <code>10000000000</code>.</span></p></li>
-<li><p><span class="chg"><strong>Course data source.</strong></span> <a href="https://github.com/cpsc436c-2026w1/b3-t1-athena-rides">Tutorial 1</a> already added the course catalog as the data source <code>course</code>. In the Athena query editor, with <strong>Data source</strong> <code>course</code>, check that <code>SHOW TABLES IN course_lake</code> lists the company tables. It also lists tables of other exercises (<code>customer</code>, <code>store_sales</code> and others): A3 uses only <span class="chg">the seven tables</span> that “What lives where” names. Step 3 creates your own database <code>branch</code>.</p></li>
-<li><p><span class="chg"><strong>Shelf-price app’s DynamoDB table.</strong></span> In CloudShell, register the connector head office shares:</p>
+<li><p><strong>Data scanned limit.</strong> In CloudShell, raise it to 10 GB and check it, as 📋 Commands: Data scanned limit, once per account below shows. You should see <code>10000000000</code>.</p></li>
+<li><p><strong>Course data source.</strong> <a href="https://github.com/cpsc436c-2026w1/b3-t1-athena-rides">Tutorial 1</a> already added the course catalog as the data source <code>course</code>. In the Athena query editor, with <strong>Data source</strong> <code>course</code>, check that <code>SHOW TABLES IN course_lake</code> lists the company tables. It also lists tables of other exercises (<code>customer</code>, <code>store_sales</code> and others): A3 uses only the seven tables that “What lives where” names. Step 3 creates your own database <code>branch</code>.</p></li>
+<li><p><strong>Shelf-price app’s DynamoDB table.</strong> In CloudShell, register the connector head office shares:</p>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="ex">aws</span> athena create-data-catalog <span class="at">--name</span> shelf <span class="at">--type</span> LAMBDA <span class="dt">\</span></span>
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">--parameters</span> function=arn:aws:lambda:ca-central-1:940482406111:function:436c-ddb-connector</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<p><span class="chg">If you run it again, it fails with an error saying the catalog already exists. The catalog is there and you can go on.</span> <span class="chg">📋 Commands: Company lakehouse, <code>branch</code> database and <code>shelf</code> data source below walks through steps 1 and 2 with what you should see.</span></p></li>
-<li><p><span class="chg"><strong>Raw zone and ready job.</strong></span> In CloudShell, in the <code>a3-starter</code> folder, run <code>bash setup_a3.sh</code>. It lands the branch’s raw files in <code>s3://436c-glue-&lt;account&gt;/branch/raw/</code>, creates your Glue database <code>branch</code>, registers the members’ change files as the table <code>branch.raw_households</code> (Athena reads a table, not an S3 path, so <code>MERGE</code> in task 3 reads this one), and creates the Glue job <code>branch-receipts</code>. You can safely run it again.</p></li>
-<li><p><strong>Head office’s replies.</strong> In CloudShell, run <code>bash subscribe.sh &lt;your email&gt;</code> and confirm the email AWS sends. Head office then emails you its check of every report you deliver. <span class="chg">📋 Commands: UNLOAD to head office’s inbox below tests the inbox with a toy report before task 1.</span></p></li>
+<p>If you run it again, it fails with an error saying the catalog already exists. The catalog is there and you can go on. 📋 Commands: Company lakehouse, <code>branch</code> database and <code>shelf</code> data source below walks through steps 1 and 2 with what you should see.</p></li>
+<li><p><strong>Raw zone and ready job.</strong> In CloudShell, in the <code>a3-starter</code> folder, run <code>bash setup_a3.sh</code>. It lands the branch’s raw files in <code>s3://436c-glue-&lt;account&gt;/branch/raw/</code>, creates your Glue database <code>branch</code>, registers the members’ change files as the table <code>branch.raw_households</code> (Athena reads a table, not an S3 path, so <code>MERGE</code> in task 3 reads this one), and creates the Glue job <code>branch-receipts</code>. You can safely run it again.</p></li>
+<li><p><strong>Head office’s replies.</strong> In CloudShell, run <code>bash subscribe.sh &lt;your email&gt;</code> and confirm the email AWS sends. Head office then emails you its check of every report you deliver. 📋 Commands: UNLOAD to head office’s inbox below tests the inbox with a toy report before task 1.</p></li>
 </ol>
 <p><span id="cmd-data-scanned-limit-once-per-account"></span></p>
 <div class="callout callout-style-default callout-note no-icon callout-titled" title="📋 Commands: Data scanned limit, once per account">
@@ -5825,7 +5825,7 @@ z-index: 1000;
 <span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">--parameters</span> function=arn:aws:lambda:ca-central-1:940482406111:function:436c-ddb-connector</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div></li>
 <li><p><strong>Athena query editor</strong>: reload the Data source list. You should see <code>shelf</code>. Run:</p>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb6"><pre class="sourceCode sql code-with-copy"><code class="sourceCode sql"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>SHOW <span class="kw">TABLES</span> <span class="kw">IN</span> shelf.<span class="kw">default</span>;</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<p>You should see <code>course_shelf_prices</code> <span class="chg">among other tables of the course account. A3 uses only <code>course_shelf_prices</code>.</span> A query on <code>course_shelf_prices</code> is a federated query, through the connector.</p></li>
+<p>You should see <code>course_shelf_prices</code> among other tables of the course account. A3 uses only <code>course_shelf_prices</code>. A query on <code>course_shelf_prices</code> is a federated query, through the connector.</p></li>
 <li><p>Data source <code>AwsDataCatalog</code>: run <code>SHOW TABLES IN branch</code>. After setup you should see <code>raw_households</code>.</p></li>
 </ol>
 <p>A statement that names every table in full runs under any Data source. Numbers from <code>shelf</code> arrive as <code>decimal(38,9)</code>: cast a key with <code>CAST(store_id AS bigint)</code> before you join on it.</p>
@@ -5867,7 +5867,7 @@ z-index: 1000;
 </div>
 </div>
 </div>
-<p><span class="chg">To check your setup, run this in CloudShell. It only reads your account. Each line says ✔ or ✗, and each ✗ says what to run. Run it again whenever a step fails.</span></p>
+<p>To check your setup, run this in CloudShell. It only reads your account. Each line says ✔ or ✗, and each ✗ says what to run. Run it again whenever a step fails.</p>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb10"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="ex">curl</span> <span class="at">-fsSO</span> https://raw.githubusercontent.com/cpsc436c-2026w1/a3-starter/main/check_a3.sh <span class="kw">&amp;&amp;</span> <span class="fu">bash</span> check_a3.sh</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <p>👀 <strong>Quick check.</strong> <code>SELECT count(*) FROM course.course_lake.households</code> returns 450000, <code>SHOW TABLES IN shelf.default</code> lists <code>course_shelf_prices</code>, and <code>aws s3 ls s3://436c-glue-&lt;account&gt;/branch/raw/ --recursive</code> lists the four raw files, including <code>_files.json</code>.</p>
 <p>📸 <strong>Screenshot 1.</strong> The Athena editor with <strong>Data source</strong> <code>AwsDataCatalog</code> and the <code>branch</code> database selected, showing <code>raw_households</code>, and the result of <code>SHOW TABLES IN shelf.default</code>.</p>
@@ -5901,12 +5901,12 @@ z-index: 1000;
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb11"><pre class="sourceCode sql code-with-copy"><code class="sourceCode sql"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> file_path, record_count, column_sizes</span>
 <span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a><span class="kw">FROM</span> course.course_lake.<span class="ot">&quot;consumption$files&quot;</span></span>
 <span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a><span class="kw">LIMIT</span> <span class="dv">3</span>;</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<p>The report needs four columns of <code>consumption</code><span class="chg">, the ones <code>report_task1.sql</code> names</span>: the time of the line, the household, the product and the line total. Which months does it read? Using <code>column_sizes</code>, estimate the Data scanned for those four columns across the whole table (<code>sum(column_sizes[&lt;field id&gt;])</code> over all of <code>&quot;consumption$files&quot;</code> adds one column up<span class="chg">, and <code>sum(file_size_in_bytes)</code> gives the whole table</span>), and write the estimate in your task 1 row of <code>results.csv</code> before you run the report. How far is it from the size of the whole table? <span class="chg">The four-column estimate and the whole-table sum are both in bytes, so divide each by 1,000,000 to get MB. The estimate goes in the <code>predicted</code> cell of the Data scanned row, and the whole-table size goes in your PDF.</span> <span class="chg"><a href="https://github.com/cpsc436c-2026w1/b3-t2-glue-rides#step-2-check-what-the-job-built">Tutorial 2’s step 2</a> practises the same prediction from <code>column_sizes</code> on the rides.</span></p>
+<p>The report needs four columns of <code>consumption</code>, the ones <code>report_task1.sql</code> names: the time of the line, the household, the product and the line total. Which months does it read? Using <code>column_sizes</code>, estimate the Data scanned for those four columns across the whole table (<code>sum(column_sizes[&lt;field id&gt;])</code> over all of <code>&quot;consumption$files&quot;</code> adds one column up, and <code>sum(file_size_in_bytes)</code> gives the whole table), and write the estimate in your task 1 row of <code>results.csv</code> before you run the report. How far is it from the size of the whole table? The four-column estimate and the whole-table sum are both in bytes, so divide each by 1,000,000 to get MB. The estimate goes in the <code>predicted</code> cell of the Data scanned row, and the whole-table size goes in your PDF. <a href="https://github.com/cpsc436c-2026w1/b3-t2-glue-rides#step-2-check-what-the-job-built">Tutorial 2’s step 2</a> practises the same prediction from <code>column_sizes</code> on the rides.</p>
 <p>📚 <strong>Lecture:</strong> L10, manifests; L11, the 🔍 box on <code>column_sizes</code> and <code>UNLOAD</code>; <a href="https://github.com/cpsc436c-2026w1/b3-t1-athena-rides">Tutorial 1</a>, metadata tables and predict then query.</p>
 </section>
 <section id="measure" class="level2">
 <h2 class="anchored" data-anchor-id="measure">1.2 Measure</h2>
-<p>Complete the report in <code>report_task1.sql</code>: the condition that picks products graded A or B, and the <code>GROUP BY</code>, are left for you. Its result has the columns <code>month</code>, <code>segment</code> and <code>ab_share</code>: <code>segment</code> is <code>lyon</code> for households with <code>is_lyon</code> true and <code>rest</code> for all others, and <code>ab_share</code> is the spend on products graded <code>a</code> or <code>b</code> in <code>catalogue</code> <span class="chg">(<code>DESCRIBE course.course_lake.catalogue</code> names its Nutri-Score column, and the grades are lower-case letters)</span>, divided by all spend. Run it, record Data scanned and run time <span class="chg">in the <code>measured</code> cells of your two task 1 rows</span>, then deliver it to head office. <code>UNLOAD</code> runs a query and writes its result as files to an S3 folder. <span class="chg">In the Athena query editor, paste your report query inside the parentheses, without its final <code>;</code>:</span></p>
+<p>Complete the report in <code>report_task1.sql</code>: the condition that picks products graded A or B, and the <code>GROUP BY</code>, are left for you. Its result has the columns <code>month</code>, <code>segment</code> and <code>ab_share</code>: <code>segment</code> is <code>lyon</code> for households with <code>is_lyon</code> true and <code>rest</code> for all others, and <code>ab_share</code> is the spend on products graded <code>a</code> or <code>b</code> in <code>catalogue</code> (<code>DESCRIBE course.course_lake.catalogue</code> names its Nutri-Score column, and the grades are lower-case letters), divided by all spend. Run it, record Data scanned and run time in the <code>measured</code> cells of your two task 1 rows, then deliver it to head office. <code>UNLOAD</code> runs a query and writes its result as files to an S3 folder. In the Athena query editor, paste your report query inside the parentheses, without its final <code>;</code>:</p>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb12"><pre class="sourceCode sql code-with-copy"><code class="sourceCode sql"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>UNLOAD (<span class="op">&lt;</span>your report <span class="kw">query</span><span class="op">&gt;</span>)</span>
 <span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a><span class="kw">TO</span> <span class="st">&#39;s3://436c-hq-inbox-940482406111/inbox/&lt;your account id&gt;/task1-&lt;any name&gt;/&#39;</span></span>
 <span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a><span class="kw">WITH</span> (format <span class="op">=</span> <span class="st">&#39;JSON&#39;</span>, compression <span class="op">=</span> <span class="st">&#39;NONE&#39;</span>);</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
@@ -5936,10 +5936,10 @@ z-index: 1000;
 </div>
 </div>
 </div>
-<p>Head office checks every report it receives and replies within a minute, by email if you subscribed. It always also writes the reply <span class="chg">to <code>inbox/&lt;your account id&gt;/replies/&lt;folder name&gt;.json</code>, named after the folder your <code>UNLOAD</code> wrote, such as <code>replies/task1-&lt;any name&gt;.json</code>. Head office checks the content only of folders whose name starts with <code>task1-</code></span><span class="chg">, and its reply to any other folder says it does not know the report</span>. <code>UNLOAD</code> refuses a folder that already holds files, so each delivery needs a new folder name. After a failed or cancelled <code>UNLOAD</code>, use a new name too. <span class="chg"><a href="#cmd-unload-to-head-office-s-inbox">📋 Commands: UNLOAD to head office’s inbox</a> in Setup tests the path with a toy report first.</span></p>
+<p>Head office checks every report it receives and replies within a minute, by email if you subscribed. It always also writes the reply to <code>inbox/&lt;your account id&gt;/replies/&lt;folder name&gt;.json</code>, named after the folder your <code>UNLOAD</code> wrote, such as <code>replies/task1-&lt;any name&gt;.json</code>. Head office checks the content only of folders whose name starts with <code>task1-</code>, and its reply to any other folder says it does not know the report. <code>UNLOAD</code> refuses a folder that already holds files, so each delivery needs a new folder name. After a failed or cancelled <code>UNLOAD</code>, use a new name too. <a href="#cmd-unload-to-head-office-s-inbox">📋 Commands: UNLOAD to head office’s inbox</a> in Setup tests the path with a toy report first.</p>
 <p>👀 <strong>Quick check.</strong> The report returns 72 rows, one per month and segment, in under a minute. Head office’s reply is organised by the requirements your report answers, R70 and R20, with each requirement and each of its constraints marked met or not met.</p>
-<p><span class="chg">⭐ <strong>Optional.</strong></span> The starter’s <a href="https://github.com/cpsc436c-2026w1/a3-starter/blob/main/features/task1_report.feature"><code>features/task1_report.feature</code></a> holds the same checks as scenarios, in L9’s Gherkin. If you want to run them on your report yourself, the <a href="https://github.com/cpsc436c-2026w1/a3-starter/blob/main/README.md">starter README</a> shows how, with <code>behave</code>.</p>
-<p>📸 <strong>Screenshot 2.</strong> Head office’s reply email to your task 1 report. <span class="chg">If the email did not arrive, take a screenshot of CloudShell printing the reply file with <code>aws s3 cp s3://436c-hq-inbox-940482406111/inbox/&lt;your account id&gt;/replies/task1-&lt;any name&gt;.json -</code>.</span></p>
+<p>⭐ <strong>Optional.</strong> The starter’s <a href="https://github.com/cpsc436c-2026w1/a3-starter/blob/main/features/task1_report.feature"><code>features/task1_report.feature</code></a> holds the same checks as scenarios, in L9’s Gherkin. If you want to run them on your report yourself, the <a href="https://github.com/cpsc436c-2026w1/a3-starter/blob/main/README.md">starter README</a> shows how, with <code>behave</code>.</p>
+<p>📸 <strong>Screenshot 2.</strong> Head office’s reply email to your task 1 report. If the email did not arrive, take a screenshot of CloudShell printing the reply file with <code>aws s3 cp s3://436c-hq-inbox-940482406111/inbox/&lt;your account id&gt;/replies/task1-&lt;any name&gt;.json -</code>.</p>
 <div class="callout callout-style-default callout-note callout-titled" title="👀 Compare with our run: open after you have written your explanation">
 <div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-9-contents" aria-controls="callout-9" aria-expanded="false" aria-label="Toggle callout">
 <div class="callout-icon-container">
@@ -5952,14 +5952,14 @@ z-index: 1000;
 </div>
 <div id="callout-9" class="callout-9-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
-<p>Our run’s Data scanned was 7.6 GB <span class="chg">(about 7,600 MB)</span>, in about 15 seconds, and head office accepted it.</p>
+<p>Our run’s Data scanned was 7.6 GB (about 7,600 MB), in about 15 seconds, and head office accepted it.</p>
 </div>
 </div>
 </div>
 </section>
 <section id="explain-the-gap" class="level2">
 <h2 class="anchored" data-anchor-id="explain-the-gap">1.3 Explain the gap</h2>
-<p><span class="chg">Write one paragraph. Why</span> did the report read what it did, compared with your estimate and the whole table? Name the mechanism that kept the other columns out of the read, and say whether any partition was skipped, and why. <span class="chg">Then do the reverse. <code>task1_variants.md</code> holds three versions of the query (one more column, one month only, the join without the catalogue) and three measured Data scanned figures. Match each version to its figure and say why it reads what it reads.</span></p>
+<p>Write one paragraph. Why did the report read what it did, compared with your estimate and the whole table? Name the mechanism that kept the other columns out of the read, and say whether any partition was skipped, and why. Then do the reverse. <code>task1_variants.md</code> holds three versions of the query (one more column, one month only, the join without the catalogue) and three measured Data scanned figures. Match each version to its figure and say why it reads what it reads.</p>
 </section>
 </section>
 <section id="task-2.-loading-the-branchs-files" class="level1">
@@ -5978,23 +5978,23 @@ z-index: 1000;
 <ul>
 <li>A load job does three things: read the raw file, transform its columns into the table’s, write the rows. The table format records which files form the table, and the catalog points Athena at the table’s current metadata file (L10).</li>
 <li>Glue is priced per DPU-hour, billed per second, with a 1-minute minimum. Athena bills per TB of Data scanned. A nightly job pays for each run, busy day or quiet.</li>
-<li>The till export and the app’s <span class="chg">price-change exports</span> differ in format and columns. Which lines of the job care about which?</li>
+<li>The till export and the app’s price-change exports differ in format and columns. Which lines of the job care about which?</li>
 <li>An EMR cluster takes minutes from launch until it is ready (L11), and those minutes are billed too. Each node bills per second while it is up, busy or idle, at the EC2 price plus the EMR price (L11).</li>
 <li>Dean runs head office’s jobs on a cluster that never shuts down, like his old car, so it is always warm and always billing. If you argue for that, price it at 24 hours a day.</li>
 <li>Things to look up before promising anything: …</li>
 </ul>
 </div>
 </div>
-<p>You load two kinds of branch file into the branch lake. The till export for day 1 is one CSV file in <code>branch/raw/receipts/</code>. The ready Glue job <code>branch-receipts</code> reads it, transforms its columns, and writes them into the Iceberg table <code>branch.receipts</code>, partitioned by day. The shelf-price app’s <span class="chg">price-change exports</span> are JSON Lines files, one per hour, in <code>branch/raw/price_events/</code>. You create a second job from the same script to load them into <code>branch.price_events</code>. <code>_files.json</code> in your raw zone lists every raw file with its size and its number of rows. <span class="chg">Print it in CloudShell with <code>aws s3 cp s3://436c-glue-&lt;account&gt;/branch/raw/_files.json -</code> (each file has <code>key</code>, <code>bytes</code> and <code>rows</code>).</span> Your raw zone holds one hour of the app’s exports, the file for 23:00 on day 1.</p>
+<p>You load two kinds of branch file into the branch lake. The till export for day 1 is one CSV file in <code>branch/raw/receipts/</code>. The ready Glue job <code>branch-receipts</code> reads it, transforms its columns, and writes them into the Iceberg table <code>branch.receipts</code>, partitioned by day. The shelf-price app’s price-change exports are JSON Lines files, one per hour, in <code>branch/raw/price_events/</code>. You create a second job from the same script to load them into <code>branch.price_events</code>. <code>_files.json</code> in your raw zone lists every raw file with its size and its number of rows. Print it in CloudShell with <code>aws s3 cp s3://436c-glue-&lt;account&gt;/branch/raw/_files.json -</code> (each file has <code>key</code>, <code>bytes</code> and <code>rows</code>). Your raw zone holds one hour of the app’s exports, the file for 23:00 on day 1.</p>
 <section id="run-the-ready-job" class="level2">
 <h2 class="anchored" data-anchor-id="run-the-ready-job">2.1 Run the ready job</h2>
-<p><strong>Predict, before you start it:</strong> how many rows the job will write into <code>branch.receipts</code>, and how many seconds the run will take. The file list <code>_files.json</code> gives the day file’s rows and size, and <a href="https://github.com/cpsc436c-2026w1/b3-t2-glue-rides">Tutorial 2</a>’s job gives you a run time to compare with. <span class="chg">Write each in the <code>predicted</code> cell of its 2.1 row of <code>results.csv</code>.</span></p>
-<p><strong>Run it.</strong> In CloudShell, run <code>aws glue start-job-run --job-name branch-receipts</code>. <span class="chg">Start it once, and don’t press <strong>Run</strong> on the job’s page as well. Task 3.3 runs it a second time on purpose.</span> <span class="chg">Wait until the run shows <strong>Succeeded</strong> on the <strong>Runs</strong> tab (Glue console, <strong>ETL jobs</strong>, <code>branch-receipts</code>). Then count the day’s rows in the Athena query editor with <code>SELECT count(*) FROM branch.receipts</code>, and read the run’s figures in CloudShell:</span> <code>aws glue get-job-runs --job-name branch-receipts --max-items 1 --query &#39;JobRuns[0].[ExecutionTime,DPUSeconds]&#39;</code>. Record the rows, the seconds and the DPU-seconds. If a run fails, <span class="chg">step 5 of <a href="#cmd-changing-a-glue-job-from-csv-to-json-lines">📋 Commands: Changing a Glue job from CSV to JSON Lines</a> in task 2.2 shows</span> where to read its error.</p>
+<p><strong>Predict, before you start it:</strong> how many rows the job will write into <code>branch.receipts</code>, and how many seconds the run will take. The file list <code>_files.json</code> gives the day file’s rows and size, and <a href="https://github.com/cpsc436c-2026w1/b3-t2-glue-rides">Tutorial 2</a>’s job gives you a run time to compare with. Write each in the <code>predicted</code> cell of its 2.1 row of <code>results.csv</code>.</p>
+<p><strong>Run it.</strong> In CloudShell, run <code>aws glue start-job-run --job-name branch-receipts</code>. Start it once, and don’t press <strong>Run</strong> on the job’s page as well. Task 3.3 runs it a second time on purpose. Wait until the run shows <strong>Succeeded</strong> on the <strong>Runs</strong> tab (Glue console, <strong>ETL jobs</strong>, <code>branch-receipts</code>). Then count the day’s rows in the Athena query editor with <code>SELECT count(*) FROM branch.receipts</code>, and read the run’s figures in CloudShell: <code>aws glue get-job-runs --job-name branch-receipts --max-items 1 --query &#39;JobRuns[0].[ExecutionTime,DPUSeconds]&#39;</code>. Record the rows, the seconds and the DPU-seconds. If a run fails, step 5 of <a href="#cmd-changing-a-glue-job-from-csv-to-json-lines">📋 Commands: Changing a Glue job from CSV to JSON Lines</a> in task 2.2 shows where to read its error.</p>
 </section>
 <section id="adapt-it-for-the-price-changes" class="level2">
 <h2 class="anchored" data-anchor-id="adapt-it-for-the-price-changes">2.2 Adapt it for the price changes</h2>
 <p><strong>Predict, before you change anything:</strong> which lines of the script must change for a JSON Lines input with different columns and a different target table, and how many rows the new job will write (<code>_files.json</code> lists the export files and their rows). In CloudShell, look at one record first: <code>aws s3 cp s3://436c-glue-&lt;account&gt;/branch/raw/price_events/dt=2026-10-16/hour=23/changes.jsonl - 2&gt;/dev/null | head -2</code>.</p>
-<p><strong>Change and run it.</strong> In the Glue console, clone <code>branch-receipts</code> (<strong>Actions</strong>, <strong>Clone job</strong>) and give the clone its own name and script file. In the clone’s script, change the reader to JSON Lines, the column mapping, and the target table <code>branch.price_events</code>. <span class="chg">Keep the export’s field names: <code>store_id</code>, <code>product_code</code>, <code>old_price_eur</code>, <code>price_eur</code>, <code>changed_at</code> and <code>source</code>. Cast <code>store_id</code> to <code>int</code> and both prices to <code>double</code>, convert <code>changed_at</code> to a timestamp with <code>F.to_timestamp(&quot;changed_at&quot;)</code>, and partition by day of <code>changed_at</code>, as the receipts job does with <code>sold_at</code>. Leave out the receipts job’s format string</span> <span class="chg"><code>&quot;yyyy-MM-dd HH:mm:ss&quot;</code></span><span class="chg">, because the app writes times such as <code>2026-10-16T23:00:00Z</code>. Task 3.5 queries these names.</span> <span class="chg">Save the script, then start the clone with <strong>Run</strong> on its page or in CloudShell with <code>aws glue start-job-run --job-name &lt;your price job&gt;</code>. Wait for <strong>Succeeded</strong>, as in 2.1.</span> <span class="chg">The 📋 box below shows</span> a worked diff from CSV to JSON Lines on another file, and why a clone works where a new empty job does not. Record the rows and the DPU-seconds.</p>
+<p><strong>Change and run it.</strong> In the Glue console, clone <code>branch-receipts</code> (<strong>Actions</strong>, <strong>Clone job</strong>) and give the clone its own name and script file. In the clone’s script, change the reader to JSON Lines, the column mapping, and the target table <code>branch.price_events</code>. Keep the export’s field names: <code>store_id</code>, <code>product_code</code>, <code>old_price_eur</code>, <code>price_eur</code>, <code>changed_at</code> and <code>source</code>. Cast <code>store_id</code> to <code>int</code> and both prices to <code>double</code>, convert <code>changed_at</code> to a timestamp with <code>F.to_timestamp(&quot;changed_at&quot;)</code>, and partition by day of <code>changed_at</code>, as the receipts job does with <code>sold_at</code>. Leave out the receipts job’s format string <code>&quot;yyyy-MM-dd HH:mm:ss&quot;</code>, because the app writes times such as <code>2026-10-16T23:00:00Z</code>. Task 3.5 queries these names. Save the script, then start the clone with <strong>Run</strong> on its page or in CloudShell with <code>aws glue start-job-run --job-name &lt;your price job&gt;</code>. Wait for <strong>Succeeded</strong>, as in 2.1. The 📋 box below shows a worked diff from CSV to JSON Lines on another file, and why a clone works where a new empty job does not. Record the rows and the DPU-seconds.</p>
 <p><span id="cmd-changing-a-glue-job-from-csv-to-json-lines"></span></p>
 <div class="callout callout-style-default callout-note no-icon callout-titled" title="📋 Commands: Changing a Glue job from CSV to JSON Lines">
 <div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-11-contents" aria-controls="callout-11" aria-expanded="false" aria-label="Toggle callout">
@@ -6014,7 +6014,7 @@ z-index: 1000;
 <li>Give the clone a new name.</li>
 <li><strong>Job details</strong> tab → <strong>Advanced properties</strong>: set the script filename to a new file in <code>s3://436c-glue-&lt;account&gt;/branch/jobs/</code>, so that saving the clone’s script leaves <code>branch_receipts.py</code> as it is. Task 3.3 runs <code>branch-receipts</code> again.</li>
 <li><strong>Script</strong> tab: edit the script, then <strong>Save</strong>.</li>
-<li>On the <strong>Runs</strong> tab, open the run. For a failed run, you see its <strong>Error message</strong>. Select <strong>Output logs</strong> to open the full log. <span class="chg">If Glue refuses a start with <code>ConcurrentRunsExceededException</code> just after a run ends, wait 30 seconds and start the job again.</span></li>
+<li>On the <strong>Runs</strong> tab, open the run. For a failed run, you see its <strong>Error message</strong>. Select <strong>Output logs</strong> to open the full log. If Glue refuses a start with <code>ConcurrentRunsExceededException</code> just after a run ends, wait 30 seconds and start the job again.</li>
 </ol>
 <p>Step 3 matters whichever path the clone starts with: a script file of its own is the only way an edit cannot reach <code>branch_receipts.py</code>.</p>
 <p><strong>Worked diff on another file.</strong> A made-up chain’s fridge sensors write one JSON Lines file an hour, with records such as <code>{&quot;sensor_id&quot;: &quot;f-07&quot;, &quot;store_id&quot;: 12, &quot;read_at&quot;: &quot;2026-10-16T23:00:05Z&quot;, &quot;temp_c&quot;: 3.4}</code>. The diff turns <code>branch_receipts.py</code> into a job that loads them into <code>demo.fridge_readings</code>. It is an example to read, not to run.</p>
@@ -6088,8 +6088,8 @@ z-index: 1000;
 </section>
 <section id="explain-and-price" class="level2">
 <h2 class="anchored" data-anchor-id="explain-and-price">2.3 Explain and price</h2>
-<p>Price a month of nightly runs of both jobs on Glue from your measured DPU-seconds ($0.44 per DPU-hour for Glue 5.0, billed per second, with a 1-minute minimum). Price the same month on an EMR cluster of one primary and two core m7g.xlarge nodes: about $0.67 an hour for the three, and about 5 minutes from launch until it is ready (L11). Both jobs run one after the other on one launch each night. <span class="chg">Assume each job runs as long on the cluster as its Glue <code>ExecutionTime</code>, that the cluster bills from launch until both jobs end (start-up included, per second), and a month of 30 nights. State any other assumption you make.</span> <span class="chg">Answer in three sentences. Which</span> would you run, Glue or the EMR cluster, and what would change your mind?</p>
-<p>Athena could run the same loads too. You could declare a Hive table over the raw files (only columns and a location in the catalog, no snapshots or manifests<span class="chg">, like <code>branch.raw_households</code> from Setup</span>), then run <code>INSERT INTO branch.receipts SELECT …</code>, and Athena would bill only the Data scanned. <span class="chg">In one more sentence, say when you would choose that over a Glue job.</span></p>
+<p>Price a month of nightly runs of both jobs on Glue from your measured DPU-seconds ($0.44 per DPU-hour for Glue 5.0, billed per second, with a 1-minute minimum). Price the same month on an EMR cluster of one primary and two core m7g.xlarge nodes: about $0.67 an hour for the three, and about 5 minutes from launch until it is ready (L11). Both jobs run one after the other on one launch each night. Assume each job runs as long on the cluster as its Glue <code>ExecutionTime</code>, that the cluster bills from launch until both jobs end (start-up included, per second), and a month of 30 nights. State any other assumption you make. Answer in three sentences. Which would you run, Glue or the EMR cluster, and what would change your mind?</p>
+<p>Athena could run the same loads too. You could declare a Hive table over the raw files (only columns and a location in the catalog, no snapshots or manifests, like <code>branch.raw_households</code> from Setup), then run <code>INSERT INTO branch.receipts SELECT …</code>, and Athena would bill only the Data scanned. In one more sentence, say when you would choose that over a Glue job.</p>
 <p>📚 <strong>Lecture:</strong> L11, billing units and rules of thumb; <a href="https://github.com/cpsc436c-2026w1/b3-t2-glue-rides">Tutorial 2</a>, a Glue load and its DPU-seconds.</p>
 </section>
 </section>
@@ -6119,11 +6119,11 @@ z-index: 1000;
 <p>You work on the branch’s own copy of its members. Day 2’s change file for members, <code>branch/raw/households/dt=2026-10-17/changes.jsonl</code>, holds one record per change, each with an <code>op</code> field: <code>upsert</code> for a member’s updated or new record (with a new field, <code>marketing_consent</code>), and <code>erase</code> for a member who asked to be erased. <code>_files.json</code> gives how many records of each kind the file holds, under <code>update</code>, <code>new_member</code> and <code>erase</code>. The <code>update</code> and <code>new_member</code> records both have <code>op</code> = <code>upsert</code>. Each step below says what to predict before you run it.</p>
 <section id="copy-the-members" class="level2">
 <h2 class="anchored" data-anchor-id="copy-the-members">3.1 Copy the members</h2>
-<p><span class="chg">In the Athena editor, Data source <code>AwsDataCatalog</code>, copy the Lyon members from <code>course.course_lake.households</code></span> into <code>branch.members</code>, with a <code>CREATE TABLE ... AS SELECT</code> and <code>table_type = &#39;ICEBERG&#39;</code>, <code>location = &#39;s3://436c-glue-&lt;account&gt;/branch/tables/members/&#39;</code> and <code>is_external = false</code>, as in <a href="https://github.com/cpsc436c-2026w1/b3-t1-athena-rides">Tutorial 1</a>. <strong>Predict first:</strong> how many rows the copy holds. Then run it and count.</p>
+<p>In the Athena editor, Data source <code>AwsDataCatalog</code>, copy the Lyon members from <code>course.course_lake.households</code> into <code>branch.members</code>, with a <code>CREATE TABLE ... AS SELECT</code> and <code>table_type = &#39;ICEBERG&#39;</code>, <code>location = &#39;s3://436c-glue-&lt;account&gt;/branch/tables/members/&#39;</code> and <code>is_external = false</code>, as in <a href="https://github.com/cpsc436c-2026w1/b3-t1-athena-rides">Tutorial 1</a>. <strong>Predict first:</strong> how many rows the copy holds. Then run it and count.</p>
 </section>
 <section id="apply-the-changes-with-merge" class="level2">
 <h2 class="anchored" data-anchor-id="apply-the-changes-with-merge">3.2 Apply the changes with MERGE</h2>
-<p>Add the new column with <code>ALTER TABLE branch.members ADD COLUMNS (marketing_consent boolean)</code>. Then apply the <code>upsert</code> records with <code>MERGE</code>: one statement that updates the rows whose <code>household_id</code> matches a record in the change file and inserts the rest, reading the change file through <code>branch.raw_households</code>. <code>merge_members.sql</code> gives the statement with two clauses blank. <span class="chg">The 📋 box below shows a <code>MERGE</code> on <a href="https://github.com/cpsc436c-2026w1/b3-t2-glue-rides">Tutorial 2</a>’s zones.</span></p>
+<p>Add the new column with <code>ALTER TABLE branch.members ADD COLUMNS (marketing_consent boolean)</code>. Then apply the <code>upsert</code> records with <code>MERGE</code>: one statement that updates the rows whose <code>household_id</code> matches a record in the change file and inserts the rest, reading the change file through <code>branch.raw_households</code>. <code>merge_members.sql</code> gives the statement with two clauses blank. The 📋 box below shows a <code>MERGE</code> on <a href="https://github.com/cpsc436c-2026w1/b3-t2-glue-rides">Tutorial 2</a>’s zones.</p>
 <p><strong>Predict first:</strong> how many rows <code>branch.members</code> holds after the <code>MERGE</code>, how many of them changed, and how many snapshots the table has afterwards. Then run it, count, and list the snapshots.</p>
 <p><span id="cmd-merge"></span></p>
 <div class="callout callout-style-default callout-note no-icon callout-titled" title="📋 Commands: MERGE">
@@ -6193,18 +6193,18 @@ z-index: 1000;
 </section>
 <section id="run-the-receipts-load-a-second-time" class="level2">
 <h2 class="anchored" data-anchor-id="run-the-receipts-load-a-second-time">3.3 Run the receipts load a second time</h2>
-<p><span class="chg">In CloudShell, start</span> task 2’s <code>branch-receipts</code> job again, on the same day’s file<span class="chg">, with the command from 2.1, and wait for <strong>Succeeded</strong></span>.</p>
-<p><strong>Predict first:</strong> how many rows <code>branch.receipts</code> holds for day 1 afterwards, and what the snapshot list shows. Then run it, count, and list the snapshots. <span class="chg">Leave both copies of the day’s receipts in the table, because task 4 works on it as it is. In 3.6, say how you would change the receipts job so that it meets R40. You do not need to run the change.</span></p>
+<p>In CloudShell, start task 2’s <code>branch-receipts</code> job again, on the same day’s file, with the command from 2.1, and wait for <strong>Succeeded</strong>.</p>
+<p><strong>Predict first:</strong> how many rows <code>branch.receipts</code> holds for day 1 afterwards, and what the snapshot list shows. Then run it, count, and list the snapshots. Leave both copies of the day’s receipts in the table, because task 4 works on it as it is. In 3.6, say how you would change the receipts job so that it meets R40. You do not need to run the change.</p>
 </section>
 <section id="process-the-erasures" class="level2">
 <h2 class="anchored" data-anchor-id="process-the-erasures">3.4 Process the erasures</h2>
-<p>Before you delete anything, note the paths of <code>branch.members</code>’ data files (<code>SELECT file_path FROM branch.&quot;members$files&quot;</code>): task 4 asks where the erased members’ rows still are. Then delete the members whose records <span class="chg">in <code>branch.raw_households</code></span> say <code>erase</code>, from <code>branch.members</code> and their lines from <code>branch.receipts</code>. <span class="chg">The <code>DELETE</code> at the end of <a href="#cmd-merge">📋 Commands: MERGE</a> in task 3.2 takes its keys from a query.</span></p>
-<p><strong>Predict first:</strong> what a query for one erased member returns at the current snapshot, and what it returns at the snapshot <span class="chg">of <code>branch.members</code></span> just before <span class="chg">its</span> <code>DELETE</code>. <span class="chg">List the snapshots with <code>SELECT * FROM branch.&quot;members$snapshots&quot;</code>, and read one with <code>FOR VERSION AS OF &lt;snapshot_id&gt;</code>, as in <a href="https://github.com/cpsc436c-2026w1/b3-t1-athena-rides">Tutorial 1</a>.</span> Then run both queries and record what each returns. <span class="chg">Keep the <code>snapshot_id</code> you used, because task 4.2 runs the same query after <code>VACUUM</code> has expired that snapshot.</span> <span class="chg">Are the files you noted still listed in <code>&quot;members$files&quot;</code>?</span></p>
+<p>Before you delete anything, note the paths of <code>branch.members</code>’ data files (<code>SELECT file_path FROM branch.&quot;members$files&quot;</code>): task 4 asks where the erased members’ rows still are. Then delete the members whose records in <code>branch.raw_households</code> say <code>erase</code>, from <code>branch.members</code> and their lines from <code>branch.receipts</code>. The <code>DELETE</code> at the end of <a href="#cmd-merge">📋 Commands: MERGE</a> in task 3.2 takes its keys from a query.</p>
+<p><strong>Predict first:</strong> what a query for one erased member returns at the current snapshot, and what it returns at the snapshot of <code>branch.members</code> just before its <code>DELETE</code>. List the snapshots with <code>SELECT * FROM branch.&quot;members$snapshots&quot;</code>, and read one with <code>FOR VERSION AS OF &lt;snapshot_id&gt;</code>, as in <a href="https://github.com/cpsc436c-2026w1/b3-t1-athena-rides">Tutorial 1</a>. Then run both queries and record what each returns. Keep the <code>snapshot_id</code> you used, because task 4.2 runs the same query after <code>VACUUM</code> has expired that snapshot. Are the files you noted still listed in <code>&quot;members$files&quot;</code>?</p>
 </section>
 <section id="one-price-in-four-places" class="level2">
 <h2 class="anchored" data-anchor-id="one-price-in-four-places">3.5 One price in four places</h2>
-<p>On 16 October 2026 at 23:14:04 UTC, the shelf-price app changed the price of Evian 6×100cl (product <code>3068320011707</code>) in store 43 from 3.51 € to 3.68 €. That price is held in four places: the app’s DynamoDB table (<code>shelf.default.course_shelf_prices</code>), the app’s <span class="chg">price-change export</span> for that hour in <code>branch/raw/price_events/</code>, your <code>branch.price_events</code> from task 2.2, and the company’s <code>current_prices</code>.</p>
-<p><strong>Predict first:</strong> which of the four show 3.68 € and which still show 3.51 €, and why. Then query each, and record the price it shows and the time it carries (<code>updated_at</code>, <code>changed_at</code> or <code>observed_at</code>). <span class="chg">The 📋 box below gives</span> a statement for each place. <span class="chg">To tell what refreshes each place, use the case for where the company’s prices come from, the architecture diagram for what the app writes and how often, and R31 for when your load runs.</span></p>
+<p>On 16 October 2026 at 23:14:04 UTC, the shelf-price app changed the price of Evian 6×100cl (product <code>3068320011707</code>) in store 43 from 3.51 € to 3.68 €. That price is held in four places: the app’s DynamoDB table (<code>shelf.default.course_shelf_prices</code>), the app’s price-change export for that hour in <code>branch/raw/price_events/</code>, your <code>branch.price_events</code> from task 2.2, and the company’s <code>current_prices</code>.</p>
+<p><strong>Predict first:</strong> which of the four show 3.68 € and which still show 3.51 €, and why. Then query each, and record the price it shows and the time it carries (<code>updated_at</code>, <code>changed_at</code> or <code>observed_at</code>). The 📋 box below gives a statement for each place. To tell what refreshes each place, use the case for where the company’s prices come from, the architecture diagram for what the app writes and how often, and R31 for when your load runs.</p>
 <p><span id="cmd-one-price-in-four-places"></span></p>
 <div class="callout callout-style-default callout-note no-icon callout-titled" title="📋 Commands: One price in four places">
 <div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-14-contents" aria-controls="callout-14" aria-expanded="false" aria-label="Toggle callout">
@@ -6225,7 +6225,7 @@ z-index: 1000;
 <span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a><span class="kw">WHERE</span> store_id <span class="op">=</span> <span class="dv">43</span> <span class="kw">AND</span> product_code <span class="op">=</span> <span class="st">&#39;3068320011707&#39;</span>;</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div></li>
 <li><p><strong>Hourly export in your raw zone</strong>, in CloudShell:</p>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb18"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="ex">aws</span> s3 cp s3://436c-glue-<span class="op">&lt;</span>account<span class="op">&gt;</span>/branch/raw/price_events/dt=2026-10-16/hour=23/changes.jsonl <span class="at">-</span> <span class="kw">|</span> <span class="fu">grep</span> <span class="st">&#39;&quot;store_id&quot;: 43, &quot;product_code&quot;: &quot;3068320011707&quot;&#39;</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<p><span class="chg">You should see one record. If nothing prints, grep for the product code alone, <code>grep 3068320011707</code>, and find store 43 among the lines.</span></p></li>
+<p>You should see one record. If nothing prints, grep for the product code alone, <code>grep 3068320011707</code>, and find store 43 among the lines.</p></li>
 <li><p><strong>Your branch table</strong>, Data source <code>AwsDataCatalog</code>:</p>
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb19"><pre class="sourceCode sql code-with-copy"><code class="sourceCode sql"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="kw">SELECT</span> price_eur, changed_at <span class="kw">FROM</span> branch.price_events</span>
 <span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a><span class="kw">WHERE</span> store_id <span class="op">=</span> <span class="dv">43</span> <span class="kw">AND</span> product_code <span class="op">=</span> <span class="st">&#39;3068320011707&#39;</span>;</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div></li>
@@ -6239,13 +6239,13 @@ z-index: 1000;
 </section>
 <section id="explain" class="level2">
 <h2 class="anchored" data-anchor-id="explain">3.6 Explain</h2>
-<p><span class="chg">Answer in four sentences, one for each question. Does the receipts load meet R40, and how would you change the job so that it does? Would the price load meet R40? What does an older snapshot still hold after a <code>DELETE</code>, and why? What can each place that holds a shelf price promise the director under R60?</span></p>
+<p>Answer in four sentences, one for each question. Does the receipts load meet R40, and how would you change the job so that it does? Would the price load meet R40? What does an older snapshot still hold after a <code>DELETE</code>, and why? What can each place that holds a shelf price promise the director under R60?</p>
 <p>📚 <strong>Lecture:</strong> L11, <code>ADD COLUMNS</code> (no data file rewritten) and <code>DELETE</code> and <code>MERGE</code> with delete files; L12, DynamoDB; <a href="https://github.com/cpsc436c-2026w1/b3-t1-athena-rides">Tutorial 1</a>, delete, time travel and a load run twice; <a href="https://github.com/cpsc436c-2026w1/b3-t2-glue-rides">Tutorial 2</a>, a Glue load and <code>MERGE</code> (extra exercise).</p>
 </section>
 </section>
 <section id="task-4.-maintenance-for-the-year" class="level1">
 <h1>Task 4. Maintenance for the year</h1>
-<p>⚙️ <strong>Data engineering:</strong> history and small files cost money<span class="chg">, and old snapshots keep an erased member’s rows in S3 against data-use rule 2. Maintenance means rewriting files and expiring snapshots, and each run has a bill.</span> (R51, R80, R90)</p>
+<p>⚙️ <strong>Data engineering:</strong> history and small files cost money, and old snapshots keep an erased member’s rows in S3 against data-use rule 2. Maintenance means rewriting files and expiring snapshots, and each run has a bill. (R51, R80, R90)</p>
 <div class="callout callout-style-default callout-tip no-icon callout-titled" title="Sam&#39;s notes (unfinished)">
 <div class="callout-header d-flex align-content-center">
 <div class="callout-icon-container">
@@ -6267,7 +6267,7 @@ z-index: 1000;
 </ul>
 </div>
 </div>
-<p>You maintain the three tables your loads and changes have written, <code>branch.members</code>, <code>branch.receipts</code> and <code>branch.price_events</code>, with the moves from <a href="https://github.com/cpsc436c-2026w1/b3-t2-glue-rides">Tutorial 2</a>: table properties that set how much history to keep, <code>OPTIMIZE</code> to compact small files, and <code>VACUUM</code> to expire old snapshots and delete the files no snapshot needs. <span class="chg">The 📋 box below has the statements for all three.</span></p>
+<p>You maintain the three tables your loads and changes have written, <code>branch.members</code>, <code>branch.receipts</code> and <code>branch.price_events</code>, with the moves from <a href="https://github.com/cpsc436c-2026w1/b3-t2-glue-rides">Tutorial 2</a>: table properties that set how much history to keep, <code>OPTIMIZE</code> to compact small files, and <code>VACUUM</code> to expire old snapshots and delete the files no snapshot needs. The 📋 box below has the statements for all three.</p>
 <p><span id="cmd-table-properties-optimize-and-vacuum"></span></p>
 <div class="callout callout-style-default callout-note no-icon callout-titled" title="📋 Commands: Table properties, OPTIMIZE and VACUUM">
 <div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-16-contents" aria-controls="callout-16" aria-expanded="false" aria-label="Toggle callout">
@@ -6325,24 +6325,24 @@ z-index: 1000;
 </div>
 <div id="callout-17" class="callout-17-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
-<p><span class="chg">In our run of A3 (2026-10-24), <code>OPTIMIZE</code> rewrote each branch table into one data file. <code>branch.receipts</code> had 64 small files from its two loads and <code>branch.price_events</code> had 32. <code>branch.members</code> had 2 data files, and its first data file had two delete files, one from the <code>MERGE</code> and one from the <code>DELETE</code>.</span></p>
+<p>In our run of A3 (2026-10-24), <code>OPTIMIZE</code> rewrote each branch table into one data file. <code>branch.receipts</code> had 64 small files from its two loads and <code>branch.price_events</code> had 32. <code>branch.members</code> had 2 data files, and its first data file had two delete files, one from the <code>MERGE</code> and one from the <code>DELETE</code>.</p>
 </div>
 </div>
 </div>
 </section>
 <section id="expire-old-snapshots" class="level2">
 <h2 class="anchored" data-anchor-id="expire-old-snapshots">4.2 Expire old snapshots</h2>
-<p>Set <code>vacuum_max_snapshot_age_seconds</code> on the three tables (<span class="chg"><a href="#cmd-table-properties-optimize-and-vacuum">📋 Commands: Table properties, OPTIMIZE and VACUUM</a> at the start of task 4 gives the statement</span>) and check it with <code>SHOW TBLPROPERTIES</code>. <strong>Predict first<span class="chg">, before you run <code>VACUUM</code></span>:</strong> what the query for an erased member at the snapshot before the erasures returns after <code>VACUUM</code>, <span class="chg">whether the data files you noted in 3.4 are still in S3, and how many files each table keeps under <code>data/</code></span>. <code>VACUUM</code> expires only snapshots older than the age you set, so let a minute pass after <span class="chg">the table’s last snapshot before you run it. An <code>OPTIMIZE</code> or a write makes a snapshot, and a property change makes none</span>. <span class="chg">Then run <code>VACUUM</code> on each table, run the query, check each file you noted with <code>aws s3 ls</code>, and count each table’s files under <code>data/</code> as the same 📋 box shows. The three counts go in <code>results.csv</code>, and the query’s result and the files you noted go in your PDF</span>.</p>
+<p>Set <code>vacuum_max_snapshot_age_seconds</code> on the three tables (<a href="#cmd-table-properties-optimize-and-vacuum">📋 Commands: Table properties, OPTIMIZE and VACUUM</a> at the start of task 4 gives the statement) and check it with <code>SHOW TBLPROPERTIES</code>. <strong>Predict first, before you run <code>VACUUM</code>:</strong> what the query for an erased member at the snapshot before the erasures returns after <code>VACUUM</code>, whether the data files you noted in 3.4 are still in S3, and how many files each table keeps under <code>data/</code>. <code>VACUUM</code> expires only snapshots older than the age you set, so let a minute pass after the table’s last snapshot before you run it. An <code>OPTIMIZE</code> or a write makes a snapshot, and a property change makes none. Then run <code>VACUUM</code> on each table, run the query, check each file you noted with <code>aws s3 ls</code>, and count each table’s files under <code>data/</code> as the same 📋 box shows. The three counts go in <code>results.csv</code>, and the query’s result and the files you noted go in your PDF.</p>
 </section>
 <section id="plan" class="level2">
 <h2 class="anchored" data-anchor-id="plan">4.3 Plan</h2>
-<p><span class="chg">Write one paragraph to the director that says</span> what runs, when, on which engine, and at what monthly cost, item by item. The paragraph also answers three questions:</p>
+<p>Write one paragraph to the director that says what runs, when, on which engine, and at what monthly cost, item by item. The paragraph also answers three questions:</p>
 <ol type="1">
 <li>In what order does an erasure go through <code>DELETE</code>, <code>OPTIMIZE</code> and <code>VACUUM</code>?</li>
 <li>Which snapshot age would you set in production to meet rule 2? It is not the 60 seconds used here.</li>
-<li>How does the raw zone meet data-use rules 2 and 4? Describe the S3 Lifecycle rule you would set. <span class="chg">⭐ Applying it is optional</span><span class="chg">, and the 📋 box below shows how</span>.</li>
+<li>How does the raw zone meet data-use rules 2 and 4? Describe the S3 Lifecycle rule you would set. ⭐ Applying it is optional, and the 📋 box below shows how.</li>
 </ol>
-<p>Use your own numbers<span class="chg">, and state the volume you plan for, such as one till export a night as large as day 1’s and 24 price exports a day as large as your 23:00 file</span>. Your plan should be motivated with the numbers from your <code>results.csv</code> and relevant prices. <span class="chg"><a href="#cmd-table-properties-optimize-and-vacuum">📋 Commands: Table properties, OPTIMIZE and VACUUM</a> at the start of task 4 ends with the prices.</span></p>
+<p>Use your own numbers, and state the volume you plan for, such as one till export a night as large as day 1’s and 24 price exports a day as large as your 23:00 file. Your plan should be motivated with the numbers from your <code>results.csv</code> and relevant prices. <a href="#cmd-table-properties-optimize-and-vacuum">📋 Commands: Table properties, OPTIMIZE and VACUUM</a> at the start of task 4 ends with the prices.</p>
 <p><span id="cmd-s3-lifecycle-rule-on-the-raw-zone"></span></p>
 <div class="callout callout-style-default callout-note no-icon callout-titled" title="📋 Commands: S3 Lifecycle rule on the raw zone">
 <div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-18-contents" aria-controls="callout-18" aria-expanded="false" aria-label="Toggle callout">
@@ -6372,29 +6372,29 @@ z-index: 1000;
 <span id="cb29-3"><a href="#cb29-3" aria-hidden="true" tabindex="-1"></a><span class="ex">aws</span> s3api get-bucket-lifecycle-configuration <span class="at">--bucket</span> 436c-glue-<span class="op">&lt;</span>account<span class="op">&gt;</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <p>You should see the rule <code>raw-30-days</code> with <code>&quot;Status&quot;: &quot;Enabled&quot;</code>.</p></li>
 </ol>
-<p>The rule deletes a file by its age in S3<span class="chg">, and never on request. S3 adds the 30 days to the time the file was written to your bucket, rounds up to the next midnight UTC, and removes the file in the background some time after that. A file that <code>setup_a3.sh</code> copied counts its age from the copy, not from the day in its folder name.</span> <span class="chg">The 128 KB minimum from L11 applies when a rule moves objects to another storage class, and it does not apply when a rule expires them by age, so this rule deletes small files too.</span></p>
+<p>The rule deletes a file by its age in S3, and never on request. S3 adds the 30 days to the time the file was written to your bucket, rounds up to the next midnight UTC, and removes the file in the background some time after that. A file that <code>setup_a3.sh</code> copied counts its age from the copy, not from the day in its folder name. The 128 KB minimum from L11 applies when a rule moves objects to another storage class, and it does not apply when a rule expires them by age, so this rule deletes small files too.</p>
 </div>
 </div>
 </div>
-<p>📚 <strong>Lecture:</strong> L11, <code>OPTIMIZE</code> then <code>VACUUM</code>, scheduling with EventBridge Scheduler, storage classes and S3 Lifecycle; <a href="https://github.com/cpsc436c-2026w1/b3-t2-glue-rides">Tutorial 2</a>, <code>OPTIMIZE</code> and <code>VACUUM</code> <span class="chg">(README steps 4 and 5)</span>.</p>
+<p>📚 <strong>Lecture:</strong> L11, <code>OPTIMIZE</code> then <code>VACUUM</code>, scheduling with EventBridge Scheduler, storage classes and S3 Lifecycle; <a href="https://github.com/cpsc436c-2026w1/b3-t2-glue-rides">Tutorial 2</a>, <code>OPTIMIZE</code> and <code>VACUUM</code> (README steps 4 and 5).</p>
 </section>
 </section>
 <section id="going-further-optional" class="level1">
-<h1><span class="chg">⭐</span> Going further (optional)</h1>
-<p>If you have time and want to dig into the topic a bit, there are <span class="chg">three</span> optional tasks which lead you to rebuild some of the features of the course lake and get into some maintenance mechanisms for data lakes and AWS. They are a bit closer to production work (though still a bit simplified for the sake of time). Chat with me if you attempted to do them, even if you haven’t finished!</p>
+<h1>⭐ Going further (optional)</h1>
+<p>If you have time and want to dig into the topic a bit, there are three optional tasks which lead you to rebuild some of the features of the course lake and get into some maintenance mechanisms for data lakes and AWS. They are a bit closer to production work (though still a bit simplified for the sake of time). Chat with me if you attempted to do them, even if you haven’t finished!</p>
 <section id="optional-a.-quality-gate-for-your-branch-lake" class="level2">
-<h2 class="anchored" data-anchor-id="optional-a.-quality-gate-for-your-branch-lake"><span class="chg">⭐</span> Optional A. Quality gate for your branch lake</h2>
+<h2 class="anchored" data-anchor-id="optional-a.-quality-gate-for-your-branch-lake">⭐ Optional A. Quality gate for your branch lake</h2>
 <p>Head office checks your report with scenarios in task 1. A quality gate applies the same method to your own tables: your Gherkin scenarios (L9) run on a table every time it commits.</p>
 <ol type="1">
 <li>Read <a href="https://github.com/cpsc436c-2026w1/a3-starter/blob/main/extensions/quality-gate/README.md"><code>extensions/quality-gate/README.md</code></a> in the starter. It has two example scenarios and the steps you can use.</li>
-<li>In <a href="https://github.com/cpsc436c-2026w1/a3-starter/blob/main/extensions/quality-gate/features/branch_lake.feature"><code>extensions/quality-gate/features/branch_lake.feature</code></a>, write three to five scenarios. For each scenario, name the requirement (R10 to R90) or the table property it checks. At least one scenario checks the table’s metadata rather than its rows. It can check snapshots, data files, row groups, or whether the files are ordered by a column. <span class="chg">After task 4, the snapshot, file-count and file-size checks still have values to measure. The gate reports the row-group and overlap checks as skipped.</span></li>
+<li>In <a href="https://github.com/cpsc436c-2026w1/a3-starter/blob/main/extensions/quality-gate/features/branch_lake.feature"><code>extensions/quality-gate/features/branch_lake.feature</code></a>, write three to five scenarios. For each scenario, name the requirement (R10 to R90) or the table property it checks. At least one scenario checks the table’s metadata rather than its rows. It can check snapshots, data files, row groups, or whether the files are ordered by a column. After task 4, the snapshot, file-count and file-size checks still have values to measure. The gate reports the row-group and overlap checks as skipped.</li>
 <li>From <code>extensions/quality-gate/</code>, run <code>bash setup_gate.sh</code>. Then in Athena, commit a change to a branch table: <code>ALTER TABLE branch.members SET TBLPROPERTIES (&#39;vacuum_min_snapshots_to_keep&#39; = &#39;2&#39;)</code>. A minute later you should see a result file in <code>s3://436c-glue-&lt;account&gt;/branch/checks/results/members/</code>. If none appears after two minutes, the README shows how to read the quality-gate function’s log.</li>
 <li>Change one scenario so that it expects something false. For example, change the R11 scenario’s condition to <code>is_lyon = true</code>. Run <code>bash setup_gate.sh features</code>, then commit again by setting <code>vacuum_min_snapshots_to_keep</code> back to <code>&#39;1&#39;</code>. Setting a property to the value it already has writes no metadata file and does not trigger the gate, so alternate between <code>&#39;2&#39;</code> and <code>&#39;1&#39;</code> for your test commits. You should see a result with <code>&quot;passed&quot;: false</code> in <code>branch/checks/results/members/</code>. Download that result file for your PDF. Then restore the scenario and run <code>bash setup_gate.sh features</code> again.</li>
 </ol>
 <p><strong>Add to your PDF, after task 4:</strong></p>
 <ul>
 <li>your feature file;</li>
-<li>a description or a screenshot of your configuration<span class="chg">, meaning the function’s settings (runtime, memory, timeout) and the bucket’s notification rule (<code>aws s3api get-bucket-notification-configuration --bucket 436c-glue-&lt;account&gt;</code>)</span>;</li>
+<li>a description or a screenshot of your configuration, meaning the function’s settings (runtime, memory, timeout) and the bucket’s notification rule (<code>aws s3api get-bucket-notification-configuration --bucket 436c-glue-&lt;account&gt;</code>);</li>
 <li>a screenshot of sample outputs, such as a passing and a failing result;</li>
 <li>3 to 5 sentences: how the option you explored works, what might and might not be a good fit for this mechanism, and how you would expand it in a production system.</li>
 </ul>
@@ -6414,8 +6414,8 @@ z-index: 1000;
 <li>R11: every row of <code>branch.members</code> has <code>is_lyon</code> true.</li>
 <li>R40: no <code>(receipt_id, line_no)</code> appears twice in <code>branch.receipts</code>.</li>
 <li>R51: no erased member’s <code>household_id</code> is left in <code>branch.members</code> or <code>branch.receipts</code>.</li>
-<li>R30: the rows of a day in <code>branch.receipts</code> equal that day’s count in <code>_files.json</code>. <span class="chg">The gate cannot read <code>_files.json</code>, so copy the number into the scenario, as in <code>the query &quot;…&quot; returns 56305</code>, day 1’s count.</span></li>
-<li><span class="chg">After tasks 3.3 and 3.4, <code>branch.receipts</code> fails the R30 and R40 scenarios, because it holds day 1 twice and has lost the erased members’ lines. A failing result there shows the gate at work.</span></li>
+<li>R30: the rows of a day in <code>branch.receipts</code> equal that day’s count in <code>_files.json</code>. The gate cannot read <code>_files.json</code>, so copy the number into the scenario, as in <code>the query &quot;…&quot; returns 56305</code>, day 1’s count.</li>
+<li>After tasks 3.3 and 3.4, <code>branch.receipts</code> fails the R30 and R40 scenarios, because it holds day 1 twice and has lost the erased members’ lines. A failing result there shows the gate at work.</li>
 <li>Metadata: choose and state your limits for the number of snapshots and the size of data files, and check whether the files of a partition overlap on the column you filter by. Files your Glue jobs wrote list their row groups in <code>split_offsets</code>. Files Athena’s <code>OPTIMIZE</code> wrote do not, so the gate skips a row-group scenario after <code>OPTIMIZE</code>.</li>
 </ul>
 </div>
@@ -6439,7 +6439,7 @@ z-index: 1000;
 </div>
 </section>
 <section id="optional-b.-nightly-maintenance" class="level2">
-<h2 class="anchored" data-anchor-id="optional-b.-nightly-maintenance"><span class="chg">⭐</span> Optional B. Nightly maintenance</h2>
+<h2 class="anchored" data-anchor-id="optional-b.-nightly-maintenance">⭐ Optional B. Nightly maintenance</h2>
 <p>Your task 4.3 plan says how often maintenance runs and what it costs. EventBridge Scheduler (L11) can run that plan: it calls Athena directly, and you don’t need a Lambda in between.</p>
 <ol type="1">
 <li>Read <a href="https://github.com/cpsc436c-2026w1/a3-starter/blob/main/extensions/scheduled-maintenance/README.md"><code>extensions/scheduled-maintenance/README.md</code></a> in the starter.</li>
@@ -6475,20 +6475,20 @@ z-index: 1000;
 </div>
 </section>
 <section id="optional-c.-glue-6.0-for-your-branch-jobs" class="level2">
-<h2 class="anchored" data-anchor-id="optional-c.-glue-6.0-for-your-branch-jobs"><span class="chg">🔬 Optional C. Glue 6.0 for your branch jobs</span></h2>
-<p><span class="chg">Glue 6.0, released in August 2026, prices a standard job run at $0.308 per DPU-hour in ca-central-1, against $0.44 for the Glue 5.0 your jobs use. A newer version can also change how a job behaves. In this task you switch one of your branch jobs to Glue 6.0 and compare it with the Glue 5.0 run you measured in task 2.</span></p>
+<h2 class="anchored" data-anchor-id="optional-c.-glue-6.0-for-your-branch-jobs">🔬 Optional C. Glue 6.0 for your branch jobs</h2>
+<p>Glue 6.0, released in August 2026, prices a standard job run at $0.308 per DPU-hour in ca-central-1, against $0.44 for the Glue 5.0 your jobs use. A newer version can also change how a job behaves. In this task you switch one of your branch jobs to Glue 6.0 and compare it with the Glue 5.0 run you measured in task 2.</p>
 <ol type="1">
-<li><span class="chg">Before you run anything, write 1 or 2 sentences on how you would organise the experiment: which job, what you keep the same, what you measure, and how you make sure both versions load the same data.</span></li>
-<li><span class="chg">Read what changed in Glue 6.0 and check your job’s script against it. Note anything that could make your job fail or give different results.</span></li>
-<li><span class="chg">Make a Glue 6.0 copy of your job, clean up what the copy will write again, run it once, and read its run time and DPU-seconds.</span></li>
-<li><span class="chg">Compare the two runs: the rows each wrote, the run time and the cost. Then price a year of nightly runs on each version.</span></li>
+<li>Before you run anything, write 1 or 2 sentences on how you would organise the experiment: which job, what you keep the same, what you measure, and how you make sure both versions load the same data.</li>
+<li>Read what changed in Glue 6.0 and check your job’s script against it. Note anything that could make your job fail or give different results.</li>
+<li>Make a Glue 6.0 copy of your job, clean up what the copy will write again, run it once, and read its run time and DPU-seconds.</li>
+<li>Compare the two runs: the rows each wrote, the run time and the cost. Then price a year of nightly runs on each version.</li>
 </ol>
-<p><strong><span class="chg">Add to your PDF, after task 4:</span></strong></p>
+<p><strong>Add to your PDF, after task 4:</strong></p>
 <ul>
-<li><span class="chg">your 1 or 2 sentences on how you organised the experiment, written before the run;</span></li>
-<li><span class="chg">what you found in the Glue 6.0 notes that applies to your script, or that nothing did, and how you checked;</span></li>
-<li><span class="chg">the results: both runs’ rows, run time, DPU-seconds and cost, and the yearly cost on each version;</span></li>
-<li><span class="chg">3 to 5 sentences: what changed and why, whether you would switch, and what you would check before switching a production pipeline.</span></li>
+<li>your 1 or 2 sentences on how you organised the experiment, written before the run;</li>
+<li>what you found in the Glue 6.0 notes that applies to your script, or that nothing did, and how you checked;</li>
+<li>the results: both runs’ rows, run time, DPU-seconds and cost, and the yearly cost on each version;</li>
+<li>3 to 5 sentences: what changed and why, whether you would switch, and what you would check before switching a production pipeline.</li>
 </ul>
 <div class="callout callout-style-default callout-tip callout-titled" title="💡 Hint: what can help you">
 <div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-22-contents" aria-controls="callout-22" aria-expanded="false" aria-label="Toggle callout">
@@ -6503,11 +6503,11 @@ z-index: 1000;
 <div id="callout-22" class="callout-22-contents callout-collapse collapse">
 <div class="callout-body-container callout-body">
 <ul>
-<li><span class="chg">The prices are on the <a href="https://aws.amazon.com/glue/pricing/">Glue pricing page</a>. Choose Canada (Central).</span></li>
-<li><span class="chg">Glue’s <a href="https://docs.aws.amazon.com/glue/latest/dg/migrating-version-60.html">migration notes for 6.0</a> list what behaves differently. Search them for what your script uses: the casts in its <code>select</code>, <code>getResolvedOptions</code> and the Iceberg write. For example, Spark’s ANSI mode is on by default in Glue 6.0, so a cast that cannot convert a value fails the job instead of returning null.</span></li>
-<li><span class="chg"><a href="https://github.com/cpsc436c-2026w1/b3-t2-glue-rides">Tutorial 2</a>’s <a href="https://github.com/cpsc436c-2026w1/b3-t2-glue-rides/blob/main/rerun_glue6.sh"><code>rerun_glue6.sh</code></a> makes a Glue 6.0 copy of a job and leaves the original as it is. Change its <code>SRC</code> and <code>NEW</code> names to your job’s.</span></li>
-<li><span class="chg">Your receipts job appends, as task 3.3 showed. Load the copy into a new table, or note the day’s row count before and after, so the comparison is fair.</span></li>
-<li><span class="chg">One run of each version is too few to call either faster, because run times vary by tens of seconds. The price per DPU-hour is the difference you can rely on.</span></li>
+<li>The prices are on the <a href="https://aws.amazon.com/glue/pricing/">Glue pricing page</a>. Choose Canada (Central).</li>
+<li>Glue’s <a href="https://docs.aws.amazon.com/glue/latest/dg/migrating-version-60.html">migration notes for 6.0</a> list what behaves differently. Search them for what your script uses: the casts in its <code>select</code>, <code>getResolvedOptions</code> and the Iceberg write. For example, Spark’s ANSI mode is on by default in Glue 6.0, so a cast that cannot convert a value fails the job instead of returning null.</li>
+<li><a href="https://github.com/cpsc436c-2026w1/b3-t2-glue-rides">Tutorial 2</a>’s <a href="https://github.com/cpsc436c-2026w1/b3-t2-glue-rides/blob/main/rerun_glue6.sh"><code>rerun_glue6.sh</code></a> makes a Glue 6.0 copy of a job and leaves the original as it is. Change its <code>SRC</code> and <code>NEW</code> names to your job’s.</li>
+<li>Your receipts job appends, as task 3.3 showed. Load the copy into a new table, or note the day’s row count before and after, so the comparison is fair.</li>
+<li>One run of each version is too few to call either faster, because run times vary by tens of seconds. The price per DPU-hour is the difference you can rely on.</li>
 </ul>
 </div>
 </div>
@@ -6518,7 +6518,7 @@ z-index: 1000;
 <h1>Submission and shutdown</h1>
 <section id="shut-down-first" class="level2">
 <h2 class="anchored" data-anchor-id="shut-down-first">Shut down first</h2>
-<p><span class="chg">⭐</span> If you did an optional task, remove its resources first. For Optional A, run <code>bash teardown_gate.sh</code> in <code>extensions/quality-gate/</code>. For Optional B, run <code>bash teardown_schedule.sh</code> in <code>extensions/scheduled-maintenance/</code>. <span class="chg">For Optional C, delete the Glue 6.0 copy of your job with <code>aws glue delete-job --job-name &lt;your copy&#39;s name&gt;</code>.</span> <span class="chg">Before you delete the Glue jobs, copy your price job’s script to CloudShell for task 2’s hand-in: <code>aws s3 cp &quot;$(aws glue get-job --job-name &lt;your price job&gt; --query &#39;Job.Command.ScriptLocation&#39; --output text)&quot; .</code></span> Then delete the Glue jobs you created and set the Data scanned limit back to 2 GB. <span class="chg">The 📋 box below shows</span> how to do both. If you no longer need the tables in <code>branch</code>, delete them too. Athena’s query history is your evidence and stays. Head office keeps your delivered reports.</p>
+<p>⭐ If you did an optional task, remove its resources first. For Optional A, run <code>bash teardown_gate.sh</code> in <code>extensions/quality-gate/</code>. For Optional B, run <code>bash teardown_schedule.sh</code> in <code>extensions/scheduled-maintenance/</code>. For Optional C, delete the Glue 6.0 copy of your job with <code>aws glue delete-job --job-name &lt;your copy&#39;s name&gt;</code>. Before you delete the Glue jobs, copy your price job’s script to CloudShell for task 2’s hand-in: <code>aws s3 cp &quot;$(aws glue get-job --job-name &lt;your price job&gt; --query &#39;Job.Command.ScriptLocation&#39; --output text)&quot; .</code> Then delete the Glue jobs you created and set the Data scanned limit back to 2 GB. The 📋 box below shows how to do both. If you no longer need the tables in <code>branch</code>, delete them too. Athena’s query history is your evidence and stays. Head office keeps your delivered reports.</p>
 <p><span id="cmd-shut-down"></span></p>
 <div class="callout callout-style-default callout-note no-icon callout-titled" title="📋 Commands: Shut down">
 <div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-23-contents" aria-controls="callout-23" aria-expanded="false" aria-label="Toggle callout">
@@ -6553,12 +6553,12 @@ z-index: 1000;
 <section id="then-submit-to-canvas" class="level2">
 <h2 class="anchored" data-anchor-id="then-submit-to-canvas">Then submit to Canvas</h2>
 <ul>
-<li><span class="chg">Your report as one PDF: each prediction and its reasoning, your measurements, and your answers to every question, using the task numbers from the assignment. It also holds everything else the roadmap’s task paragraphs ask you to hand in, such as task 2’s script changes and task 4’s properties.</span></li>
-<li><code>results.csv</code> <span class="chg">with 16 rows: 2 for task 1, 5 for task 2, 3 for task 3 and 6 for task 4. Each row has its measured value, and a predicted value where a step asks you to predict it</span>.</li>
-<li><span class="chg">Screenshots 1 and 2</span>. Screenshot 2 is head office’s reply email to your task 1 report, or the reply file if the email did not arrive.</li>
-<li><span class="chg">⭐</span> If you did an optional task, what it asks you to add to your PDF.</li>
+<li>Your report as one PDF: each prediction and its reasoning, your measurements, and your answers to every question, using the task numbers from the assignment. It also holds everything else the roadmap’s task paragraphs ask you to hand in, such as task 2’s script changes and task 4’s properties.</li>
+<li><code>results.csv</code> with 16 rows: 2 for task 1, 5 for task 2, 3 for task 3 and 6 for task 4. Each row has its measured value, and a predicted value where a step asks you to predict it.</li>
+<li>Screenshots 1 and 2. Screenshot 2 is head office’s reply email to your task 1 report, or the reply file if the email did not arrive.</li>
+<li>⭐ If you did an optional task, what it asks you to add to your PDF.</li>
 </ul>
-<p><span class="chg">Your account number should be visible in these screenshots: it is how we tell your work from anyone else’s. Do not post them publicly or commit them to a public repository. Upload them to Canvas and nowhere else, and never submit a screenshot showing a key, a token, or a secret.</span></p>
+<p>Your account number should be visible in these screenshots: it is how we tell your work from anyone else’s. Do not post them publicly or commit them to a public repository. Upload them to Canvas and nowhere else, and never submit a screenshot showing a key, a token, or a secret.</p>
 </section>
 </section>
 <section id="rubric-summary" class="level1">
