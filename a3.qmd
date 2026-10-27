@@ -451,7 +451,7 @@ then query.
 ## 1.2 Measure
 
 Complete the report in `report_task1.sql`: the condition that picks products graded A or B, and the `GROUP BY`, are
-left for you. Its result has the
+left for you. The report's result has the
 columns `month`, `segment` and `ab_share`: `segment` is `lyon` for households with `is_lyon` true and `rest` for
 all others, and `ab_share` is the spend on products graded `a` or `b` in `catalogue` (`DESCRIBE course.course_lake.catalogue` names its Nutri-Score column,
 and the grades are lower-case letters), divided by all spend. Run it,
