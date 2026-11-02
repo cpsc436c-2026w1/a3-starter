@@ -944,7 +944,10 @@ the files you noted go in your PDF.
 ## 4.3 Plan
 
 Write one paragraph to the director that says what runs, when, on which engine, and at what monthly cost,
-item by item. The paragraph also answers three questions:
+item by item[, for everything your branch account pays for. That is the branch side of the diagram, plus the Data
+scanned of the queries your account runs on head office's lakehouse and through the shelf-price connector, because
+Athena bills a query to the account that runs it. A short cost table beside the paragraph is welcome. End with the
+monthly total and what the director gets for it]{.chg}. The paragraph also answers three questions:
 
 1. In what order does an erasure go through `DELETE`, `OPTIMIZE` and `VACUUM`?
 2. Which snapshot age would you set in production to meet rule 2? It is not the 60 seconds used here.
@@ -953,8 +956,17 @@ item by item. The paragraph also answers three questions:
 
 Use your own numbers, and state the volume you plan for,
 such as one till export a night as large as day 1's and 24 price exports a day as large as your 23:00 file.
+[Athena bills a query that scans less than 10 MB as 10 MB, and Glue bills a run shorter than a minute as a minute,
+so a small nightly run is priced by these minimums, not by the data it scans.]{.chg}
 Your plan should be motivated with the numbers from your
 `results.csv` and relevant prices. [📋 Commands: Table properties, OPTIMIZE and VACUUM](#cmd-table-properties-optimize-and-vacuum) at the start of task 4 ends with the prices.
+
+[⭐ **Optional, up to 5 bonus points: head office's side.** Estimate the monthly cost of head office's side of the
+diagram as well: the company lakehouse's storage and the S3 requests your queries make on it (head office pays
+those, because its bucket bills its owner), the report checker and its emails, the shelf-price app, and the
+connector's Lambda time. You have less information about it, so state each assumption, for example how many
+reports a month the checker answers. This part is marked on how clearly you state and use your assumptions, not on
+matching head office's real bill.]{.chg}
 
 []{#cmd-s3-lifecycle-rule-on-the-raw-zone}
 
